@@ -1,4 +1,4 @@
-package main.java.com.myapp.backend.model;
+package com.myapp.backend.model;
 
 public class Patient {
     private String name;

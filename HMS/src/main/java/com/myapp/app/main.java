@@ -1,1 +1,1 @@
-package main.java.com.myapp.app;
+package com.myapp.app;

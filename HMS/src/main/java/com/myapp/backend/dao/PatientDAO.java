@@ -1,7 +1,7 @@
-package main.java.com.myapp.backend.dao;
+package com.myapp.backend.dao;
 
-import main.java.com.myapp.backend.model.Patient;
-import main.java.com.myapp.backend.db.DBUtil;
+import com.myapp.backend.model.Patient;
+import com.myapp.backend.db.DBUtil;
 
 import java.sql.*;
 import java.util.ArrayList;

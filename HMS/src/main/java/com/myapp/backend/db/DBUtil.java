@@ -1,4 +1,4 @@
-package main.java.com.myapp.backend.db;
+package com.myapp.backend.db;
 
 
 import java.sql.Connection;

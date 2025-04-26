@@ -1,8 +1,8 @@
-package main.java.com.myapp.backend.services;
+package com.myapp.backend.services;
 
 
-import main.java.com.myapp.backend.dao.PatientDAO;
-import main.java.com.myapp.backend.model.Patient;
+import com.myapp.backend.dao.PatientDAO;
+import com.myapp.backend.model.Patient;
 
 public class PatientService {
     private PatientDAO dao = new PatientDAO();
