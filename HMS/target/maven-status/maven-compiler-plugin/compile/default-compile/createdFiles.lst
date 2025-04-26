@@ -1,5 +1,7 @@
-main\java\com\myapp\backend\services\PatientService.class
-main\java\com\myapp\frontend\controllers\RegisterController.class
-main\java\com\myapp\backend\dao\PatientDAO.class
-main\java\com\myapp\backend\db\DBUtil.class
-main\java\com\myapp\backend\model\Patient.class
+com\myapp\backend\services\PatientService.class
+com\myapp\frontend\controllers\LoginController.class
+com\myapp\backend\model\Patient.class
+com\myapp\frontend\controllers\RegisterController.class
+main\java\com\myapp\app\Main.class
+com\myapp\backend\db\DBUtil.class
+com\myapp\backend\dao\PatientDAO.class

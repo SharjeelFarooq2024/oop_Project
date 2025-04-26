@@ -7,7 +7,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PatientDAO {
+public class PatientDAO
+{
+    public Patient findByEmail(String email) {
+        // Logic to find a patient by email
+        // For example, return null if not found
+        return null; // Replace with actual implementation
+    }
     public void addPatient(Patient patient) throws SQLException {
         String sql = "INSERT INTO patients (name, age) VALUES (?, ?)";
         try (Connection conn = DBUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {

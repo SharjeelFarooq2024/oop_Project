@@ -11,11 +11,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
-        <javafx.version>20</javafx.version> <!-- You can use 19 or 20 depending -->
+        <javafx.version>20.0.2</javafx.version>
     </properties>
 
     <dependencies>
-        <!-- JavaFX dependencies -->
+        <!-- JavaFX -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -27,7 +27,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- Add JDBC or other dependencies here -->
+        <!-- JDBC or Other dependencies -->
     </dependencies>
 
     <build>
@@ -43,23 +43,15 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
                 </configuration>
             </plugin>
 
-            <!-- JavaFX Maven plugin for running -->
+            <!-- JavaFX Maven plugin -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
-                <mainClass>com.myapp.app.Main</mainClass> <!-- Replace with your actual main class if different -->
+                    <mainClass>com.myapp.app.Main</mainClass>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 

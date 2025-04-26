@@ -3,6 +3,17 @@ package com.myapp.backend.model;
 public class Patient {
     private String name;
     private int age;
+    private String password;
+
+    // Getter for password
+    public String getPassword() {
+        return password;
+    }
+
+    // Setter for password
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public Patient(String name, int age) {
         this.name = name;
