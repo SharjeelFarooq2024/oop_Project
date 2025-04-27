@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+    <?import javafx.scene.control.*?>
+    <?import javafx.geometry.Insets?>
+    
+    <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.myapp.frontend.controllers.PatientDashboardController">
+    
+        <!-- Top Bar -->
+        <top>
+            <HBox style="-fx-background-color: #2C3E50;">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+                <Label text="Patient Dashboard" style="-fx-text-fill: white; -fx-font-size: 20px;"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Button text="Logout" fx:id="logoutButton" />
+            </HBox>
+        </top>
+    
+        <!-- Left Sidebar -->
+        <left>
+            <VBox spacing="10" style="-fx-background-color:rgb(49, 69, 90);">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+                <Button text="Home" style="-fx-background-color: transparent; -fx-text-fill: white;" />
+                <Button text="Book Appointment" fx:id="bookAppointmentButton" style="-fx-background-color: transparent; -fx-text-fill: white;" />
+                <Button text="View Reports" fx:id="viewReportsButton" style="-fx-background-color: transparent; -fx-text-fill: white;" />
+            </VBox>
+        </left>
+    
+        <!-- Main Content Area -->
+        <center>
+            <VBox spacing="20" alignment="CENTER">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <Label text="Welcome to Your Dashboard" style="-fx-font-size: 24px;" />
+                <Label text="Select an option from the sidebar" style="-fx-font-size: 16px;" />
+            </VBox>
+        </center>
+    
+    </BorderPane>
+    

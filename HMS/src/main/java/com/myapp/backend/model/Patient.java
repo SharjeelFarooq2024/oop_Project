@@ -5,6 +5,17 @@ public class Patient {
     private int age;
     private String password;
 
+    // Constructor
+
+    private String email;
+    
+    // Other fields like name, age, etc.
+
+    // 🛠 Add this constructor:
+    public Patient(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
     // Getter for password
     public String getPassword() {
         return password;

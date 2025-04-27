@@ -1,3 +1,4 @@
+com\myapp\frontend\controllers\PatientDashboardController.class
 com\myapp\backend\services\PatientService.class
 com\myapp\frontend\controllers\LoginController.class
 com\myapp\backend\model\Patient.class

@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.geometry.*?>
-
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.myapp.frontend.controllers.LoginController">
-
-    <VBox alignment="CENTER" spacing="15.0" layoutX="100" layoutY="100" prefWidth="300" prefHeight="300">
-        <Label text="Patient Login" style="-fx-font-size: 24px; -fx-text-fill: #00bfa5;" />
-
-        <TextField fx:id="emailField" promptText="Email" />
-        <PasswordField fx:id="passwordField" promptText="Password" />
-
-        <Button text="Login" onAction="#handleLoginButtonAction" style="-fx-background-color: #00bfa5; -fx-text-fill: white;"/>
-
-    </VBox>
-</AnchorPane>
+    <?import javafx.scene.layout.*?>
+    
+    <AnchorPane xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx"
+                fx:controller="com.myapp.frontend.controllers.LoginController">
+    
+        <VBox alignment="CENTER" spacing="15.0" layoutX="100" layoutY="100" prefWidth="300" prefHeight="300">
+            <Label text="Patient Login" style="-fx-font-size: 24px; -fx-text-fill: #00bfa5;" />
+    
+            <TextField fx:id="emailField" promptText="Email" />
+            <PasswordField fx:id="passwordField" promptText="Password" />
+    
+            <Button fx:id="loginButton" text="Login" onAction="#handleLoginButtonAction"
+                    style="-fx-background-color: #00bfa5; -fx-text-fill: white;"/>
+        </VBox>
+    
+    </AnchorPane>
+    
