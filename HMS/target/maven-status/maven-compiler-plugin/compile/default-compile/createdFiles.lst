@@ -1,8 +1,11 @@
 com\myapp\frontend\controllers\PatientDashboardController.class
-com\myapp\backend\services\PatientService.class
 com\myapp\frontend\controllers\LoginController.class
+com\myapp\frontend\controllers\BookAppointmentController.class
 com\myapp\backend\model\Patient.class
 com\myapp\frontend\controllers\RegisterController.class
 com\myapp\backend\db\DBUtil.class
-com\myapp\backend\dao\PatientDAO.class
 com\myapp\app\Main.class
+com\myapp\frontend\controllers\UploadVitalsController.class
+com\myapp\backend\services\PatientService.class
+com\myapp\frontend\controllers\ViewReportsController.class
+com\myapp\backend\dao\PatientDAO.class

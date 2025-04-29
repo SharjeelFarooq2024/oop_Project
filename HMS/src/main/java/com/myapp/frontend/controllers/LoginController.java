@@ -40,21 +40,24 @@ public class LoginController {
         Patient patient = patientService.login(email, password);
         if (patient != null) {
             try {
-                // FIX: Better way to load FXML
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                double width = stage.getWidth();
+                double height = stage.getHeight();
+
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PatientDashboard.fxml"));
                 Parent dashboardRoot = loader.load();
-
-                Stage stage = (Stage) loginButton.getScene().getWindow();
-                stage.setScene(new Scene(dashboardRoot));
-                stage.setTitle("Patient Dashboard");
-                stage.show();
-            }catch (Exception e) {
-                    e.printStackTrace();  // print error to console
-                    showAlert("Error", "Could not load dashboard!\n" + e.getMessage());
-                }
+                Scene scene = new Scene(dashboardRoot);
                 
+                stage.setScene(scene);
+                stage.setTitle("Patient Dashboard");
+                stage.setWidth(width);
+                stage.setHeight(height);
+                stage.show();
+            } catch (Exception e) {
+                e.printStackTrace();  // print error to console
+                showAlert("Error", "Could not load dashboard!\n" + e.getMessage());
             }
-        else {
+        } else {
             showAlert("Error", "Invalid credentials.");
         }
     }

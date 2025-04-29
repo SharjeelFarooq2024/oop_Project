@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+    
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.myapp.frontend.controllers.BookAppointmentController">
+    <top>
+        <HBox spacing="10" style="-fx-background-color: #1a237e;">
+            <padding><Insets top="15" right="20" bottom="15" left="20"/></padding>
+            <Button fx:id="backButton" text="Back" 
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px;"/>
+        </HBox>
+    </top>
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background: #f5f5f5; -fx-background-color: #f5f5f5;">
+            <VBox alignment="TOP_CENTER" spacing="25" style="-fx-background-color: white; -fx-background-radius: 10;">
+                <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+                
+                <Text text="Book an Appointment" 
+                      style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-fill: #1a237e;"/>
+                
+                <VBox spacing="20" maxWidth="400">
+                    <VBox spacing="8">
+                        <Label text="Select Doctor" style="-fx-font-size: 14px;"/>
+                        <ComboBox fx:id="doctorNameField" promptText="Choose your doctor" 
+                                 prefWidth="400" style="-fx-font-size: 14px;"/>
+                    </VBox>
+                    
+                    <VBox spacing="8">
+                        <Label text="Select Date" style="-fx-font-size: 14px;"/>
+                        <DatePicker fx:id="appointmentDatePicker" prefWidth="400" 
+                                  style="-fx-font-size: 14px;"/>
+                    </VBox>
+                    
+                    <VBox spacing="8">
+                        <Label text="Select Time" style="-fx-font-size: 14px;"/>
+                        <ComboBox fx:id="timeSlotComboBox" promptText="Choose available time" 
+                                 prefWidth="400" style="-fx-font-size: 14px;"/>
+                    </VBox>
+                    
+                    <VBox spacing="8">
+                        <Label text="Reason for Visit" style="-fx-font-size: 14px;"/>
+                        <TextArea fx:id="reasonField" promptText="Brief description of your condition"
+                                 prefRowCount="3" wrapText="true" style="-fx-font-size: 14px;"/>
+                    </VBox>
+                    
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Clear" fx:id="clearButton"
+                                style="-fx-background-color: #e0e0e0; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 5;"/>
+                        <Button text="Confirm Appointment" fx:id="confirmButton"
+                                style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 5;"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
