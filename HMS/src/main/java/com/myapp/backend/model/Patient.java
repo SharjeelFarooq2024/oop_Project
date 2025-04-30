@@ -1,50 +1,31 @@
 package com.myapp.backend.model;
 
-public class Patient {
-    private String name;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Patient extends User {
     private int age;
-    private String password;
+    private List<Feedback> feedbacks;
 
-    // Constructor
-
-    private String email;
-    
-    // Other fields like name, age, etc.
-
-    // 🛠 Add this constructor:
-    public Patient(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-    // Getter for password
-    public String getPassword() {
-        return password;
-    }
-
-    // Setter for password
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Patient(String name, int age) {
-        this.name = name;
+    public Patient(String id, String name, String email, int age) {
+        super(id, name, email);
         this.age = age;
-    }
-
-    public String getName() {
-        return name;
+        this.feedbacks = new ArrayList<>();
     }
 
     public int getAge() {
         return age;
     }
 
-    // Optionally add setters
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public void addFeedback(Feedback feedback) {
+        this.feedbacks.add(feedback);
+    }
+
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
     }
 }
