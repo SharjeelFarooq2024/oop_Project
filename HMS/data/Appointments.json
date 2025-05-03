@@ -1,0 +1,12 @@
+[ {
+  "appointmentId" : "a32f6207-70ac-4cd6-a655-e07b42b1cb6d",
+  "patientId" : "8118d4f2-be80-4b79-80d5-ba8d2afe27ec",
+  "doctorId" : "doc-002",
+  "status" : "Pending",
+  "date" : "2025-05-23",
+  "time" : "03:00 PM",
+  "description" : "sdfghjklxcvbnklcvbnm",
+  "completed" : false,
+  "scheduled" : false,
+  "pending" : true
+} ]

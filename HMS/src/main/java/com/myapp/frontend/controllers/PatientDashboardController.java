@@ -1,12 +1,15 @@
 package com.myapp.frontend.controllers;
 
+import com.myapp.backend.model.Appointment;
 import com.myapp.backend.model.Patient;
+import com.myapp.backend.services.AppointmentService;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -98,24 +101,42 @@ public class PatientDashboardController {
         }
     }
 
-    private void handleBookAppointment(ActionEvent event) {
-        try {
-            Stage stage = (Stage) bookAppointmentButton.getScene().getWindow();
-            double width = stage.getWidth();
-            double height = stage.getHeight();
-            
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml/BookAppointment.fxml"));
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Book Appointment");
-            
-            stage.setWidth(width);
-            stage.setHeight(height);
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void showAlert(String title, String message) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
+}
+
+private void handleBookAppointment(ActionEvent event) {
+    try {
+        Stage stage = (Stage) bookAppointmentButton.getScene().getWindow();
+        double width = stage.getWidth();
+        double height = stage.getHeight();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/BookAppointment.fxml"));
+        Parent root = loader.load();
+
+        // Pass the logged-in patient to BookAppointmentController
+        BookAppointmentController controller = loader.getController();
+        controller.setLoggedInPatient(loggedInPatient);
+
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Book Appointment");
+        stage.setWidth(width);
+        stage.setHeight(height);
+        stage.show();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        showAlert("Error", "Unable to load the appointment booking page.");
     }
+}
+
+
+    
 
     private void handleViewReports(ActionEvent event) {
         try {

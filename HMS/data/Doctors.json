@@ -1,0 +1,30 @@
+[
+    {
+      "id": "doc-001",
+      "name": "Dr. Alice Morgan",
+      "email": "alice.morgan@hospital.com",
+      "password": "pass123",
+      "specialization": "Cardiologist",
+      "patients": [],
+      "appointments": []
+    },
+    {
+      "id": "doc-002",
+      "name": "Dr. Brian Lee",
+      "email": "brian.lee@hospital.com",
+      "password": "secure456",
+      "specialization": "Dermatologist",
+      "patients": [],
+      "appointments": []
+    },
+    {
+      "id": "doc-003",
+      "name": "Dr. Clara Zhang",
+      "email": "clara.zhang@hospital.com",
+      "password": "doc789",
+      "specialization": "Pediatrician",
+      "patients": [],
+      "appointments": []
+    }
+  ]
+  

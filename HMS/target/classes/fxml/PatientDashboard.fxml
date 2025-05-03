@@ -72,7 +72,7 @@
 
                     <!-- Upcoming Appointment Card -->
                     <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);" 
-                          GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        GridPane.columnIndex="0" GridPane.rowIndex="0">
                         <padding>
                             <Insets top="20" right="20" bottom="20" left="20"/>
                         </padding>
@@ -83,7 +83,7 @@
 
                     <!-- Recent Reports Card -->
                     <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);" 
-                          GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        GridPane.columnIndex="1" GridPane.rowIndex="0">
                         <padding>
                             <Insets top="20" right="20" bottom="20" left="20"/>
                         </padding>

@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Doctor extends User {
+    private String specialization;
     private List<Patient> patients;
     private List<Appointment> appointments;
-
+    
     // No-arg constructor for Jackson serialization
     public Doctor() {
         super(); // Make sure User also has a default constructor
@@ -14,14 +15,23 @@ public class Doctor extends User {
         this.appointments = new ArrayList<>();
     }
 
-    // Constructor for creating a Doctor with name, email, and password
-    public Doctor(String name, String email, String password) {
+    // Constructor for creating a Doctor with name, email, password, and specialization
+    public Doctor(String name, String email, String password, String specialization) {
         super(name, email, password);
+        this.specialization = specialization;
         this.patients = new ArrayList<>();
         this.appointments = new ArrayList<>();
     }
 
     // Getters and Setters
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
+    }
+
     public List<Appointment> getAppointments() {
         return appointments;
     }
@@ -52,22 +62,28 @@ public class Doctor extends User {
             return;
         }
 
+        boolean found = false;
+
         System.out.println("\nCurrent Appointments:");
         for (Appointment appointment : appointments) {
-            System.out.println("ID: " + appointment.getAppointmentId() + 
-                             " | Patient: " + appointment.getPatientId() + 
-                             " | Status: " + (appointment.isApproved() ? "Approved" : "Pending"));
-        }
+            System.out.println("ID: " + appointment.getAppointmentId() +
+                               " | Patient ID: " + appointment.getPatientId() +
+                               " | Status: " + appointment.getStatus());
 
-        for (Appointment appointment : appointments) {
             if (appointment.getAppointmentId().equals(appointmentId)) {
-                appointment.approveAppointment();
-                System.out.println("Appointment with ID " + appointmentId + " has been approved.");
-                return;
+                if (!appointment.isPending()) {
+                    System.out.println("Appointment is not pending and cannot be approved.");
+                } else {
+                    appointment.markAsScheduled();
+                    System.out.println("Appointment with ID " + appointmentId + " has been approved (Scheduled).");
+                }
+                found = true;
             }
         }
 
-        System.out.println("Appointment with ID " + appointmentId + " not found.");
+        if (!found) {
+            System.out.println("Appointment with ID " + appointmentId + " not found.");
+        }
     }
 
     public void giveFeedback(Patient patient, String comment) {
@@ -77,8 +93,8 @@ public class Doctor extends User {
 
     public void displayUserInfo() {
         System.out.printf("The name of the Doctor is %s%n" +
-                         "The ID of the doctor is %s%n" +
-                         "The email of the doctor is %s%n",
-                         getName(), getId(), getEmail());
+                          "The ID of the doctor is %s%n" +
+                          "The email of the doctor is %s%n",
+                          getName(), getId(), getEmail());
     }
 }

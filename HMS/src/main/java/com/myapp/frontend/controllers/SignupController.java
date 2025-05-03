@@ -57,7 +57,14 @@ public class SignupController {
         String name = nameField.getText();
         String email = emailField.getText();
         String password = passwordField.getText();
-        int age = Integer.parseInt(ageField.getText());
+        String ageText = ageField.getText();
+if (!ageText.matches("\\d+")) {
+    showAlert("Validation Error", "Age must be a number.");
+    return;
+}
+
+int age = Integer.parseInt(ageText);
+
 
         if (name.isEmpty() || email.isEmpty() || password.isEmpty() || ageField.getText().isEmpty()) {
             showAlert("Error", "All fields are required.");
