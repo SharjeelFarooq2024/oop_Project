@@ -1,11 +1,14 @@
 package com.myapp.frontend.controllers;
 
+import com.myapp.backend.model.Patient;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 public class PatientDashboardController {
@@ -23,9 +26,27 @@ public class PatientDashboardController {
     private Button uploadVitalsButton;
 
     @FXML
+    private Label welcomeLabel;  // Add a label to show the welcome message
+
+    private Patient loggedInPatient;  // This is where we store the logged-in patient
+
+    // This method will be called after the login to pass the logged-in patient
+    public void setLoggedInPatient(Patient patient) {
+        this.loggedInPatient = patient;
+        updateWelcomeMessage();
+    }
+
+    @FXML
     public void initialize() {
         setupButtonHoverEffects();
         setupButtonHandlers();
+    }
+
+    private void updateWelcomeMessage() {
+        if (loggedInPatient != null) {
+            // Update the welcome message dynamically with the patient's name
+            welcomeLabel.setText("Welcome back, " + loggedInPatient.getName() + "!");
+        }
     }
 
     private void setupButtonHoverEffects() {
@@ -134,4 +155,3 @@ public class PatientDashboardController {
         }
     }
 }
-

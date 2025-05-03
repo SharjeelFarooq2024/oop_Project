@@ -1,25 +1,38 @@
 package com.myapp.backend.services;
 
+import java.io.IOException;
+
 import com.myapp.backend.dao.PatientDAO;
 import com.myapp.backend.model.Patient;
-import java.util.UUID;
 
 public class PatientService {
-    private PatientDAO dao = new PatientDAO();
+    private PatientDAO dao = new PatientDAO(); // Instance of PatientDAO
 
+    // Logs in a patient by matching email and password in the JSON file
     public Patient login(String email, String password) {
-        if (email.equals("patient@example.com") && password.equals("password")) {
-            // Create a dummy patient with required fields
-            return new Patient(UUID.randomUUID().toString(), "Dummy Patient", email, 30);
+        Patient patient = dao.findByEmail(email); // Use the instance of PatientDAO
+        if (patient != null && patient.getPassword().equals(password)) {
+            return patient;
         }
         return null;
     }
 
-    public void registerNewPatient(Patient patient) throws Exception {
-        if (patient.getName().isBlank()) {
-            throw new Exception("Patient name cannot be empty");
+    // Registers a new patient after validation
+    public void registerNewPatient(String name, String email, String password, int age) {
+        // Check if the patient already exists using the PatientDAO instance
+        if (dao.findByEmail(email) != null) { // Use the instance of PatientDAO
+            System.out.println("Patient with this email already exists.");
+            return;
         }
-        dao.addPatient(patient);
+
+        // Create a new patient and add to the file
+        Patient newPatient = new Patient(name, email, password, age);
+        try {
+            dao.addPatient(newPatient); // Use the instance of PatientDAO
+            System.out.println("New patient registered successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error registering patient: " + e.getMessage());
+        }
     }
 }
-

@@ -7,8 +7,14 @@ public class Patient extends User {
     private int age;
     private List<Feedback> feedbacks;
 
-    public Patient(String id, String name, String email, int age) {
-        super(id, name, email);
+    public Patient() {
+        super(); // make sure User also has a default constructor
+        this.feedbacks = new ArrayList<>();
+    }
+    
+
+    public Patient(String name, String email, String password, int age) {
+        super(name, email, password);
         this.age = age;
         this.feedbacks = new ArrayList<>();
     }
@@ -27,5 +33,9 @@ public class Patient extends User {
 
     public List<Feedback> getFeedbacks() {
         return feedbacks;
+    }
+
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
     }
 }

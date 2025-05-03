@@ -29,7 +29,8 @@
                 <Insets top="20" right="15" bottom="20" left="15"/>
             </padding>
             
-            <Text text="John Doe" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Label fx:id="patientNameLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
             <Text text="Patient ID: P-1234" style="-fx-font-size: 14px; -fx-fill: #757575;"/>
             
             <Separator style="-fx-padding: 10 0 10 0;"/>
@@ -57,7 +58,8 @@
                     <padding>
                         <Insets top="30" right="30" bottom="30" left="30"/>
                     </padding>
-                    <Text text="Welcome back, John!" style="-fx-fill: white; -fx-font-size: 24px;"/>
+                    <Label fx:id="welcomeLabel" text="Welcome back" style="-fx-text-fill: white; -fx-font-size: 24px;" />
+
                     <Text text="Here's your health overview" style="-fx-fill: white; -fx-font-size: 16px; -fx-opacity: 0.9;"/>
                 </VBox>
 

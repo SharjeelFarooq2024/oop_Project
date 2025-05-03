@@ -4,8 +4,6 @@ com\myapp\backend\model\Doctor.class
 com\myapp\frontend\controllers\LoginController.class
 com\myapp\frontend\controllers\BookAppointmentController.class
 com\myapp\backend\model\Patient.class
-com\myapp\frontend\controllers\RegisterController.class
-com\myapp\backend\db\DBUtil.class
 com\myapp\backend\model\Session.class
 com\myapp\backend\model\Appointment.class
 com\myapp\app\Main.class
