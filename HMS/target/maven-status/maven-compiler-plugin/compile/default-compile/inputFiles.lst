@@ -14,6 +14,7 @@ c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\
 c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Feedback.java
 c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\SessionManager.java
 c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\util\FileUtil.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\VitalSignService.java
 c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Appointment.java
 c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\User.java
 c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\dao\DoctorDAO.java
@@ -26,4 +27,5 @@ c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend
 c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\UploadVitalsController.java
 c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Session.java
 c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\PatientDashboardController.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\dao\VitalSignDAO.java
 c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Patient.java

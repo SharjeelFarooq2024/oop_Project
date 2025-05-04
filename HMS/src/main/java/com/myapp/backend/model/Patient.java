@@ -7,9 +7,12 @@ public class Patient extends User {
     private int age;
     private List<Feedback> feedbacks;
 
+    private List<VitalSign> vitalSigns;  // Store the list of vitals
+
     public Patient() {
         super(); // make sure User also has a default constructor
         this.feedbacks = new ArrayList<>();
+        this.vitalSigns = new ArrayList<>();  // Initialize vitalSigns list
     }
     
 
@@ -17,6 +20,15 @@ public class Patient extends User {
         super(name, email, password);
         this.age = age;
         this.feedbacks = new ArrayList<>();
+        this.vitalSigns = new ArrayList<>();  // Initialize vitalSigns list
+    }
+
+    public List<VitalSign> getVitalSigns() {
+        return vitalSigns;
+    }
+
+    public void setVitalSigns(List<VitalSign> vitalSigns) {
+        this.vitalSigns = vitalSigns;
     }
 
     public int getAge() {

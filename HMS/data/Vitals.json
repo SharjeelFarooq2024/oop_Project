@@ -1,0 +1,12 @@
+[
+    {
+      "vitalId": "5ba2c6cb-e2c4-44c8-8f23-d8088a4698d6",
+      "patientId": "8118d4f2-be80-4b79-80d5-ba8d2afe27ec",
+      "heartRate": 5.0,
+      "oxygenLevel": 6.0,
+      "bloodPressure": "3",
+      "temperature": 4.0,
+      "timestamp": "2025-05-04T10:00:00Z"
+    }
+  ]
+  
