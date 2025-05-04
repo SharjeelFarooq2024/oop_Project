@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import com.myapp.backend.dao.AppointmentDAO;
 import com.myapp.backend.dao.AppointmentDAO.AppointmentStatus;
 import com.myapp.backend.dao.DoctorDAO;

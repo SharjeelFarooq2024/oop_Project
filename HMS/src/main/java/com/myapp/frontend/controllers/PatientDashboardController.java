@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import com.myapp.backend.model.Appointment;
 import com.myapp.backend.model.Doctor;
 import com.myapp.backend.model.Patient;
