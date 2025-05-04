@@ -12,7 +12,7 @@ import java.util.List;
 public class AppointmentService {
     
 
-    private static final String APPOINTMENT_FILE_PATH = "path/to/bookappointment.json"; // Specify the path to your JSON file
+    private static final String APPOINTMENT_FILE_PATH = System.getProperty("user.dir") + "/data/Appointments.json"; // Specify the path to your JSON file
 
     private static AppointmentDAO appointmentDAO = new AppointmentDAO();
 
@@ -41,6 +41,16 @@ public class AppointmentService {
         } catch (IOException e) {
             e.printStackTrace();
             // Handle the case where the file cannot be read or written
+        }
+    }
+
+    public static boolean bookAppointment(Appointment appointment) {
+        try {
+            AppointmentDAO.AppointmentStatus status = new AppointmentDAO().addAppointment(appointment);
+            return status == AppointmentDAO.AppointmentStatus.SUCCESS;
+        } catch (Exception e) {
+            System.err.println("Error booking appointment: " + e.getMessage());
+            return false;
         }
     }
 }

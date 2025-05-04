@@ -50,4 +50,19 @@ public class PatientDAO {
         }
         return null;
     }
+    
+    // Find a patient by ID
+    public Patient findById(String id) {
+        try {
+            List<Patient> patients = loadPatients();
+            for (Patient p : patients) {
+                if (p.getId().equals(id)) {
+                    return p;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -17,12 +17,15 @@ public class AppointmentDAO {
     private List<Appointment> loadAppointments() throws IOException {
         File file = new File(FILE_PATH);
         if (!file.exists()) {
+            file.getParentFile().mkdirs(); // Create directory if it doesn't exist
+            mapper.writeValue(file, new ArrayList<>()); // Create empty file
             return new ArrayList<>();
         }
         try {
             return mapper.readValue(file, new TypeReference<List<Appointment>>() {});
         } catch (IOException e) {
-            throw new IOException("Error reading appointments from file.", e);
+            System.err.println("Error reading appointments: " + e.getMessage());
+            return new ArrayList<>(); // Return empty list on error
         }
     }
 
@@ -62,9 +65,6 @@ public class AppointmentDAO {
         }
     }
     
-    
-    
-
     // Find appointments by patient ID
     public List<Appointment> findByPatientId(String patientId) {
         try {
@@ -89,7 +89,6 @@ public class AppointmentDAO {
         ERROR
     }
     
-
     // Additional helper method to ensure appointments are loaded once and used for various operations
     public List<Appointment> getAllAppointments() {
         try {
@@ -98,5 +97,19 @@ public class AppointmentDAO {
             System.err.println("Error loading all appointments: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    // Add this method to the existing AppointmentDAO class
+    public void updateAppointment(Appointment updatedAppointment) throws IOException {
+        List<Appointment> appointments = loadAppointments();
+        
+        for (int i = 0; i < appointments.size(); i++) {
+            if (appointments.get(i).getAppointmentId().equals(updatedAppointment.getAppointmentId())) {
+                appointments.set(i, updatedAppointment);
+                break;
+            }
+        }
+        
+        saveAppointments(appointments);
     }
 }

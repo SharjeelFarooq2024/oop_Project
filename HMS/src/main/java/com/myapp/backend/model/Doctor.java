@@ -1,29 +1,72 @@
 package com.myapp.backend.model;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 public class Doctor extends User {
     private String specialization;
-    private List<Patient> patients;
-    private List<Appointment> appointments;
+    private ArrayList<Patient> patients;
+    private ArrayList<Appointment> appointments;
+    private ArrayList<EmergencyAlert> emergencyAlerts;
     
     // No-arg constructor for Jackson serialization
     public Doctor() {
-        super(); // Make sure User also has a default constructor
+        super();
         this.patients = new ArrayList<>();
         this.appointments = new ArrayList<>();
+        this.emergencyAlerts = new ArrayList<>();
     }
 
-    // Constructor for creating a Doctor with name, email, password, and specialization
+    // Keep only this constructor - remove the duplicate one
     public Doctor(String name, String email, String password, String specialization) {
         super(name, email, password);
         this.specialization = specialization;
         this.patients = new ArrayList<>();
         this.appointments = new ArrayList<>();
+        this.emergencyAlerts = new ArrayList<>();
     }
 
-    // Getters and Setters
+    public void addPatient(Patient patient) {
+        patients.add(patient);
+    }
+
+    public void removePatient(String patientId) {
+        patients.removeIf(patient -> patient.getId().equals(patientId));
+    }
+
+    public void approveAppointment(String appointmentId) {
+        for (Appointment appointment : appointments) {
+            if (appointment.getAppointmentId().equals(appointmentId)) {
+                appointment.markAsScheduled();
+                System.out.println("Appointment with ID " + appointmentId + " has been approved.");
+                return;
+            }
+        }
+        System.out.println("Appointment with ID " + appointmentId + " not found.");
+    }
+
+    public void rejectAppointment(String appointmentId) {
+        for (Appointment appointment : appointments) {
+            if (appointment.getAppointmentId().equals(appointmentId)) {
+                appointment.setStatus("Rejected");
+                System.out.println("Appointment with ID " + appointmentId + " has been rejected.");
+                return;
+            }
+        }
+        System.out.println("Appointment with ID " + appointmentId + " not found.");
+    }
+
+    // This method call assumes the Doctor can add a feedback to Patient
+    public void giveFeedback(Patient patient, String comment, String medicationPrescribed) {
+        Feedback feedback = new Feedback(comment, this.getName(), medicationPrescribed, LocalDateTime.now());
+        patient.addFeedback(feedback); // Make sure this method exists in Patient class
+    }
+
+    public void receiveEmergencyAlert(EmergencyAlert alert) {
+        this.emergencyAlerts.add(alert);
+        System.out.println("Emergency alert received from patient: " + alert.getPatientName());
+    }
+
     public String getSpecialization() {
         return specialization;
     }
@@ -32,69 +75,37 @@ public class Doctor extends User {
         this.specialization = specialization;
     }
 
-    public List<Appointment> getAppointments() {
-        return appointments;
-    }
-
-    public void setAppointments(List<Appointment> appointments) {
-        this.appointments = appointments;
-    }
-
-    public List<Patient> getPatients() {
+    public ArrayList<Patient> getPatients() {
         return patients;
     }
 
-    public void setPatients(List<Patient> patients) {
+    public void setPatients(ArrayList<Patient> patients) {
         this.patients = patients;
     }
 
-    public void addAppointment(Appointment appointment) {
-        this.appointments.add(appointment);
+    public ArrayList<Appointment> getAppointments() {
+        return appointments;
     }
 
-    public void addPatient(Patient patient) {
-        this.patients.add(patient);
+    public void setAppointments(ArrayList<Appointment> appointments) {
+        this.appointments = appointments;
+    }
+    
+    public ArrayList<EmergencyAlert> getEmergencyAlerts() {
+        return emergencyAlerts;
     }
 
-    public void approveAppointment(String appointmentId) {
-        if (appointments.isEmpty()) {
-            System.out.println("No appointments found for approval.");
-            return;
-        }
-
-        boolean found = false;
-
-        System.out.println("\nCurrent Appointments:");
-        for (Appointment appointment : appointments) {
-            System.out.println("ID: " + appointment.getAppointmentId() +
-                               " | Patient ID: " + appointment.getPatientId() +
-                               " | Status: " + appointment.getStatus());
-
-            if (appointment.getAppointmentId().equals(appointmentId)) {
-                if (!appointment.isPending()) {
-                    System.out.println("Appointment is not pending and cannot be approved.");
-                } else {
-                    appointment.markAsScheduled();
-                    System.out.println("Appointment with ID " + appointmentId + " has been approved (Scheduled).");
-                }
-                found = true;
-            }
-        }
-
-        if (!found) {
-            System.out.println("Appointment with ID " + appointmentId + " not found.");
-        }
+    public void setEmergencyAlerts(ArrayList<EmergencyAlert> emergencyAlerts) {
+        this.emergencyAlerts = emergencyAlerts;
     }
 
-    public void giveFeedback(Patient patient, String comment) {
-        Feedback feedback = new Feedback(comment, getName());
-        patient.addFeedback(feedback);
+    public void clearEmergencyAlert(EmergencyAlert alert) {
+        emergencyAlerts.remove(alert);
     }
 
+    // Remove @Override since User class doesn't have this method
     public void displayUserInfo() {
-        System.out.printf("The name of the Doctor is %s%n" +
-                          "The ID of the doctor is %s%n" +
-                          "The email of the doctor is %s%n",
-                          getName(), getId(), getEmail());
+        System.out.printf("Doctor Name: %s\nDoctor ID: %s\nDoctor Email: %s\n", 
+                this.getName(), this.getId(), this.getEmail());
     }
 }

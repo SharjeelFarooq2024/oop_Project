@@ -1,30 +1,46 @@
-[
-    {
-      "id": "doc-001",
-      "name": "Dr. Alice Morgan",
-      "email": "alice.morgan@hospital.com",
-      "password": "pass123",
-      "specialization": "Cardiologist",
-      "patients": [],
-      "appointments": []
-    },
-    {
-      "id": "doc-002",
-      "name": "Dr. Brian Lee",
-      "email": "brian.lee@hospital.com",
-      "password": "secure456",
-      "specialization": "Dermatologist",
-      "patients": [],
-      "appointments": []
-    },
-    {
-      "id": "doc-003",
-      "name": "Dr. Clara Zhang",
-      "email": "clara.zhang@hospital.com",
-      "password": "doc789",
-      "specialization": "Pediatrician",
-      "patients": [],
-      "appointments": []
-    }
-  ]
-  
+[ {
+  "name" : "Dr. John Smith",
+  "id" : "8a5e49f6-e44a-4135-9bb6-7a2008521084",
+  "email" : "john@hospital.com",
+  "password" : "password",
+  "specialization" : "Cardiology",
+  "patients" : [ ],
+  "appointments" : [ ],
+  "emergencyAlerts" : [ ]
+}, {
+  "name" : "Dr. Sarah Johnson",
+  "id" : "838eda4a-687f-40a1-bc43-bb829ba7f5bb",
+  "email" : "sarah@hospital.com",
+  "password" : "password",
+  "specialization" : "Neurology",
+  "patients" : [ ],
+  "appointments" : [ ],
+  "emergencyAlerts" : [ ]
+}, {
+  "name" : "Dr. Michael Chen",
+  "id" : "bad8ce3d-9528-4bcb-95d1-5921d095b6e2",
+  "email" : "michael@hospital.com",
+  "password" : "password",
+  "specialization" : "Orthopedics",
+  "patients" : [ ],
+  "appointments" : [ ],
+  "emergencyAlerts" : [ ]
+}, {
+  "name" : "Dr. Emily Davis",
+  "id" : "209cf267-a845-491e-a98e-484dd1c8aa85",
+  "email" : "emily@hospital.com",
+  "password" : "password",
+  "specialization" : "Pediatrics",
+  "patients" : [ ],
+  "appointments" : [ ],
+  "emergencyAlerts" : [ ]
+}, {
+  "name" : "Dr. Robert Wilson",
+  "id" : "11845abe-b606-418d-809a-7dd4e3fa46f2",
+  "email" : "robert@hospital.com",
+  "password" : "password",
+  "specialization" : "Dermatology",
+  "patients" : [ ],
+  "appointments" : [ ],
+  "emergencyAlerts" : [ ]
+} ]
