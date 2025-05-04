@@ -1,14 +1,27 @@
 package com.myapp.backend.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myapp.backend.dao.AppointmentDAO;
 import com.myapp.backend.model.Appointment;
+import com.myapp.backend.model.Doctor;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public class AppointmentService {
+    
 
     private static final String APPOINTMENT_FILE_PATH = "path/to/bookappointment.json"; // Specify the path to your JSON file
+
+    private static AppointmentDAO appointmentDAO = new AppointmentDAO();
+
+    // Fetch appointments for a specific patient
+    public static List<Appointment> getAppointmentsForPatient(String patientId) {
+        return appointmentDAO.findByPatientId(patientId);
+    }
+
+
 
     // Method to save appointment
     public static void saveAppointmentToJson(Appointment appointment) {

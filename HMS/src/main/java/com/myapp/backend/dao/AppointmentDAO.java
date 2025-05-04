@@ -33,33 +33,35 @@ public class AppointmentDAO {
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(file, appointments);
         } catch (IOException e) {
-            throw new IOException("Error saving appointments to file.", e);
+            e.printStackTrace(); // Print full error
+            System.err.println("Error Details: " + e.getMessage());
+    throw new IOException("Error saving appointments to file.", e);
         }
     }
 
     // Add an appointment to the list and save to file
-    public boolean addAppointment(Appointment appointment) {
+    public AppointmentStatus addAppointment(Appointment appointment) {
         try {
             List<Appointment> appointments = loadAppointments();
     
-            // Check for double booking
             for (Appointment a : appointments) {
                 if (a.getDoctorId().equals(appointment.getDoctorId()) &&
                     a.getDate().equals(appointment.getDate()) &&
                     a.getTime().equals(appointment.getTime())) {
-                    System.err.println("Doctor already has an appointment at this time.");
-                    return false;
+                    return AppointmentStatus.DUPLICATE;
                 }
             }
     
             appointments.add(appointment);
             saveAppointments(appointments);
-            return true;
+            return AppointmentStatus.SUCCESS;
+    
         } catch (IOException e) {
             System.err.println("Error saving appointment: " + e.getMessage());
-            return false;
+            return AppointmentStatus.ERROR;
         }
     }
+    
     
     
 
@@ -79,6 +81,14 @@ public class AppointmentDAO {
             return new ArrayList<>();
         }
     }
+
+    public enum AppointmentStatus
+    {
+        SUCCESS,
+        DUPLICATE,
+        ERROR
+    }
+    
 
     // Additional helper method to ensure appointments are loaded once and used for various operations
     public List<Appointment> getAllAppointments() {

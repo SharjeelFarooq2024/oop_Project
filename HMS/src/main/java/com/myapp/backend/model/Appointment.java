@@ -1,6 +1,10 @@
 package com.myapp.backend.model;
-
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+
 
 public class Appointment {
     private String appointmentId;
@@ -10,6 +14,11 @@ public class Appointment {
     private String date; // Optional: Date of the appointment
     private String time; // Optional: Time of the appointment
     private String description;
+
+    public Appointment() {
+        // no-arg constructor for Jackson
+    }
+    
 
     // Constructor
     public Appointment(String patientId, String doctorId, String status, String date, String time, String description) {
@@ -38,12 +47,24 @@ public class Appointment {
         return appointmentId;
     }
 
+    public void setAppointmentId(String appointmentId) {
+        this.appointmentId = appointmentId;
+    }
+
     public String getPatientId() {
         return patientId;
     }
 
     public String getDoctorId() {
         return doctorId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
+    }
+
+    public void setDoctorId(String doctorId) {
+        this.doctorId = doctorId;
     }
 
     public String getStatus() {

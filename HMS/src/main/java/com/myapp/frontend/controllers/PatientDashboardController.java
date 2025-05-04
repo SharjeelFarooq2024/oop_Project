@@ -1,8 +1,17 @@
 package com.myapp.frontend.controllers;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myapp.backend.model.Appointment;
+import com.myapp.backend.model.Doctor;
 import com.myapp.backend.model.Patient;
 import com.myapp.backend.services.AppointmentService;
+import com.myapp.backend.services.SessionManager;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,9 +21,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class PatientDashboardController {
+
+    @FXML
+    private VBox appointmentsVBox; // Declare the VBox for displaying appointments
 
     @FXML
     private Button logoutButton;
@@ -37,6 +51,34 @@ public class PatientDashboardController {
     public void setLoggedInPatient(Patient patient) {
         this.loggedInPatient = patient;
         updateWelcomeMessage();
+        loadAppointments();
+    }
+
+    private void loadAppointments() {
+        if (loggedInPatient != null) {
+            // Fetch appointments for the logged-in patient
+            List<Appointment> appointments = AppointmentService.getAppointmentsForPatient(loggedInPatient.getId());
+    
+            // Clear the current list of appointments before adding new ones
+            appointmentsVBox.getChildren().clear();
+    
+            // Display each appointment in the VBox
+            for (Appointment appointment : appointments) {
+                String doctorId = appointment.getDoctorId();  // Fetch doctorId
+                String doctorName = getDoctorNameById(doctorId);  // Fetch doctor name
+
+                String appointmentTime = appointment.getTime().toString();
+                String status = appointment.getStatus().toString();
+    
+                // Create a label for each appointment and add it to the VBox
+                VBox appointmentBox = new VBox();
+                appointmentBox.setSpacing(5);
+                appointmentBox.getChildren().add(new Text("Doctor: " + doctorName));  // Display doctor's name
+                appointmentBox.getChildren().add(new Text("Time: " + appointmentTime));
+                appointmentBox.getChildren().add(new Text("Status: " + status));
+                appointmentsVBox.getChildren().add(appointmentBox);
+            }
+        }
     }
 
     @FXML
@@ -78,12 +120,15 @@ public class PatientDashboardController {
     private void setupButtonHandlers() {
         logoutButton.setOnAction(this::handleLogout);
         bookAppointmentButton.setOnAction(this::handleBookAppointment);
-        viewReportsButton.setOnAction(this::handleViewReports);
+        viewReportsButton.setOnAction(this::handleViewReports); // Ensure this references a valid method
         uploadVitalsButton.setOnAction(this::handleUploadVitals);
     }
 
     private void handleLogout(ActionEvent event) {
         try {
+            // Clear the session
+            SessionManager.clearSession();
+
             Stage stage = (Stage) logoutButton.getScene().getWindow();
             double width = stage.getWidth();
             double height = stage.getHeight();
@@ -102,58 +147,36 @@ public class PatientDashboardController {
     }
 
     private void showAlert(String title, String message) {
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
-}
-
-private void handleBookAppointment(ActionEvent event) {
-    try {
-        Stage stage = (Stage) bookAppointmentButton.getScene().getWindow();
-        double width = stage.getWidth();
-        double height = stage.getHeight();
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/BookAppointment.fxml"));
-        Parent root = loader.load();
-
-        // Pass the logged-in patient to BookAppointmentController
-        BookAppointmentController controller = loader.getController();
-        controller.setLoggedInPatient(loggedInPatient);
-
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Book Appointment");
-        stage.setWidth(width);
-        stage.setHeight(height);
-        stage.show();
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        showAlert("Error", "Unable to load the appointment booking page.");
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
-}
 
-
-    
-
-    private void handleViewReports(ActionEvent event) {
+    private void handleBookAppointment(ActionEvent event) {
         try {
-            Stage stage = (Stage) viewReportsButton.getScene().getWindow();
+            Stage stage = (Stage) bookAppointmentButton.getScene().getWindow();
             double width = stage.getWidth();
             double height = stage.getHeight();
-            
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml/ViewReports.fxml"));
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/BookAppointment.fxml"));
+            Parent root = loader.load();
+
+            // Pass the logged-in patient to BookAppointmentController
+            BookAppointmentController controller = loader.getController();
+            controller.setLoggedInPatient(loggedInPatient);
+
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.setTitle("View Reports");
-            
+            stage.setTitle("Book Appointment");
             stage.setWidth(width);
             stage.setHeight(height);
             stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert("Error", "Unable to load the appointment booking page.");
         }
     }
 
@@ -163,7 +186,13 @@ private void handleBookAppointment(ActionEvent event) {
             double width = stage.getWidth();
             double height = stage.getHeight();
             
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml/UploadVitals.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/UploadVitals.fxml"));
+            Parent root = loader.load();
+
+            // Pass the logged-in patient to UploadVitalsController
+            UploadVitalsController controller = loader.getController();
+            controller.setLoggedInPatient(loggedInPatient);
+
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Upload Vitals");
@@ -174,5 +203,42 @@ private void handleBookAppointment(ActionEvent event) {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void handleViewReports(ActionEvent event) {
+        try {
+            // Handle the "view reports" action
+            System.out.println("View Reports clicked!");
+            // For example, navigate to the reports page or show reports to the user
+            // You can use the same structure as other methods to load the next screen
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "Unable to load the reports page.");
+        }
+    }
+
+    private String getDoctorNameById(String doctorId) {
+        try {
+            // Load doctor list from JSON file
+            File file = new File("data/Doctors.json");
+
+            if (!file.exists()) {
+                return "Unknown Doctor";
+            }
+    
+            InputStream input = new FileInputStream(file);
+            ObjectMapper mapper = new ObjectMapper();
+            List<Doctor> doctors = Arrays.asList(mapper.readValue(input, Doctor[].class));
+    
+            // Find doctor with matching ID
+            for (Doctor doctor : doctors) {
+                if (doctor.getId().equals(doctorId)) {
+                    return doctor.getName();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Unknown Doctor";  // Fallback if doctor not found
     }
 }

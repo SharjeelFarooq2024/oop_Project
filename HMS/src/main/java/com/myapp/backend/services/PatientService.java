@@ -35,4 +35,8 @@ public class PatientService {
             System.out.println("Error registering patient: " + e.getMessage());
         }
     }
+    // Method to get the logged-in patient
+    public static Patient getLoggedInPatient() {
+        return SessionManager.getLoggedInPatient();
+    }
 }

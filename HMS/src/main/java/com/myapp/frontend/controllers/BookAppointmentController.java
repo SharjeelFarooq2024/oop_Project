@@ -1,10 +1,16 @@
 package com.myapp.frontend.controllers;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myapp.backend.dao.AppointmentDAO;
+import com.myapp.backend.dao.AppointmentDAO.AppointmentStatus;
 import com.myapp.backend.dao.DoctorDAO;
 import com.myapp.backend.model.Appointment;
 import com.myapp.backend.model.Doctor;
@@ -51,6 +57,7 @@ public class BookAppointmentController {
         this.loggedInPatient = patient;
         loadDoctors(); // Load doctors when patient is set
     }
+    
 
     @FXML
     public void initialize() {
@@ -127,29 +134,54 @@ public class BookAppointmentController {
         }
     
         // Create Appointment object
-        Appointment appointment = new Appointment(
-            loggedInPatient.getId(),
-            selectedDoctor.getId(),
-            "Pending", // status
-            selectedDate.toString(),
-            selectedTime,
-            reason
-        );
+        Appointment appointment = new Appointment();
+appointment.setAppointmentId(UUID.randomUUID().toString());
+appointment.setPatientId(loggedInPatient.getId());
+appointment.setDoctorId(selectedDoctor.getId());
+appointment.setStatus("Pending");
+appointment.setDate(selectedDate.toString());
+appointment.setTime(selectedTime);
+appointment.setDescription(reason);
+
+
     
         // Save appointment using DAO
-        boolean success = appointmentDAO.addAppointment(appointment);
+        AppointmentStatus status = appointmentDAO.addAppointment(appointment);
+
     
-        if (success) {
-            showAlert(Alert.AlertType.INFORMATION, "Appointment booked successfully!");
-            clearForm();
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Failed to book appointment. Please try again.");
+        switch (status) {
+            case SUCCESS:
+                showAlert(Alert.AlertType.INFORMATION, "Appointment booked successfully!");
+                clearForm();
+                break;
+            case DUPLICATE:
+                showAlert(Alert.AlertType.WARNING, "This doctor is already booked at the selected date and time.");
+                break;
+            case ERROR:
+                showAlert(Alert.AlertType.ERROR, "An unexpected error occurred while booking the appointment.");
+                break;
         }
+        
     }
     
     
     private void goBack() {
-        Stage stage = (Stage) backButton.getScene().getWindow();
-        stage.close();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PatientDashboard.fxml"));
+            Parent dashboardRoot = loader.load();
+    
+            // Pass the logged-in patient to the dashboard controller
+            PatientDashboardController controller = loader.getController();
+            controller.setLoggedInPatient(loggedInPatient); // You need to implement this method in that controller
+    
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setScene(new Scene(dashboardRoot));
+            stage.setTitle("Patient Dashboard");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Failed to return to dashboard.");
+        }
     }
+
+    
 }

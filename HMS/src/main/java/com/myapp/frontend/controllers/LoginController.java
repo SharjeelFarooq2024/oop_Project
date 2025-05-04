@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import com.myapp.backend.services.SessionManager;
 import com.myapp.backend.services.PatientService;
 import com.myapp.backend.model.Patient;
 
@@ -62,7 +63,10 @@ public class LoginController {
         Patient patient = patientService.login(email, password);
         if (patient != null) {
             try {
-                // Get the current stage and remember its size
+                // Store the logged-in patient in the session
+                SessionManager.setLoggedInPatient(patient);
+
+                // Proceed with loading the dashboard
                 Stage stage = (Stage) loginButton.getScene().getWindow();
                 double width = stage.getWidth();
                 double height = stage.getHeight();

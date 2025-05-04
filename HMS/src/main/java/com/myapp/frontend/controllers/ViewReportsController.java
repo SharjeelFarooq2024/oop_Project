@@ -2,13 +2,20 @@ package com.myapp.frontend.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+
+import java.io.IOException;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import com.myapp.backend.services.SessionManager;
+import com.myapp.backend.model.Patient;
 
 public class ViewReportsController {
     @FXML
@@ -17,8 +24,13 @@ public class ViewReportsController {
     @FXML
     private Button backButton;
 
+    private Patient loggedInPatient;
+
     @FXML
     public void initialize() {
+        // Retrieve logged-in patient from SessionManager
+        loggedInPatient = SessionManager.getLoggedInPatient();
+
         // For now, just populate with sample data
         reportListView.setItems(FXCollections.observableArrayList(
             "Check-up Report - 2025-04-01",
@@ -31,20 +43,27 @@ public class ViewReportsController {
 
     private void handleBack(ActionEvent event) {
         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PatientDashboard.fxml"));
+            Parent dashboardRoot = loader.load();
+
+            // Pass the logged-in patient to the PatientDashboardController
+            PatientDashboardController controller = loader.getController();
+            controller.setLoggedInPatient(loggedInPatient); // Ensure this is correctly set
+
             Stage stage = (Stage) backButton.getScene().getWindow();
-            double width = stage.getWidth();
-            double height = stage.getHeight();
-            
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml/PatientDashboard.fxml"));
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
+            stage.setScene(new Scene(dashboardRoot));
             stage.setTitle("Patient Dashboard");
-            
-            stage.setWidth(width);
-            stage.setHeight(height);
-            stage.show();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Failed to return to dashboard.");
         }
+    }
+
+    private void showAlert(Alert.AlertType alertType, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
