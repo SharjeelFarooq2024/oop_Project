@@ -7,11 +7,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import com.myapp.backend.model.Appointment;
 import com.myapp.backend.model.Doctor;
 import com.myapp.backend.model.Patient;
+import com.myapp.backend.model.VitalSign; // Assuming you have a Vitals model
 import com.myapp.backend.services.AppointmentService;
+import com.myapp.backend.services.PatientService;
 import com.myapp.backend.services.SessionManager;
+import com.myapp.backend.services.VitalSignService;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -44,32 +49,45 @@ public class PatientDashboardController {
 
     @FXML
     private Label welcomeLabel;  // Add a label to show the welcome message
+    @FXML
+    private Text bloodPressureLabel; // Add labels for vitals
+    @FXML
+    private Text heartRateLabel;
+    @FXML
+    private Text temperatureLabel;
+    @FXML
+    private Text latestVitalsLabel;
+    @FXML
+    private Text oxygenLevelLabel;
 
     private Patient loggedInPatient;  // This is where we store the logged-in patient
+    private PatientService patientService = new PatientService();  // Assuming you have a PatientService for data management
 
     // This method will be called after the login to pass the logged-in patient
     public void setLoggedInPatient(Patient patient) {
         this.loggedInPatient = patient;
         updateWelcomeMessage();
         loadAppointments();
+        loadLatestVitals(); // Load the latest vitals for the patient
+        updateVitalsDisplay();
     }
 
     private void loadAppointments() {
         if (loggedInPatient != null) {
             // Fetch appointments for the logged-in patient
             List<Appointment> appointments = AppointmentService.getAppointmentsForPatient(loggedInPatient.getId());
-    
+        
             // Clear the current list of appointments before adding new ones
             appointmentsVBox.getChildren().clear();
-    
+        
             // Display each appointment in the VBox
             for (Appointment appointment : appointments) {
                 String doctorId = appointment.getDoctorId();  // Fetch doctorId
                 String doctorName = getDoctorNameById(doctorId);  // Fetch doctor name
-
+       
                 String appointmentTime = appointment.getTime().toString();
                 String status = appointment.getStatus().toString();
-    
+        
                 // Create a label for each appointment and add it to the VBox
                 VBox appointmentBox = new VBox();
                 appointmentBox.setSpacing(5);
@@ -78,6 +96,51 @@ public class PatientDashboardController {
                 appointmentBox.getChildren().add(new Text("Status: " + status));
                 appointmentsVBox.getChildren().add(appointmentBox);
             }
+        
+            // Now fetch and display the latest vitals
+            
+        }
+    }
+    
+    
+
+    // Method to update the latest vitals display
+    private void updateVitalsDisplay() {
+        if (loggedInPatient != null) {
+            VitalSign latestVitals = VitalSignService.getLatestVitals(loggedInPatient.getId());
+            if (latestVitals != null) {
+                latestVitalsLabel.setText("Latest Vitals:\nBlood Pressure: " + latestVitals.getBloodPressure() +
+                                          "\nHeart Rate: " + latestVitals.getHeartRate() +
+                                          "\nTemperature: " + latestVitals.getTemperature() +
+                                          "\nOxygen Level: " + latestVitals.getOxygenLevel() +
+                                          "\nTimestamp: " + latestVitals.getTimestamp());
+            } else {
+                latestVitalsLabel.setText("No vitals available.");
+            }
+        }
+    }
+    
+    private void loadLatestVitals() {
+        if (loggedInPatient != null) {
+            List<VitalSign> vitalsHistory = VitalSignService.getVitalsHistory(loggedInPatient.getId());
+            loggedInPatient.setVitalSigns(vitalsHistory);  // Store in patient object (optional)
+    
+            if (vitalsHistory != null && !vitalsHistory.isEmpty()) {
+                updateVitalsDisplay(); // refresh the UI
+            } else {
+                latestVitalsLabel.setText("No vitals available.");
+            }
+        }
+    }
+    
+    
+    
+    
+
+    private void updateWelcomeMessage() {
+        if (loggedInPatient != null) {
+            // Update the welcome message dynamically with the patient's name
+            welcomeLabel.setText("Welcome back, " + loggedInPatient.getName() + "!");
         }
     }
 
@@ -85,13 +148,6 @@ public class PatientDashboardController {
     public void initialize() {
         setupButtonHoverEffects();
         setupButtonHandlers();
-    }
-
-    private void updateWelcomeMessage() {
-        if (loggedInPatient != null) {
-            // Update the welcome message dynamically with the patient's name
-            welcomeLabel.setText("Welcome back, " + loggedInPatient.getName() + "!");
-        }
     }
 
     private void setupButtonHoverEffects() {
@@ -120,7 +176,7 @@ public class PatientDashboardController {
     private void setupButtonHandlers() {
         logoutButton.setOnAction(this::handleLogout);
         bookAppointmentButton.setOnAction(this::handleBookAppointment);
-        viewReportsButton.setOnAction(this::handleViewReports); // Ensure this references a valid method
+        viewReportsButton.setOnAction(this::handleViewReports);
         uploadVitalsButton.setOnAction(this::handleUploadVitals);
     }
 
@@ -185,18 +241,22 @@ public class PatientDashboardController {
             Stage stage = (Stage) uploadVitalsButton.getScene().getWindow();
             double width = stage.getWidth();
             double height = stage.getHeight();
-            
+    
+            // Load the UploadVitals FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/UploadVitals.fxml"));
             Parent root = loader.load();
-
-            // Pass the logged-in patient to UploadVitalsController
+    
+            // Get the controller of UploadVitals
             UploadVitalsController controller = loader.getController();
+            
+            // Pass the logged-in patient to the UploadVitalsController
             controller.setLoggedInPatient(loggedInPatient);
-
+    
+            // Set the scene and show the stage
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Upload Vitals");
-            
+    
             stage.setWidth(width);
             stage.setHeight(height);
             stage.show();
@@ -204,6 +264,7 @@ public class PatientDashboardController {
             e.printStackTrace();
         }
     }
+    
 
     private void handleViewReports(ActionEvent event) {
         try {

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 C:\Users\Silicon computers\Downloads\oop_Project-2\HMS\src\main\java\com\myapp\frontend\controllers\DoctorDashboardController.java
 C:\Users\Silicon computers\Downloads\oop_Project-2\HMS\src\main\java\com\myapp\backend\dao\DoctorDAO.java
 C:\Users\Silicon computers\Downloads\oop_Project-2\HMS\src\main\java\com\myapp\backend\model\Appointment.java
@@ -36,3 +37,36 @@ C:\Users\Silicon computers\Downloads\oop_Project-2\HMS\src\main\java\com\myapp\f
 C:\Users\Silicon computers\Downloads\oop_Project-2\HMS\src\main\java\com\myapp\app\Main.java
 C:\Users\Silicon computers\Downloads\oop_Project-2\HMS\src\main\java\com\myapp\backend\model\User.java
 C:\Users\Silicon computers\Downloads\oop_Project-2\HMS\src\main\java\com\myapp\frontend\controllers\DoctorPatientsController.java
+=======
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\BookAppointmentController.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\NotificationService.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\VideoCallSession.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\PatientService.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\EmergencyAlert.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\VideoCallService.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Doctor.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\EmergencyAlertService.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\app\Main.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\ChatMessage.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\LoginController.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\dao\PatientDAO.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\VitalSign.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Feedback.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\SessionManager.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\util\FileUtil.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\VitalSignService.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Appointment.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\User.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\dao\DoctorDAO.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\DoctorDashboardController.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\SignupController.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\dao\AppointmentDAO.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\ChatService.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\AppointmentService.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\ViewReportsController.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\UploadVitalsController.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Session.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\PatientDashboardController.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\dao\VitalSignDAO.java
+c:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Patient.java
+>>>>>>> 54bf15486aa4dc4a303bfd9b7067359cc08384cf

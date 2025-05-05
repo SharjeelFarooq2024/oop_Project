@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 com\myapp\backend\services\NotificationService.class
 com\myapp\frontend\controllers\DoctorDashboardController$1.class
 com\myapp\frontend\controllers\EmergencyAlertsController.class
@@ -48,3 +49,5 @@ com\myapp\backend\notification\Notifiable.class
 com\myapp\frontend\controllers\PatientDetailsController.class
 com\myapp\backend\dao\PatientDAO.class
 com\myapp\frontend\controllers\DoctorPatientsController.class
+=======
+>>>>>>> 54bf15486aa4dc4a303bfd9b7067359cc08384cf
