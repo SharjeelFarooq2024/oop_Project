@@ -4,10 +4,14 @@ C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\PatientService.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\EmergencyAlert.java
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\notification\EmailNotification.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\VideoCallService.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\DoctorPatientsController.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\util\ErrorHandler.java
+=======
+C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\VideoCallService.java
+>>>>>>> Stashed changes
 =======
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\VideoCallService.java
 >>>>>>> Stashed changes
@@ -22,7 +26,10 @@ C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\SessionManager.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\util\FileUtil.java
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\notification\Notifiable.java
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\VitalSignService.java
@@ -33,6 +40,7 @@ C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\SignupController.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\dao\AppointmentDAO.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\ChatService.java
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\DoctorService.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\AppointmentService.java
@@ -47,6 +55,8 @@ C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Patient.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\EmergencyAlertsController.java
 =======
+=======
+>>>>>>> Stashed changes
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\services\AppointmentService.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\ViewReportsController.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\UploadVitalsController.java
@@ -54,4 +64,7 @@ C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\frontend\controllers\PatientDashboardController.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\dao\VitalSignDAO.java
 C:\Users\Sharj\OneDrive\Desktop\oop_Project\HMS\src\main\java\com\myapp\backend\model\Patient.java
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes

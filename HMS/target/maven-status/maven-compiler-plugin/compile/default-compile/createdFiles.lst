@@ -1,5 +1,6 @@
 com\myapp\backend\dao\VitalSignDAO$1.class
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 com\myapp\backend\services\NotificationService.class
 com\myapp\frontend\controllers\DoctorDashboardController$1.class
 com\myapp\frontend\controllers\EmergencyAlertsController.class
@@ -53,6 +54,8 @@ com\myapp\frontend\controllers\PatientDetailsController.class
 com\myapp\backend\dao\PatientDAO.class
 com\myapp\frontend\controllers\DoctorPatientsController.class
 =======
+=======
+>>>>>>> Stashed changes
 com\myapp\frontend\controllers\BookAppointmentController$2.class
 com\myapp\frontend\controllers\BookAppointmentController.class
 com\myapp\backend\model\Appointment.class
@@ -83,4 +86,7 @@ com\myapp\backend\model\VitalSign.class
 com\myapp\backend\dao\PatientDAO$1.class
 com\myapp\frontend\controllers\ViewReportsController.class
 com\myapp\backend\dao\PatientDAO.class
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
