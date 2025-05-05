@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+com\myapp\backend\dao\VitalSignDAO$1.class
 com\myapp\backend\services\NotificationService.class
 com\myapp\frontend\controllers\DoctorDashboardController$1.class
 com\myapp\frontend\controllers\EmergencyAlertsController.class
@@ -40,7 +40,9 @@ com\myapp\frontend\controllers\LoginController.class
 com\myapp\backend\services\EmergencyAlertService.class
 com\myapp\backend\model\Session.class
 com\myapp\app\Main.class
+com\myapp\backend\dao\VitalSignDAO.class
 com\myapp\backend\services\PatientService.class
+com\myapp\backend\services\VitalSignService.class
 com\myapp\backend\model\VitalSign.class
 com\myapp\backend\notification\EmailNotification.class
 com\myapp\backend\model\EmergencyAlert.class
@@ -49,5 +51,3 @@ com\myapp\backend\notification\Notifiable.class
 com\myapp\frontend\controllers\PatientDetailsController.class
 com\myapp\backend\dao\PatientDAO.class
 com\myapp\frontend\controllers\DoctorPatientsController.class
-=======
->>>>>>> 54bf15486aa4dc4a303bfd9b7067359cc08384cf
