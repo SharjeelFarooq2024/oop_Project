@@ -28,6 +28,7 @@ public class VitalSignService {
 
             FileInputStream inputStream = new FileInputStream(file);
             ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
 
             // Read the data into a list of VitalSign objects
             List<VitalSign> vitalsList = mapper.readValue(inputStream, mapper.getTypeFactory().constructCollectionType(List.class, VitalSign.class));
@@ -55,6 +56,7 @@ public class VitalSignService {
 
             FileInputStream inputStream = new FileInputStream(file);
             ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
 
             // Read the data into a list of VitalSign objects
             List<VitalSign> vitalsList = mapper.readValue(inputStream, mapper.getTypeFactory().constructCollectionType(List.class, VitalSign.class));
@@ -82,6 +84,7 @@ public class VitalSignService {
             if (file.exists()) {
                 FileInputStream inputStream = new FileInputStream(file);
                 ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
 
                 // Deserialize the file content into a list of VitalSign objects
                 vitalsList = mapper.readValue(inputStream, mapper.getTypeFactory().constructCollectionType(List.class, VitalSign.class));
@@ -95,6 +98,7 @@ public class VitalSignService {
 
             // Write the updated list back to the JSON file
             ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
             FileOutputStream outputStream = new FileOutputStream(file);
             mapper.writeValue(outputStream, vitalsList);
 

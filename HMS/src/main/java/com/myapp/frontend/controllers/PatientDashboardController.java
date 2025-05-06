@@ -18,6 +18,7 @@ import com.myapp.backend.services.PatientService;
 import com.myapp.backend.services.SessionManager;
 import com.myapp.backend.services.VitalSignService;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -239,6 +240,7 @@ public class PatientDashboardController {
     private void handleUploadVitals(ActionEvent event) {
         try {
             Stage stage = (Stage) uploadVitalsButton.getScene().getWindow();
+            // Store current window size
             double width = stage.getWidth();
             double height = stage.getHeight();
     
@@ -248,20 +250,27 @@ public class PatientDashboardController {
     
             // Get the controller of UploadVitals
             UploadVitalsController controller = loader.getController();
-            
-            // Pass the logged-in patient to the UploadVitalsController
             controller.setLoggedInPatient(loggedInPatient);
     
-            // Set the scene and show the stage
+            // Create and set the scene
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Upload Vitals");
-    
+
+            // Force a layout pass before showing
+            root.applyCss();
+            root.layout();
+
+            // Preserve window size
             stage.setWidth(width);
             stage.setHeight(height);
+            
+            // Show the stage
             stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert("Error", "Could not open Upload Vitals page");
         }
     }
     
