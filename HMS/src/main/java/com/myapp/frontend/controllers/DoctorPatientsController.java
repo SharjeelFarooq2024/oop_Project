@@ -1,6 +1,7 @@
 package com.myapp.frontend.controllers;
 
 import com.myapp.backend.model.*;
+import com.myapp.backend.dao.PatientDAO;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class DoctorPatientsController implements Initializable {
@@ -64,18 +66,23 @@ public class DoctorPatientsController implements Initializable {
         
         patients.clear();
         
-        if (loggedInDoctor.getPatients() == null || loggedInDoctor.getPatients().isEmpty()) {
+        ArrayList<String> patientIds = loggedInDoctor.getPatientIds();
+        if (patientIds == null || patientIds.isEmpty()) {
             // Add sample data if no patients
             patients.add(new PatientViewModel("John Doe", "john@example.com", "555-1234"));
             patients.add(new PatientViewModel("Jane Smith", "jane@example.com", "555-5678"));
             patients.add(new PatientViewModel("Ali Khan", "ali@example.com", "555-9012"));
         } else {
-            for (Patient patient : loggedInDoctor.getPatients()) {
-                patients.add(new PatientViewModel(
-                    patient.getName(),
-                    patient.getEmail(),
-                    "N/A" // Phone not implemented in Patient model
-                ));
+            PatientDAO patientDAO = new PatientDAO();
+            for (String patientId : patientIds) {
+                Patient patient = patientDAO.findById(patientId);
+                if (patient != null) {
+                    patients.add(new PatientViewModel(
+                        patient.getName(),
+                        patient.getEmail(),
+                        "N/A" // Phone not implemented in Patient model
+                    ));
+                }
             }
         }
     }
@@ -125,9 +132,12 @@ public class DoctorPatientsController implements Initializable {
         try {
             // Find the actual Patient object
             Patient patient = null;
-            if (loggedInDoctor.getPatients() != null) {
-                for (Patient p : loggedInDoctor.getPatients()) {
-                    if (p.getName().equals(selectedPatient.getName()) && 
+            PatientDAO patientDAO = new PatientDAO();
+            ArrayList<String> patientIds = loggedInDoctor.getPatientIds();
+            if (patientIds != null) {
+                for (String patientId : patientIds) {
+                    Patient p = patientDAO.findById(patientId);
+                    if (p != null && p.getName().equals(selectedPatient.getName()) && 
                         p.getEmail().equals(selectedPatient.getEmail())) {
                         patient = p;
                         break;

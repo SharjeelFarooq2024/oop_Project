@@ -7,52 +7,47 @@ import com.myapp.backend.dao.AppointmentDAO;
 import com.myapp.backend.model.Appointment;
 import com.myapp.backend.model.Doctor;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public class AppointmentService {
-    
-
-    private static final String APPOINTMENT_FILE_PATH = System.getProperty("user.dir") + "/data/Appointments.json"; // Specify the path to your JSON file
-
-    private static AppointmentDAO appointmentDAO = new AppointmentDAO();
+    private static final AppointmentDAO appointmentDAO = new AppointmentDAO();
 
     // Fetch appointments for a specific patient
     public static List<Appointment> getAppointmentsForPatient(String patientId) {
         return appointmentDAO.findByPatientId(patientId);
     }
 
-
-
-    // Method to save appointment
-    public static void saveAppointmentToJson(Appointment appointment) {
-        try {
-            // Create ObjectMapper to convert the object to JSON
-            ObjectMapper objectMapper = new ObjectMapper();
-            
-            // Read the current list of appointments from the file
-            List<Appointment> appointments = objectMapper.readValue(new File(APPOINTMENT_FILE_PATH), objectMapper.getTypeFactory().constructCollectionType(List.class, Appointment.class));
-            
-            // Add the new appointment to the list
-            appointments.add(appointment);
-            
-            // Write the updated list of appointments back to the file
-            objectMapper.writeValue(new File(APPOINTMENT_FILE_PATH), appointments);
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle the case where the file cannot be read or written
-        }
-    }
-
     public static boolean bookAppointment(Appointment appointment) {
         try {
-            AppointmentDAO.AppointmentStatus status = new AppointmentDAO().addAppointment(appointment);
+            AppointmentDAO.AppointmentStatus status = appointmentDAO.addAppointment(appointment);
             return status == AppointmentDAO.AppointmentStatus.SUCCESS;
         } catch (Exception e) {
             System.err.println("Error booking appointment: " + e.getMessage());
             return false;
+        }
+    }
+
+    public static void syncAppointments() throws IOException {
+        try {
+            appointmentDAO.syncAllAppointments();
+            System.out.println("Appointment synchronization completed successfully.");
+        } catch (IOException e) {
+            System.err.println("Error syncing appointments: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    // For manual syncing via command line
+    public static void main(String[] args) {
+        System.out.println("Starting appointment synchronization...");
+        try {
+            syncAppointments();
+        } catch (Exception e) {
+            System.err.println("Error during synchronization: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
         }
     }
 }

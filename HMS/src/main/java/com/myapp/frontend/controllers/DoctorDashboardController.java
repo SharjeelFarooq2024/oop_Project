@@ -116,7 +116,10 @@ public class DoctorDashboardController implements Initializable {
         if (loggedInDoctor != null) {
             doctorNameLabel.setText(loggedInDoctor.getName());
             specializationLabel.setText(loggedInDoctor.getSpecialization());
-            welcomeLabel.setText("Welcome back, " + loggedInDoctor.getName().split(" ")[1] + "!");
+            // Handle single-word names
+            String[] nameParts = loggedInDoctor.getName().split(" ");
+            String displayName = nameParts.length > 1 ? nameParts[1] : nameParts[0];
+            welcomeLabel.setText("Welcome back, " + displayName + "!");
         }
     }
     
@@ -232,7 +235,7 @@ public class DoctorDashboardController implements Initializable {
         
         try {
             // Count total patients
-            int totalPatients = loggedInDoctor.getPatients() != null ? loggedInDoctor.getPatients().size() : 0;
+            int totalPatients = loggedInDoctor.getPatientIds() != null ? loggedInDoctor.getPatientIds().size() : 0;
             
             // Count upcoming appointments
             int upcomingAppointments = 0;
@@ -265,10 +268,10 @@ public class DoctorDashboardController implements Initializable {
     private Patient getPatientById(String patientId) {
         try {
             // First try from the doctor's patients list
-            if (loggedInDoctor.getPatients() != null) {
-                for (Patient patient : loggedInDoctor.getPatients()) {
-                    if (patient.getId().equals(patientId)) {
-                        return patient;
+            if (loggedInDoctor.getPatientIds() != null) {
+                for (String id : loggedInDoctor.getPatientIds()) {
+                    if (id.equals(patientId)) {
+                        return new PatientDAO().findById(patientId);
                     }
                 }
             }
@@ -511,8 +514,8 @@ public class DoctorDashboardController implements Initializable {
             if (loggedInDoctor == null) return;
             
             // Get all patients of this doctor
-            List<Patient> patients = loggedInDoctor.getPatients();
-            if (patients == null || patients.isEmpty()) {
+            ArrayList<String> patientIds = loggedInDoctor.getPatientIds();
+            if (patientIds == null || patientIds.isEmpty()) {
                 showAlert(Alert.AlertType.INFORMATION, "You don't have any patients to call");
                 return;
             }
@@ -528,7 +531,17 @@ public class DoctorDashboardController implements Initializable {
             
             // Create a ListView with all patients
             ListView<Patient> patientListView = new ListView<>();
-            ObservableList<Patient> patientList = FXCollections.observableArrayList(patients);
+            ObservableList<Patient> patientList = FXCollections.observableArrayList();
+            
+            // Get actual Patient objects
+            PatientDAO patientDAO = new PatientDAO();
+            for (String patientId : patientIds) {
+                Patient patient = patientDAO.findById(patientId);
+                if (patient != null) {
+                    patientList.add(patient);
+                }
+            }
+            
             patientListView.setItems(patientList);
             
             // Set the cell factory to display patient names
@@ -554,7 +567,7 @@ public class DoctorDashboardController implements Initializable {
             // Add the ListView to the dialog
             dialog.getDialogPane().setContent(patientListView);
             
-            // Convert the result to a patient when the start call button is clicked
+            // Convert the result
             dialog.setResultConverter(dialogButton -> {
                 if (dialogButton == startCallButtonType) {
                     return patientListView.getSelectionModel().getSelectedItem();
@@ -562,32 +575,27 @@ public class DoctorDashboardController implements Initializable {
                 return null;
             });
             
-            // Show the dialog and wait for result
-            Optional<Patient> result = dialog.showAndWait();
-            
-            // Then continue with your existing code
-            result.ifPresent(patient -> {
+            // Show dialog and handle result
+            dialog.showAndWait().ifPresent(selectedPatient -> {
                 try {
-                    // Load the video call view
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/VideoCall.fxml"));
                     Parent videoCallRoot = loader.load();
                     
                     VideoCallController controller = loader.getController();
-                    controller.startCall(loggedInDoctor, patient);
+                    controller.startCall(loggedInDoctor, selectedPatient);
                     
-                    Stage videoCallStage = new Stage();
-                    videoCallStage.setTitle("Video Call with " + patient.getName());
-                    videoCallStage.setScene(new Scene(videoCallRoot));
-                    videoCallStage.show();
+                    Stage stage = new Stage();
+                    stage.setTitle("Video Call with " + selectedPatient.getName());
+                    stage.setScene(new Scene(videoCallRoot));
+                    stage.show();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    showAlert(Alert.AlertType.ERROR, "Error starting video call: " + e.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Error opening video call window");
                 }
             });
-            
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error preparing video call");
+            showAlert(Alert.AlertType.ERROR, "Error showing video call dialog");
         }
     }
     

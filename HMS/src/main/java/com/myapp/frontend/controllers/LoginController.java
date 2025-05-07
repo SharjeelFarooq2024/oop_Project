@@ -59,6 +59,8 @@ public class LoginController {
         String email = emailField.getText();
         String password = passwordField.getText();
 
+        System.out.println("Login attempt - Email: " + email);
+
         if (email.isEmpty() || password.isEmpty()) {
             showAlert("Error", "Please enter email and password.");
             return;
@@ -75,9 +77,12 @@ public class LoginController {
             if (selectedType == doctorRadio) {
                 // Doctor login
                 Doctor doctor = doctorService.login(email, password);
+                System.out.println("Login result - Doctor object: " + (doctor != null ? "found" : "not found"));
+                
                 if (doctor != null) {
+                    System.out.println("Login successful for doctor: " + doctor.getName());
                     SessionManager.setLoggedInDoctor(doctor);
-                    
+
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DoctorDashboard.fxml"));
                     Parent dashboardRoot = loader.load();
 
@@ -91,33 +96,16 @@ public class LoginController {
                     stage.setHeight(height);
                     stage.show();
                 } else {
+                    System.out.println("Login failed - Invalid doctor credentials");
                     showAlert("Error", "Invalid doctor credentials.");
                 }
-            } else if (selectedType == adminRadio) {
-                // Admin login
-               // Admin admin = adminService.login(email, password);
-               // if (admin != null) {
-                 //   SessionManager.setLoggedInAdmin(admin);
-                    
-                    //FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminDashboard.fxml"));
-                    //Parent dashboardRoot = loader.load();
-
-                    //AdminDashboardController controller = loader.getController();
-                   // controller.setLoggedInAdmin(admin);
-
-                //     Scene scene = new Scene(dashboardRoot);
-                //     stage.setScene(scene);
-                //     stage.setTitle("Admin Dashboard");
-                //     stage.setWidth(width);
-                //     stage.setHeight(height);
-                //     stage.show();
-                // } else {
-                //     showAlert("Error", "Invalid administrator credentials.");
-                // }
-            } else {
-                // Patient login (default)
+            } else if (selectedType == patientRadio) {
+                // Patient login
                 Patient patient = patientService.login(email, password);
+                System.out.println("Login result - Patient object: " + (patient != null ? "found" : "not found"));
+                
                 if (patient != null) {
+                    System.out.println("Login successful for patient: " + patient.getName());
                     SessionManager.setLoggedInPatient(patient);
 
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PatientDashboard.fxml"));
@@ -133,12 +121,13 @@ public class LoginController {
                     stage.setHeight(height);
                     stage.show();
                 } else {
+                    System.out.println("Login failed - Invalid patient credentials");
                     showAlert("Error", "Invalid patient credentials.");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Error", "Login failed: " + e.getMessage());
+            showAlert("Error", "An error occurred during login: " + e.getMessage());
         }
     }
 

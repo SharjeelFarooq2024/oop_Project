@@ -12,8 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PatientDAO {
-    private static final String FILE_PATH = System.getProperty("user.dir") + "/data/Patients.json"; // Absolute path
-    private ObjectMapper mapper = new ObjectMapper();
+    private static final String FILE_PATH = "data" + File.separator + "Patients.json";
+    private ObjectMapper mapper;
+
+    public PatientDAO() {
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+    }
 
     // Load patients from the file
     private List<Patient> loadPatients() throws IOException {
@@ -41,13 +46,20 @@ public class PatientDAO {
     // Find a patient by email
     public Patient findByEmail(String email) {
         try {
+            System.out.println("PatientDAO.findByEmail() - Loading patients from file: " + FILE_PATH);
             List<Patient> patients = loadPatients();
+            System.out.println("PatientDAO.findByEmail() - Loaded " + patients.size() + " patients");
+            
             for (Patient p : patients) {
+                System.out.println("PatientDAO.findByEmail() - Comparing with patient email: " + p.getEmail());
                 if (p.getEmail().equalsIgnoreCase(email)) {
+                    System.out.println("PatientDAO.findByEmail() - Found matching patient: " + p.getName());
                     return p;
                 }
             }
+            System.out.println("PatientDAO.findByEmail() - No matching patient found");
         } catch (IOException e) {
+            System.err.println("PatientDAO.findByEmail() - Error loading patients: " + e.getMessage());
             e.printStackTrace();
         }
         return null;

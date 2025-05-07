@@ -137,23 +137,25 @@ public class BookAppointmentController {
     
         // Create Appointment object
         Appointment appointment = new Appointment();
-appointment.setAppointmentId(UUID.randomUUID().toString());
-appointment.setPatientId(loggedInPatient.getId());
-appointment.setDoctorId(selectedDoctor.getId());
-appointment.setStatus("Pending");
-appointment.setDate(selectedDate.toString());
-appointment.setTime(selectedTime);
-appointment.setDescription(reason);
+        appointment.setAppointmentId(UUID.randomUUID().toString());
+        appointment.setPatientId(loggedInPatient.getId());
+        appointment.setDoctorId(selectedDoctor.getId());
+        appointment.setStatus("Pending");
+        appointment.setDate(selectedDate.toString());
+        appointment.setTime(selectedTime);
+        appointment.setDescription(reason);
 
 
-    
         // Save appointment using DAO
         AppointmentStatus status = appointmentDAO.addAppointment(appointment);
-
     
         switch (status) {
             case SUCCESS:
-                showAlert(Alert.AlertType.INFORMATION, "Appointment booked successfully!");
+                showAlert(Alert.AlertType.INFORMATION, 
+                    String.format("Appointment booked successfully!\n\nDetails:\nDoctor: %s\nDate: %s\nTime: %s\n\nStatus: Pending (Awaiting doctor's confirmation)",
+                    selectedDoctor.getName(),
+                    selectedDate.toString(),
+                    selectedTime));
                 clearForm();
                 break;
             case DUPLICATE:
@@ -163,7 +165,6 @@ appointment.setDescription(reason);
                 showAlert(Alert.AlertType.ERROR, "An unexpected error occurred while booking the appointment.");
                 break;
         }
-        
     }
     
     

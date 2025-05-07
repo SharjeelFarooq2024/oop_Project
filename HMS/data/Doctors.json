@@ -3,8 +3,9 @@
   "id" : "8a5e49f6-e44a-4135-9bb6-7a2008521084",
   "email" : "john@hospital.com",
   "password" : "password",
+  "age" : 0,
   "specialization" : "Cardiology",
-  "patients" : [ ],
+  "patientIds" : [ ],
   "appointments" : [ ],
   "emergencyAlerts" : [ ]
 }, {
@@ -12,35 +13,72 @@
   "id" : "838eda4a-687f-40a1-bc43-bb829ba7f5bb",
   "email" : "sarah@hospital.com",
   "password" : "password",
+  "age" : 0,
   "specialization" : "Neurology",
-  "patients" : [ ],
-  "appointments" : [ ],
+  "patientIds" : [ ],
+  "appointments" : [ {
+    "appointmentId" : "3038f5c1-6a5a-4639-820c-8743855c00a5",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "838eda4a-687f-40a1-bc43-bb829ba7f5bb",
+    "status" : "Pending",
+    "date" : "2025-05-14",
+    "time" : "03:00 PM",
+    "description" : "e",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  } ],
   "emergencyAlerts" : [ ]
 }, {
   "name" : "Dr. Michael Chen",
   "id" : "bad8ce3d-9528-4bcb-95d1-5921d095b6e2",
   "email" : "michael@hospital.com",
   "password" : "password",
+  "age" : 0,
   "specialization" : "Orthopedics",
-  "patients" : [ ],
-  "appointments" : [ ],
+  "patientIds" : [ "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1" ],
+  "appointments" : [ {
+    "appointmentId" : "e1857613-8d1e-4280-b864-501cca3595d6",
+    "patientId" : "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1",
+    "doctorId" : "bad8ce3d-9528-4bcb-95d1-5921d095b6e2",
+    "status" : "Pending",
+    "date" : "2025-05-22",
+    "time" : "03:00 PM",
+    "description" : "ddd",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  } ],
   "emergencyAlerts" : [ ]
 }, {
   "name" : "Dr. Emily Davis",
   "id" : "209cf267-a845-491e-a98e-484dd1c8aa85",
   "email" : "emily@hospital.com",
   "password" : "password",
+  "age" : 0,
   "specialization" : "Pediatrics",
-  "patients" : [ ],
-  "appointments" : [ ],
+  "patientIds" : [ ],
+  "appointments" : [ {
+    "appointmentId" : "18fd38f6-fe8b-4c6b-b069-d0133ff7d43d",
+    "patientId" : "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1",
+    "doctorId" : "209cf267-a845-491e-a98e-484dd1c8aa85",
+    "status" : "Pending",
+    "date" : "2025-05-28",
+    "time" : "12:00 PM",
+    "description" : "qwerty",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  } ],
   "emergencyAlerts" : [ ]
 }, {
   "name" : "Dr. Robert Wilson",
   "id" : "11845abe-b606-418d-809a-7dd4e3fa46f2",
   "email" : "robert@hospital.com",
   "password" : "password",
+  "age" : 0,
   "specialization" : "Dermatology",
-  "patients" : [ ],
+  "patientIds" : [ ],
   "appointments" : [ ],
   "emergencyAlerts" : [ ]
 }, {
@@ -48,8 +86,9 @@
   "id" : null,
   "email" : "alpha",
   "password" : "alpha",
+  "age" : 0,
   "specialization" : null,
-  "patients" : [ ],
+  "patientIds" : [ ],
   "appointments" : [ ],
   "emergencyAlerts" : [ ]
 }, {
@@ -57,8 +96,74 @@
   "id" : "cdc28005-9b25-497f-85f5-4c9c792af7a2",
   "email" : "beta",
   "password" : "beta",
+  "age" : 0,
   "specialization" : "beta",
-  "patients" : [ ],
+  "patientIds" : [ ],
   "appointments" : [ ],
+  "emergencyAlerts" : [ ]
+}, {
+  "name" : "sikandar",
+  "id" : "c7f18c72-1210-45c4-8529-9011e61c324d",
+  "email" : "sikandar@gmail.com",
+  "password" : "a",
+  "age" : 0,
+  "specialization" : "fighter",
+  "patientIds" : [ ],
+  "appointments" : [ {
+    "appointmentId" : "dc5ef11d-9878-44a7-a487-1ad5b1724a29",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "c7f18c72-1210-45c4-8529-9011e61c324d",
+    "status" : "Pending",
+    "date" : "2025-05-23",
+    "time" : "05:00 PM",
+    "description" : "fjdbhhu",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "6a73ddcb-e8b0-4925-87f7-f0922179a23d",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "c7f18c72-1210-45c4-8529-9011e61c324d",
+    "status" : "Pending",
+    "date" : "2025-05-15",
+    "time" : "10:00 AM",
+    "description" : "fgg",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "5c3c6df7-2c21-4b98-acd3-1133b7b3f9e1",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "c7f18c72-1210-45c4-8529-9011e61c324d",
+    "status" : "Pending",
+    "date" : "2025-05-15",
+    "time" : "02:00 PM",
+    "description" : "fgg",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "ffefd1a6-b2a1-4077-bdeb-f729f7ec1854",
+    "patientId" : "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1",
+    "doctorId" : "c7f18c72-1210-45c4-8529-9011e61c324d",
+    "status" : "Pending",
+    "date" : "2025-05-20",
+    "time" : "12:00 PM",
+    "description" : "qwertyuiop",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "e6d3724e-2eea-4ee2-b4dc-eac469afc32b",
+    "patientId" : "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1",
+    "doctorId" : "c7f18c72-1210-45c4-8529-9011e61c324d",
+    "status" : "Pending",
+    "date" : "2025-05-30",
+    "time" : "02:00 PM",
+    "description" : "q",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  } ],
   "emergencyAlerts" : [ ]
 } ]

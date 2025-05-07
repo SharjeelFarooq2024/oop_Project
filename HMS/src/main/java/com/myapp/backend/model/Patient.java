@@ -2,19 +2,21 @@ package com.myapp.backend.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Patient extends User {
     private List<Feedback> feedbacks;
     private List<VitalSign> vitalSigns;
 
     public Patient() {
-        super();
+        super(); // This will generate the ID
         this.feedbacks = new ArrayList<>();
         this.vitalSigns = new ArrayList<>();
     }
 
     public Patient(String name, String email, String password) {
-        super(name, email, password);
+        super(name, email, password); // This will generate the ID
         this.feedbacks = new ArrayList<>();
         this.vitalSigns = new ArrayList<>();
     }
@@ -28,6 +30,9 @@ public class Patient extends User {
     }
 
     public void addFeedback(Feedback feedback) {
+        if (this.feedbacks == null) {
+            this.feedbacks = new ArrayList<>();
+        }
         this.feedbacks.add(feedback);
     }
 

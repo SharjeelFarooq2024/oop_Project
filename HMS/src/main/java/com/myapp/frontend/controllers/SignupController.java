@@ -84,14 +84,14 @@ public class SignupController {
             }
 
             if (success) {
-                showAlert("Success", "Registration successful! Please login.");
-                goToLogin(null);
+                showAlert("Success", "Registration successful! Please log in.");
+                goToLogin(event);  // Navigate back to login screen
             } else {
-                showAlert("Error", "Registration failed. Please try again.");
+                showAlert("Error", "Registration failed. Email may already be in use.");
             }
         } catch (Exception e) {
-            showAlert("Error", "Registration failed: " + e.getMessage());
             e.printStackTrace();
+            showAlert("Error", "An error occurred during registration: " + e.getMessage());
         }
     }
 

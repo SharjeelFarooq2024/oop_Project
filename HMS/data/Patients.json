@@ -4,19 +4,30 @@
   "email" : "ali",
   "password" : "ali",
   "age" : 12,
-  "feedbacks" : [ ]
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ]
 }, {
   "name" : "a",
   "id" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
   "email" : "b",
   "password" : "c",
   "age" : 20,
-  "feedbacks" : [ ]
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ]
 }, {
   "name" : "abdullah",
   "id" : "6c838500-1953-4933-be97-67166cca0f40",
   "email" : "akhalil.bsai24seecs@seecs.edu.pk",
   "password" : "a1",
   "age" : 20,
-  "feedbacks" : [ ]
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ]
+}, {
+  "name" : "dogar",
+  "id" : "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1",
+  "email" : "dogar@gmail.com",
+  "password" : "qwerty",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ]
 } ]

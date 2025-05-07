@@ -10,9 +10,17 @@ public class PatientService {
 
     // Logs in a patient by matching email and password in the JSON file
     public Patient login(String email, String password) {
+        System.out.println("PatientService.login() - Attempting login with email: " + email);
         Patient patient = dao.findByEmail(email); // Use the instance of PatientDAO
-        if (patient != null && patient.getPassword().equals(password)) {
-            return patient;
+        System.out.println("PatientService.login() - Patient found: " + (patient != null ? "yes" : "no"));
+        
+        if (patient != null) {
+            System.out.println("PatientService.login() - Comparing passwords");
+            if (patient.getPassword().equals(password)) {
+                System.out.println("PatientService.login() - Password match successful");
+                return patient;
+            }
+            System.out.println("PatientService.login() - Password match failed");
         }
         return null;
     }
@@ -26,10 +34,7 @@ public class PatientService {
         }
 
         // Create a new patient and add to the file
-        Patient newPatient = new Patient();
-        newPatient.setName(name);
-        newPatient.setEmail(email);
-        newPatient.setPassword(password);
+        Patient newPatient = new Patient(name, email, password);
         
         try {
             dao.addPatient(newPatient); // Use the instance of PatientDAO
