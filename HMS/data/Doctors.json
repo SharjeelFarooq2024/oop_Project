@@ -43,4 +43,22 @@
   "patients" : [ ],
   "appointments" : [ ],
   "emergencyAlerts" : [ ]
+}, {
+  "name" : "alpha",
+  "id" : null,
+  "email" : "alpha",
+  "password" : "alpha",
+  "specialization" : null,
+  "patients" : [ ],
+  "appointments" : [ ],
+  "emergencyAlerts" : [ ]
+}, {
+  "name" : "beta",
+  "id" : "cdc28005-9b25-497f-85f5-4c9c792af7a2",
+  "email" : "beta",
+  "password" : "beta",
+  "specialization" : "beta",
+  "patients" : [ ],
+  "appointments" : [ ],
+  "emergencyAlerts" : [ ]
 } ]

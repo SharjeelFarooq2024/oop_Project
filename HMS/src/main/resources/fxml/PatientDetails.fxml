@@ -37,14 +37,11 @@ Details.fxml -->
                     <Label text="Name:" style="-fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
                     <Label fx:id="patientNameLabel" text="John Doe" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
                     
-                    <Label text="Age:" style="-fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <Label fx:id="patientAgeLabel" text="35" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="ID:" style="-fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label fx:id="patientIdLabel" text="12345" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
                     
-                    <Label text="ID:" style="-fx-font-weight: bold;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                    <Label fx:id="patientIdLabel" text="12345" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                    
-                    <Label text="Email:" style="-fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                    <Label fx:id="patientEmailLabel" text="john@example.com" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    <Label text="Email:" style="-fx-font-weight: bold;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label fx:id="patientEmailLabel" text="john@example.com" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
                 </GridPane>
             </VBox>
             

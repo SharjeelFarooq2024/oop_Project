@@ -38,7 +38,6 @@
             <TableView fx:id="patientsTable" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="nameColumn" text="Name" prefWidth="200"/>
-                    <TableColumn fx:id="ageColumn" text="Age" prefWidth="100"/>
                     <TableColumn fx:id="emailColumn" text="Email" prefWidth="200"/>
                     <TableColumn fx:id="phoneColumn" text="Phone" prefWidth="150"/>
                 </columns>

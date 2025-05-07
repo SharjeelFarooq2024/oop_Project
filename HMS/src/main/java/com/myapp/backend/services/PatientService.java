@@ -18,23 +18,30 @@ public class PatientService {
     }
 
     // Registers a new patient after validation
-    public void registerNewPatient(String name, String email, String password, int age) {
+    public boolean registerNewPatient(String name, String email, String password) {
         // Check if the patient already exists using the PatientDAO instance
         if (dao.findByEmail(email) != null) { // Use the instance of PatientDAO
             System.out.println("Patient with this email already exists.");
-            return;
+            return false;
         }
 
         // Create a new patient and add to the file
-        Patient newPatient = new Patient(name, email, password, age);
+        Patient newPatient = new Patient();
+        newPatient.setName(name);
+        newPatient.setEmail(email);
+        newPatient.setPassword(password);
+        
         try {
             dao.addPatient(newPatient); // Use the instance of PatientDAO
             System.out.println("New patient registered successfully.");
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error registering patient: " + e.getMessage());
+            return false;
         }
     }
+
     // Method to get the logged-in patient
     public static Patient getLoggedInPatient() {
         return SessionManager.getLoggedInPatient();

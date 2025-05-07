@@ -13,6 +13,7 @@ import com.myapp.backend.services.PatientService;
 import com.myapp.backend.services.DoctorService;
 import com.myapp.backend.model.Patient;
 import com.myapp.backend.model.Doctor;
+import com.myapp.backend.model.Admin;
 
 import java.io.IOException;
 
@@ -24,6 +25,7 @@ public class LoginController {
     @FXML private ToggleGroup userTypeToggle;
     @FXML private RadioButton patientRadio;
     @FXML private RadioButton doctorRadio;
+    @FXML private RadioButton adminRadio;
 
     private PatientService patientService = new PatientService();
     private DoctorService doctorService = new DoctorService();
@@ -39,11 +41,8 @@ public class LoginController {
     @FXML
     private void handleSignUpLinkClick(ActionEvent event) {
         try {
-            // Load the sign-up page FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Signup.fxml"));
             Parent signUpRoot = loader.load();
-            
-            // Get the current stage and set the new scene
             Stage stage = (Stage) emailField.getScene().getWindow();
             Scene signUpScene = new Scene(signUpRoot);
             stage.setScene(signUpScene);
@@ -65,21 +64,20 @@ public class LoginController {
             return;
         }
 
-        boolean isDoctor = doctorRadio != null && doctorRadio.isSelected();
-        
-        if (isDoctor) {
-            // Doctor login
-            Doctor doctor = doctorService.login(email, password);
-            if (doctor != null) {
-                try {
-                    // Store the logged-in doctor in the session
+        try {
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            double width = stage.getWidth();
+            double height = stage.getHeight();
+
+            // Get selected user type
+            RadioButton selectedType = (RadioButton) userTypeToggle.getSelectedToggle();
+
+            if (selectedType == doctorRadio) {
+                // Doctor login
+                Doctor doctor = doctorService.login(email, password);
+                if (doctor != null) {
                     SessionManager.setLoggedInDoctor(doctor);
-
-                    // Load the Doctor Dashboard
-                    Stage stage = (Stage) loginButton.getScene().getWindow();
-                    double width = stage.getWidth();
-                    double height = stage.getHeight();
-
+                    
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DoctorDashboard.fxml"));
                     Parent dashboardRoot = loader.load();
 
@@ -92,48 +90,55 @@ public class LoginController {
                     stage.setWidth(width);
                     stage.setHeight(height);
                     stage.show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    showAlert("Error", "Could not load dashboard!\n" + e.getMessage());
+                } else {
+                    showAlert("Error", "Invalid doctor credentials.");
                 }
+            } else if (selectedType == adminRadio) {
+                // Admin login
+               // Admin admin = adminService.login(email, password);
+               // if (admin != null) {
+                 //   SessionManager.setLoggedInAdmin(admin);
+                    
+                    //FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminDashboard.fxml"));
+                    //Parent dashboardRoot = loader.load();
+
+                    //AdminDashboardController controller = loader.getController();
+                   // controller.setLoggedInAdmin(admin);
+
+                //     Scene scene = new Scene(dashboardRoot);
+                //     stage.setScene(scene);
+                //     stage.setTitle("Admin Dashboard");
+                //     stage.setWidth(width);
+                //     stage.setHeight(height);
+                //     stage.show();
+                // } else {
+                //     showAlert("Error", "Invalid administrator credentials.");
+                // }
             } else {
-                showAlert("Error", "Invalid doctor credentials.");
-            }
-        } else {
-            // Patient login (existing code)
-            Patient patient = patientService.login(email, password);
-            if (patient != null) {
-                try {
-                    // Store the logged-in patient in the session
+                // Patient login (default)
+                Patient patient = patientService.login(email, password);
+                if (patient != null) {
                     SessionManager.setLoggedInPatient(patient);
 
-                    // Proceed with loading the dashboard
-                    Stage stage = (Stage) loginButton.getScene().getWindow();
-                    double width = stage.getWidth();
-                    double height = stage.getHeight();
-
-                    // Load the PatientDashboard.fxml
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PatientDashboard.fxml"));
                     Parent dashboardRoot = loader.load();
 
-                    // Get the PatientDashboardController and set the logged-in patient
                     PatientDashboardController controller = loader.getController();
-                    controller.setLoggedInPatient(patient); // Pass the logged-in patient
+                    controller.setLoggedInPatient(patient);
 
-                    // Set the scene and keep the current stage size
                     Scene scene = new Scene(dashboardRoot);
                     stage.setScene(scene);
                     stage.setTitle("Patient Dashboard");
                     stage.setWidth(width);
                     stage.setHeight(height);
                     stage.show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    showAlert("Error", "Could not load dashboard!\n" + e.getMessage());
+                } else {
+                    showAlert("Error", "Invalid patient credentials.");
                 }
-            } else {
-                showAlert("Error", "Invalid patient credentials.");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "Login failed: " + e.getMessage());
         }
     }
 

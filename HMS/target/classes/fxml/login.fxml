@@ -27,6 +27,7 @@
                 </toggleGroup>
             </RadioButton>
             <RadioButton fx:id="doctorRadio" text="Doctor" toggleGroup="$userTypeToggle"/>
+            <RadioButton fx:id="adminRadio" text="Administrator" toggleGroup="$userTypeToggle"/>
         </HBox>
 
         <VBox spacing="5" style="-fx-padding: 20 0 0 0;">

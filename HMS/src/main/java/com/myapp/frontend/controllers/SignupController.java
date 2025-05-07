@@ -1,83 +1,48 @@
 package com.myapp.frontend.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
 
 import com.myapp.backend.services.PatientService;
+import com.myapp.backend.services.DoctorService;
 
-import java.io.IOException;  // Import IOException to handle file-related exceptions
+import java.io.IOException;
 
 public class SignupController {
 
-    @FXML
-    private TextField nameField;
-
-    @FXML
-    private TextField emailField;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private TextField ageField;
-
-    @FXML
-    private Button signupButton;
+    @FXML private TextField nameField;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private Button signupButton;
+    @FXML private ToggleGroup userTypeToggle;
+    @FXML private RadioButton patientRadio;
+    @FXML private RadioButton doctorRadio;
+    @FXML private VBox specializationBox;
+    @FXML private TextField specializationField;
 
     private PatientService patientService = new PatientService();
+    private DoctorService doctorService = new DoctorService();
+
+    @FXML
+    public void initialize() {
+        // Add listener to userTypeToggle to show/hide specialization field
+        userTypeToggle.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            boolean isDoctorSelected = doctorRadio.equals(newValue);
+            specializationBox.setVisible(isDoctorSelected);
+            specializationBox.setManaged(isDoctorSelected);
+        });
+    }
 
     @FXML
     private void goToLogin(ActionEvent event) {
-    try {
-        // Load the login page FXML
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
-        Parent loginRoot = loader.load();
-        
-        // Get the current stage and set the new scene (switch to login page)
-        Stage stage = (Stage) signupButton.getScene().getWindow();
-        Scene loginScene = new Scene(loginRoot);
-        stage.setScene(loginScene);
-        stage.setTitle("Login");
-        stage.show();
-    } catch (IOException e) {
-        e.printStackTrace();
-        showAlert("Error", "Could not load login page!\n" + e.getMessage());
-    }
-}
-    @FXML
-    private void handleSignUp(ActionEvent event) {
-        String name = nameField.getText();
-        String email = emailField.getText();
-        String password = passwordField.getText();
-        String ageText = ageField.getText();
-if (!ageText.matches("\\d+")) {
-    showAlert("Validation Error", "Age must be a number.");
-    return;
-}
-
-int age = Integer.parseInt(ageText);
-
-
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || ageField.getText().isEmpty()) {
-            showAlert("Error", "All fields are required.");
-            return;
-        }
-
-        // Call register method in PatientService
-        patientService.registerNewPatient(name, email, password, age);
-
-        // If registration is successful, go to login page
         try {
-            // Switch to the login screen
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
             Parent loginRoot = loader.load();
             Stage stage = (Stage) signupButton.getScene().getWindow();
             Scene loginScene = new Scene(loginRoot);
@@ -90,8 +55,48 @@ int age = Integer.parseInt(ageText);
         }
     }
 
+    @FXML
+    private void handleSignUp(ActionEvent event) {
+        String name = nameField.getText();
+        String email = emailField.getText();
+        String password = passwordField.getText();
+
+        // Validation
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            showAlert("Error", "All fields are required.");
+            return;
+        }
+
+        try {
+            // Register based on selected user type
+            RadioButton selectedType = (RadioButton) userTypeToggle.getSelectedToggle();
+            boolean success = false;
+
+            if (selectedType == patientRadio) {
+                success = patientService.registerNewPatient(name, email, password);
+            } else if (selectedType == doctorRadio) {
+                String specialization = specializationField.getText();
+                if (specialization.isEmpty()) {
+                    showAlert("Error", "Specialization is required for doctors.");
+                    return;
+                }
+                success = doctorService.registerNewDoctor(name, email, password, specialization);
+            }
+
+            if (success) {
+                showAlert("Success", "Registration successful! Please login.");
+                goToLogin(null);
+            } else {
+                showAlert("Error", "Registration failed. Please try again.");
+            }
+        } catch (Exception e) {
+            showAlert("Error", "Registration failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(title.contains("Success") ? Alert.AlertType.INFORMATION : Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

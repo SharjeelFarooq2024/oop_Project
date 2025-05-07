@@ -3,7 +3,6 @@ package com.myapp.frontend.controllers;
 import com.myapp.backend.model.Doctor;
 import com.myapp.backend.model.Feedback;
 import com.myapp.backend.model.Patient;
-import com.myapp.backend.model.VitalSign;
 import com.myapp.backend.services.NotificationService;
 
 import javafx.fxml.FXML;
@@ -25,7 +24,6 @@ import java.util.ResourceBundle;
 public class PatientDetailsController implements Initializable {
 
     @FXML private Label patientNameLabel;
-    @FXML private Label patientAgeLabel;
     @FXML private Label patientIdLabel;
     @FXML private Label patientEmailLabel;
     
@@ -57,7 +55,6 @@ public class PatientDetailsController implements Initializable {
     private void updatePatientInfo() {
         if (currentPatient != null) {
             patientNameLabel.setText(currentPatient.getName());
-            patientAgeLabel.setText(String.valueOf(currentPatient.getAge()));
             patientIdLabel.setText(currentPatient.getId());
             patientEmailLabel.setText(currentPatient.getEmail());
         }

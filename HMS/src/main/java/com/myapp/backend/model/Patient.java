@@ -4,23 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Patient extends User {
-    private int age;
     private List<Feedback> feedbacks;
-
-    private List<VitalSign> vitalSigns;  // Store the list of vitals
+    private List<VitalSign> vitalSigns;
 
     public Patient() {
-        super(); // make sure User also has a default constructor
+        super();
         this.feedbacks = new ArrayList<>();
-        this.vitalSigns = new ArrayList<>();  // Initialize vitalSigns list
+        this.vitalSigns = new ArrayList<>();
     }
-    
 
-    public Patient(String name, String email, String password, int age) {
+    public Patient(String name, String email, String password) {
         super(name, email, password);
-        this.age = age;
         this.feedbacks = new ArrayList<>();
-        this.vitalSigns = new ArrayList<>();  // Initialize vitalSigns list
+        this.vitalSigns = new ArrayList<>();
     }
 
     public List<VitalSign> getVitalSigns() {
@@ -29,14 +25,6 @@ public class Patient extends User {
 
     public void setVitalSigns(List<VitalSign> vitalSigns) {
         this.vitalSigns = vitalSigns;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
     }
 
     public void addFeedback(Feedback feedback) {

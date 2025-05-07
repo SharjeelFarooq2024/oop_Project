@@ -75,4 +75,16 @@ public class DoctorDAO {
         }
         return null;
     }
+
+    public void addDoctor(Doctor doctor) throws IOException {
+        List<Doctor> doctors = loadDoctors();
+        doctors.add(doctor);
+        
+        // Ensure directory exists
+        File file = new File(FILE_PATH);
+        file.getParentFile().mkdirs();
+        
+        // Save updated list to file
+        mapper.writerWithDefaultPrettyPrinter().writeValue(file, doctors);
+    }
 }
