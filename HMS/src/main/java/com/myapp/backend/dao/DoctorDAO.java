@@ -87,4 +87,23 @@ public class DoctorDAO {
         // Save updated list to file
         mapper.writerWithDefaultPrettyPrinter().writeValue(file, doctors);
     }
+
+    public void updateDoctor(Doctor updatedDoctor) throws IOException {
+        List<Doctor> doctors = loadDoctors();
+        
+        for (int i = 0; i < doctors.size(); i++) {
+            if (doctors.get(i).getId().equals(updatedDoctor.getId())) {
+                doctors.set(i, updatedDoctor);
+                break;
+            }
+        }
+        
+        saveDoctors(doctors);
+    }
+
+    private void saveDoctors(List<Doctor> doctors) throws IOException {
+        File file = new File(FILE_PATH);
+        file.getParentFile().mkdirs();
+        mapper.writerWithDefaultPrettyPrinter().writeValue(file, doctors);
+    }
 }

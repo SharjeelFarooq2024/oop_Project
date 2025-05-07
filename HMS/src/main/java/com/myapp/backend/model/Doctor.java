@@ -67,6 +67,12 @@ public class Doctor extends User {
         System.out.println("Emergency alert received from patient: " + alert.getPatientName());
     }
 
+    public void addAppointment(Appointment appointment) {
+        if (appointment != null && appointment.getDoctorId().equals(this.getId())) {
+            appointments.add(appointment);
+        }
+    }
+
     public String getSpecialization() {
         return specialization;
     }
