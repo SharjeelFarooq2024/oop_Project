@@ -3,44 +3,55 @@ package com.myapp.backend.dao;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import com.myapp.backend.model.Doctor;
-import com.myapp.backend.util.ErrorHandler;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class DoctorDAO {
     private static final String FILE_PATH = System.getProperty("user.dir") + "/data/Doctors.json";
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
+
+    public DoctorDAO() {
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        initializeFile();
+    }
+
+    private void initializeFile() {
+        try {
+            File file = new File(FILE_PATH);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                saveDoctors(new ArrayList<>());
+            }
+        } catch (IOException e) {
+            System.err.println("Error initializing doctors file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized Doctor findById(String doctorId) {
+        List<Doctor> doctors = loadDoctors();
+        return doctors.stream()
+            .filter(d -> d.getId() != null && d.getId().equals(doctorId))
+            .findFirst()
+            .orElse(null);
+    }
 
     public List<Doctor> loadDoctors() {
-        File file = new File(FILE_PATH);
-        System.out.println("Looking for doctor file at: " + FILE_PATH);
-        if (!file.exists()) {
-            System.out.println("Doctor file not found! Creating sample doctors...");
-            createSampleDoctors();
-        }
-    
         try {
-            List<Doctor> doctors = mapper.readValue(file, new TypeReference<List<Doctor>>() {});
-            System.out.println("Loaded " + doctors.size() + " doctors.");
-            for (Doctor doc : doctors) {
-                System.out.println(doc.getName() + " - " + doc.getSpecialization());
+            File file = new File(FILE_PATH);
+            if (!file.exists()) {
+                return new ArrayList<>();
             }
-            return doctors;
+            return mapper.readValue(file, new TypeReference<List<Doctor>>() {});
         } catch (IOException e) {
-            ErrorHandler.handleException(
-                e, 
-                false, 
-                "Data Loading Error", 
-                "Failed to load doctors data. Creating sample data instead."
-            );
-            createSampleDoctors();
-            return loadDoctors(); // Try again after creating sample data
+            System.err.println("Error reading doctors: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 
@@ -53,12 +64,7 @@ public class DoctorDAO {
             doctors.add(new Doctor("Dr. Emily Davis", "emily@hospital.com", "password", "Pediatrics"));
             doctors.add(new Doctor("Dr. Robert Wilson", "robert@hospital.com", "password", "Dermatology"));
             
-            // Ensure directory exists
-            File file = new File(FILE_PATH);
-            file.getParentFile().mkdirs();
-            
-            // Save doctors to file
-            mapper.writerWithDefaultPrettyPrinter().writeValue(file, doctors);
+            saveDoctors(doctors);
             System.out.println("Sample doctors created successfully!");
         } catch (IOException e) {
             System.out.println("Failed to create sample doctors: " + e.getMessage());
@@ -69,7 +75,7 @@ public class DoctorDAO {
     public Doctor findByEmail(String email) {
         List<Doctor> doctors = loadDoctors();
         for (Doctor doctor : doctors) {
-            if (doctor.getEmail().equals(email)) {
+            if (email != null && email.equals(doctor.getEmail())) {
                 return doctor;
             }
         }
@@ -79,29 +85,42 @@ public class DoctorDAO {
     public void addDoctor(Doctor doctor) throws IOException {
         List<Doctor> doctors = loadDoctors();
         doctors.add(doctor);
-        
-        // Ensure directory exists
-        File file = new File(FILE_PATH);
-        file.getParentFile().mkdirs();
-        
-        // Save updated list to file
-        mapper.writerWithDefaultPrettyPrinter().writeValue(file, doctors);
+        saveDoctors(doctors);
     }
 
-    public void updateDoctor(Doctor updatedDoctor) throws IOException {
+    public synchronized void updateDoctor(Doctor doctor) throws IOException {
+        if (doctor == null || doctor.getId() == null) {
+            throw new IOException("Invalid doctor data");
+        }
+
         List<Doctor> doctors = loadDoctors();
-        
+        boolean found = false;
+
         for (int i = 0; i < doctors.size(); i++) {
-            if (doctors.get(i).getId().equals(updatedDoctor.getId())) {
-                doctors.set(i, updatedDoctor);
+            if (doctor.getId() != null && doctor.getId().equals(doctors.get(i).getId())) {
+                // Preserve existing lists if they're empty in the update
+                Doctor existingDoctor = doctors.get(i);
+                if (doctor.getAppointments() == null || doctor.getAppointments().isEmpty()) {
+                    doctor.setAppointments(existingDoctor.getAppointments());
+                }
+                if (doctor.getPatientIds() == null || doctor.getPatientIds().isEmpty()) {
+                    doctor.setPatientIds(existingDoctor.getPatientIds());
+                }
+                doctors.set(i, doctor);
+                found = true;
                 break;
             }
         }
         
+
+        if (!found) {
+            doctors.add(doctor);
+        }
+
         saveDoctors(doctors);
     }
 
-    private void saveDoctors(List<Doctor> doctors) throws IOException {
+    private synchronized void saveDoctors(List<Doctor> doctors) throws IOException {
         File file = new File(FILE_PATH);
         file.getParentFile().mkdirs();
         mapper.writerWithDefaultPrettyPrinter().writeValue(file, doctors);

@@ -42,6 +42,7 @@ com\myapp\backend\services\EmergencyAlertService.class
 com\myapp\backend\model\Session.class
 com\myapp\app\Main.class
 com\myapp\backend\dao\VitalSignDAO.class
+com\myapp\backend\model\Admin.class
 com\myapp\backend\services\PatientService.class
 com\myapp\backend\services\VitalSignService.class
 com\myapp\backend\model\VitalSign.class

@@ -10,7 +10,6 @@ public abstract class User {
     protected int age;
 
     public User() {
-        // Generate ID even in no-arg constructor
         this.id = UUID.randomUUID().toString();
     }
 

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import com.myapp.backend.model.Appointment;
 import com.myapp.backend.model.Doctor;
-import com.myapp.backend.model.Patient;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,24 +13,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppointmentDAO {
-    private static final String FILE_PATH = System.getProperty("user.dir") + "/data/Appointments.json";
+    private static final String FILE_PATH = "data/Appointments.json";
     private final ObjectMapper mapper;
     private final DoctorDAO doctorDAO;
-    private final PatientDAO patientDAO;
 
     public AppointmentDAO() {
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         doctorDAO = new DoctorDAO();
-        patientDAO = new PatientDAO();
+        initializeFile();
     }
 
-    // Load appointments from the file
+    private void initializeFile() {
+        try {
+            File file = new File(FILE_PATH);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                saveAppointments(new ArrayList<>());
+            }
+        } catch (IOException e) {
+            System.err.println("Error initializing appointments file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     private synchronized List<Appointment> loadAppointments() throws IOException {
         File file = new File(FILE_PATH);
         if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            mapper.writeValue(file, new ArrayList<>());
             return new ArrayList<>();
         }
         try {
@@ -43,40 +51,49 @@ public class AppointmentDAO {
         }
     }
 
-    // Save appointments to the file
     private synchronized void saveAppointments(List<Appointment> appointments) throws IOException {
         File file = new File(FILE_PATH);
         file.getParentFile().mkdirs();
-        try {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(file, appointments);
-        } catch (IOException e) {
-            System.err.println("Error saving appointments: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
+        mapper.writerWithDefaultPrettyPrinter().writeValue(file, appointments);
+        // Sync doctor data after saving appointments
+        syncAllAppointments();
     }
 
-    // Add an appointment to the list and save to file
     public synchronized AppointmentStatus addAppointment(Appointment appointment) {
         try {
+            if (appointment == null || appointment.getDoctorId() == null) {
+                return AppointmentStatus.ERROR;
+            }
+
             List<Appointment> appointments = loadAppointments();
             
-            // Check for duplicate appointments - only consider pending or scheduled appointments
+            // Sort appointments before checking for duplicates
+            appointments.sort((a1, a2) -> {
+                int dateCompare = a2.getDate().compareTo(a1.getDate());
+                return dateCompare != 0 ? dateCompare : a2.getTime().compareTo(a1.getTime());
+            });
+
+            // Check for duplicate appointments
             for (Appointment a : appointments) {
                 if (a.getDoctorId().equals(appointment.getDoctorId()) &&
                     a.getDate().equals(appointment.getDate()) &&
                     a.getTime().equals(appointment.getTime()) &&
-                    (a.getStatus().equalsIgnoreCase("Pending") || 
-                     a.getStatus().equalsIgnoreCase("Scheduled"))) {
+                    (a.isPending() || a.isScheduled())) {
                     return AppointmentStatus.DUPLICATE;
                 }
             }
 
-            appointments.add(appointment);
+            // Add new appointment at the beginning of the list
+            appointments.add(0, appointment);
             saveAppointments(appointments);
 
-            // Update doctor's appointments and patient list
-            updateDoctorWithNewPatient(appointment);
+            // Update doctor's data
+            Doctor doctor = doctorDAO.findById(appointment.getDoctorId());
+            if (doctor != null) {
+                doctor.addAppointment(appointment);
+                doctor.addPatientId(appointment.getPatientId());
+                doctorDAO.updateDoctor(doctor);
+            }
             
             return AppointmentStatus.SUCCESS;
         } catch (IOException e) {
@@ -86,16 +103,23 @@ public class AppointmentDAO {
         }
     }
 
-    // Find appointments by patient ID
     public List<Appointment> findByPatientId(String patientId) {
         try {
             List<Appointment> appointments = loadAppointments();
             List<Appointment> patientAppointments = new ArrayList<>();
+            
             for (Appointment a : appointments) {
                 if (a.getPatientId().equals(patientId)) {
                     patientAppointments.add(a);
                 }
             }
+            
+            // Sort appointments by date and time
+            patientAppointments.sort((a1, a2) -> {
+                int dateCompare = a2.getDate().compareTo(a1.getDate());
+                return dateCompare != 0 ? dateCompare : a2.getTime().compareTo(a1.getTime());
+            });
+            
             return patientAppointments;
         } catch (IOException e) {
             System.err.println("Error loading appointments: " + e.getMessage());
@@ -110,10 +134,15 @@ public class AppointmentDAO {
         ERROR
     }
     
-    // Get all appointments
     public List<Appointment> getAllAppointments() {
         try {
-            return loadAppointments();
+            List<Appointment> appointments = loadAppointments();
+            // Sort appointments by date and time
+            appointments.sort((a1, a2) -> {
+                int dateCompare = a2.getDate().compareTo(a1.getDate());
+                return dateCompare != 0 ? dateCompare : a2.getTime().compareTo(a1.getTime());
+            });
+            return appointments;
         } catch (IOException e) {
             System.err.println("Error loading all appointments: " + e.getMessage());
             e.printStackTrace();
@@ -121,12 +150,14 @@ public class AppointmentDAO {
         }
     }
 
-    // Update an existing appointment
     public synchronized void updateAppointment(Appointment updatedAppointment) throws IOException {
-        // First update the main appointments file
+        if (updatedAppointment == null || updatedAppointment.getAppointmentId() == null) {
+            throw new IOException("Invalid appointment data");
+        }
+
         List<Appointment> appointments = loadAppointments();
         boolean found = false;
-        
+
         for (int i = 0; i < appointments.size(); i++) {
             if (appointments.get(i).getAppointmentId().equals(updatedAppointment.getAppointmentId())) {
                 appointments.set(i, updatedAppointment);
@@ -134,70 +165,45 @@ public class AppointmentDAO {
                 break;
             }
         }
-        
+
         if (!found) {
             throw new IOException("Appointment not found with ID: " + updatedAppointment.getAppointmentId());
         }
-        
+
         saveAppointments(appointments);
-        updateDoctorWithNewPatient(updatedAppointment);
     }
 
-    // Helper method to update doctor's appointments and patient list
-    private synchronized void updateDoctorWithNewPatient(Appointment appointment) throws IOException {
-        List<Doctor> doctors = doctorDAO.loadDoctors();
-        for (Doctor doctor : doctors) {
-            if (doctor.getId().equals(appointment.getDoctorId())) {
-                // Update appointments list
-                ArrayList<Appointment> doctorAppointments = doctor.getAppointments();
-                if (doctorAppointments == null) {
-                    doctorAppointments = new ArrayList<>();
-                }
-                doctorAppointments.add(appointment);
-                doctor.setAppointments(doctorAppointments);
-
-                // Add patient ID to doctor's patient list if not already present
-                Patient patient = patientDAO.findById(appointment.getPatientId());
-                if (patient != null) {
-                    ArrayList<String> doctorPatients = doctor.getPatientIds();
-                    if (doctorPatients == null) {
-                        doctorPatients = new ArrayList<>();
-                    }
-                    if (!doctorPatients.contains(patient.getId())) {
-                        doctorPatients.add(patient.getId());
-                        doctor.setPatientIds(doctorPatients);
-                    }
-                }
-
-                doctorDAO.updateDoctor(doctor);
-                break;
-            }
-        }
-    }
-
-    // Sync method to fix any inconsistencies between appointments and doctor records
     public synchronized void syncAllAppointments() throws IOException {
         List<Appointment> allAppointments = loadAppointments();
         List<Doctor> doctors = doctorDAO.loadDoctors();
         
-        // Clear all doctors' appointment lists first
+        // First reset all doctors' appointment lists
         for (Doctor doctor : doctors) {
-            doctor.setAppointments(new ArrayList<>());
+            if (doctor.getId() != null) {
+                doctor.setAppointments(new ArrayList<>());
+            }
         }
         
         // Add appointments to corresponding doctors
         for (Appointment appointment : allAppointments) {
-            for (Doctor doctor : doctors) {
-                if (doctor.getId().equals(appointment.getDoctorId())) {
-                    doctor.addAppointment(appointment);
-                    break;
+            if (appointment.getDoctorId() != null) {
+                for (Doctor doctor : doctors) {
+                    if (doctor.getId() != null && doctor.getId().equals(appointment.getDoctorId())) {
+                        doctor.addAppointment(appointment);
+                        if (!appointment.getStatus().equals("Rejected")) {
+                            doctor.addPatientId(appointment.getPatientId());
+                        }
+                        break;
+                    }
                 }
             }
         }
         
         // Save all doctors with updated appointments
         for (Doctor doctor : doctors) {
-            doctorDAO.updateDoctor(doctor);
+            if (doctor.getId() != null) {
+                doctorDAO.updateDoctor(doctor);
+            }
         }
     }
 }

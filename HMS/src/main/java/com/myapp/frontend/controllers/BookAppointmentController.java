@@ -1,15 +1,9 @@
 package com.myapp.frontend.controllers;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import com.myapp.backend.dao.AppointmentDAO;
 import com.myapp.backend.dao.AppointmentDAO.AppointmentStatus;
@@ -20,7 +14,6 @@ import com.myapp.backend.model.Patient;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -71,7 +64,7 @@ public class BookAppointmentController {
     }
 
     private void loadDoctors() {
-        List<Doctor> doctors = doctorDAO.loadDoctors(); // Load from doctors.json
+        List<Doctor> doctors = doctorDAO.loadDoctors();
         System.out.println("Doctors loaded from DAO: " + doctors.size());
 
         if (doctors.isEmpty()) {
@@ -82,19 +75,27 @@ public class BookAppointmentController {
         doctorNameField.setItems(observableDoctors);
 
         // Visual rendering in dropdown
-        doctorNameField.setCellFactory(lv -> new ListCell<>() {
+        doctorNameField.setCellFactory(lv -> new ListCell<Doctor>() {
             @Override
             protected void updateItem(Doctor doctor, boolean empty) {
                 super.updateItem(doctor, empty);
-                setText(empty || doctor == null ? null : doctor.getName() + " - " + doctor.getSpecialization());
+                if (empty || doctor == null) {
+                    setText(null);
+                } else {
+                    setText(doctor.getName() + " - " + doctor.getSpecialization());
+                }
             }
         });
 
-        doctorNameField.setButtonCell(new ListCell<>() {
+        doctorNameField.setButtonCell(new ListCell<Doctor>() {
             @Override
             protected void updateItem(Doctor doctor, boolean empty) {
                 super.updateItem(doctor, empty);
-                setText(empty || doctor == null ? null : doctor.getName() + " - " + doctor.getSpecialization());
+                if (empty || doctor == null) {
+                    setText(null);
+                } else {
+                    setText(doctor.getName() + " - " + doctor.getSpecialization());
+                }
             }
         });
     }
@@ -119,6 +120,8 @@ public class BookAppointmentController {
 
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
+        alert.setTitle(type == Alert.AlertType.ERROR ? "Error" : "Information");
+        alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
@@ -128,42 +131,70 @@ public class BookAppointmentController {
         LocalDate selectedDate = appointmentDatePicker.getValue();
         String selectedTime = timeSlotComboBox.getValue();
         String reason = reasonField.getText();
-    
-        // Validate input
-        if (selectedDoctor == null || selectedDate == null || selectedTime == null || reason.isBlank()) {
-            showAlert(Alert.AlertType.ERROR, "Please fill in all fields before booking.");
-            return;
-        }
-    
-        // Create Appointment object
-        Appointment appointment = new Appointment();
-        appointment.setAppointmentId(UUID.randomUUID().toString());
-        appointment.setPatientId(loggedInPatient.getId());
-        appointment.setDoctorId(selectedDoctor.getId());
-        appointment.setStatus("Pending");
-        appointment.setDate(selectedDate.toString());
-        appointment.setTime(selectedTime);
-        appointment.setDescription(reason);
 
+        try {
+            // Validate input
+            if (selectedDoctor == null || selectedDate == null || selectedTime == null || reason.isBlank()) {
+                showAlert(Alert.AlertType.ERROR, "Please fill in all fields before booking.");
+                return;
+            }
 
-        // Save appointment using DAO
-        AppointmentStatus status = appointmentDAO.addAppointment(appointment);
-    
-        switch (status) {
-            case SUCCESS:
-                showAlert(Alert.AlertType.INFORMATION, 
-                    String.format("Appointment booked successfully!\n\nDetails:\nDoctor: %s\nDate: %s\nTime: %s\n\nStatus: Pending (Awaiting doctor's confirmation)",
-                    selectedDoctor.getName(),
-                    selectedDate.toString(),
-                    selectedTime));
-                clearForm();
-                break;
-            case DUPLICATE:
-                showAlert(Alert.AlertType.WARNING, "This doctor is already booked at the selected date and time.");
-                break;
-            case ERROR:
-                showAlert(Alert.AlertType.ERROR, "An unexpected error occurred while booking the appointment.");
-                break;
+            if (selectedDate.isBefore(LocalDate.now())) {
+                showAlert(Alert.AlertType.ERROR, "Cannot book appointments for past dates.");
+                return;
+            }
+
+            // Create Appointment object with proper initialization
+            Appointment appointment = new Appointment();
+            appointment.setAppointmentId(UUID.randomUUID().toString());
+            appointment.setPatientId(loggedInPatient.getId());
+            appointment.setDoctorId(selectedDoctor.getId());
+            appointment.setStatus("Pending");
+            appointment.setDate(selectedDate.toString());
+            appointment.setTime(selectedTime);
+            appointment.setDescription(reason);
+
+            // Save appointment and sync with doctor's data
+            AppointmentStatus status = appointmentDAO.addAppointment(appointment);
+            
+            switch (status) {
+                case SUCCESS:
+                    // Manually update the doctor's data
+                    selectedDoctor.addAppointment(appointment);
+                    selectedDoctor.addPatientId(loggedInPatient.getId());
+                    doctorDAO.updateDoctor(selectedDoctor);
+                    
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Success");
+                    successAlert.setHeaderText("Appointment Booked Successfully!");
+                    successAlert.setContentText(String.format(
+                        "Appointment Details:\n\n" +
+                        "Doctor: %s\n" +
+                        "Date: %s\n" +
+                        "Time: %s\n" +
+                        "Status: Pending (Awaiting doctor's confirmation)\n\n" +
+                        "You will be notified once the doctor confirms your appointment.",
+                        selectedDoctor.getName(),
+                        selectedDate.toString(),
+                        selectedTime
+                    ));
+                    
+                    clearForm();
+                    successAlert.showAndWait();
+                    goBack();
+                    break;
+                    
+                case DUPLICATE:
+                    showAlert(Alert.AlertType.WARNING, "This doctor is already booked at the selected date and time.");
+                    break;
+                    
+                case ERROR:
+                    showAlert(Alert.AlertType.ERROR, "An unexpected error occurred while booking the appointment.");
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error booking appointment: " + e.getMessage());
         }
     }
     

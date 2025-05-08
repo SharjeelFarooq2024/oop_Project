@@ -21,9 +21,14 @@ public class AppointmentService {
     public static boolean bookAppointment(Appointment appointment) {
         try {
             AppointmentDAO.AppointmentStatus status = appointmentDAO.addAppointment(appointment);
-            return status == AppointmentDAO.AppointmentStatus.SUCCESS;
+            System.out.println("Appointment booking status: " + status); // DEBUG
+            if (status == AppointmentDAO.AppointmentStatus.SUCCESS) {
+                return true;
+            }
+            return false;
         } catch (Exception e) {
             System.err.println("Error booking appointment: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -36,6 +41,18 @@ public class AppointmentService {
             System.err.println("Error syncing appointments: " + e.getMessage());
             e.printStackTrace();
             throw e;
+        }
+    }
+
+    // Force sync all appointments
+    public static void forceSyncAppointments() {
+        try {
+            System.out.println("Starting forced appointment synchronization...");
+            appointmentDAO.syncAllAppointments();
+            System.out.println("Appointment synchronization completed successfully.");
+        } catch (Exception e) {
+            System.err.println("Error during synchronization: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

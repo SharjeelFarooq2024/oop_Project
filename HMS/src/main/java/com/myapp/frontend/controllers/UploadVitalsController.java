@@ -93,6 +93,9 @@ public class UploadVitalsController {
             // Create the new VitalSign object with the data
             VitalSign vitals = new VitalSign(loggedInPatient.getId(), heartRate, oxygenLevel, bloodPressure, temperature, LocalDateTime.now());
 
+            // Add the vitals to the patient's vitalSigns array
+            loggedInPatient.getVitalSigns().add(vitals);
+
             // Add the vitals to the service
             VitalSignService.addVitals(loggedInPatient.getId(), vitals);
             showAlert("Success", "Vitals submitted successfully.");

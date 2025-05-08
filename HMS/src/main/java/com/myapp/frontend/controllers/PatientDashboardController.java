@@ -1,20 +1,13 @@
 package com.myapp.frontend.controllers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
+import com.myapp.backend.dao.DoctorDAO;
 import com.myapp.backend.model.Appointment;
 import com.myapp.backend.model.Doctor;
 import com.myapp.backend.model.Patient;
-import com.myapp.backend.model.VitalSign; // Assuming you have a Vitals model
+import com.myapp.backend.model.VitalSign;
 import com.myapp.backend.services.AppointmentService;
-import com.myapp.backend.services.PatientService;
 import com.myapp.backend.services.SessionManager;
 import com.myapp.backend.services.VitalSignService;
 
@@ -62,48 +55,72 @@ public class PatientDashboardController {
     private Text oxygenLevelLabel;
 
     private Patient loggedInPatient;  // This is where we store the logged-in patient
-    private PatientService patientService = new PatientService();  // Assuming you have a PatientService for data management
 
     // This method will be called after the login to pass the logged-in patient
     public void setLoggedInPatient(Patient patient) {
         this.loggedInPatient = patient;
-        updateWelcomeMessage();
-        loadAppointments();
-        loadLatestVitals(); // Load the latest vitals for the patient
-        updateVitalsDisplay();
+        SessionManager.setLoggedInPatient(patient);  // Ensure patient is stored in session
+        
+        // Initialize the UI with patient data
+        Platform.runLater(() -> {
+            updateWelcomeMessage();
+            loadAppointments();
+            loadLatestVitals();
+            updateVitalsDisplay();
+        });
     }
 
     private void loadAppointments() {
         if (loggedInPatient != null) {
             // Fetch appointments for the logged-in patient
             List<Appointment> appointments = AppointmentService.getAppointmentsForPatient(loggedInPatient.getId());
-        
-            // Clear the current list of appointments before adding new ones
+            
+            // Sort appointments by date and time in descending order (latest first)
+            appointments.sort((a1, a2) -> {
+                // First compare dates in descending order
+                int dateCompare = a2.getDate().compareTo(a1.getDate());
+                if (dateCompare != 0) {
+                    return dateCompare;
+                }
+                // If dates are equal, compare times in descending order
+                return a2.getTime().compareTo(a1.getTime());
+            });
+            
+            // Clear the current list of appointments
             appointmentsVBox.getChildren().clear();
-        
+            
+            DoctorDAO doctorDAO = new DoctorDAO();
+            List<Doctor> allDoctors = doctorDAO.loadDoctors();
+            
             // Display each appointment in the VBox
             for (Appointment appointment : appointments) {
-                String doctorId = appointment.getDoctorId();  // Fetch doctorId
-                String doctorName = getDoctorNameById(doctorId);  // Fetch doctor name
-       
-                String appointmentTime = appointment.getTime().toString();
-                String status = appointment.getStatus().toString();
-        
+                String doctorId = appointment.getDoctorId();
+                String doctorName = "Unknown";
+                
+                // Find the doctor's name from the doctor list
+                for (Doctor doctor : allDoctors) {
+                    if (doctor.getId() != null && doctor.getId().equals(doctorId)) {
+                        doctorName = doctor.getName() + " - " + doctor.getSpecialization();
+                        break;
+                    }
+                }
+                
                 // Create a label for each appointment and add it to the VBox
                 VBox appointmentBox = new VBox();
                 appointmentBox.setSpacing(5);
-                appointmentBox.getChildren().add(new Text("Doctor: " + doctorName));  // Display doctor's name
-                appointmentBox.getChildren().add(new Text("Time: " + appointmentTime));
-                appointmentBox.getChildren().add(new Text("Status: " + status));
+                appointmentBox.getStyleClass().add("appointment-box");
+                
+                Text doctorText = new Text("Doctor: " + doctorName);
+                Text dateText = new Text("Date: " + appointment.getDate());
+                Text timeText = new Text("Time: " + appointment.getTime());
+                Text statusText = new Text("Status: " + appointment.getStatus());
+                Text descText = new Text("Reason: " + appointment.getDescription());
+                
+                appointmentBox.getChildren().addAll(doctorText, dateText, timeText, statusText, descText);
                 appointmentsVBox.getChildren().add(appointmentBox);
             }
-        
-            // Now fetch and display the latest vitals
-            
         }
     }
-    
-    
 
     // Method to update the latest vitals display
     private void updateVitalsDisplay() {
@@ -133,10 +150,6 @@ public class PatientDashboardController {
             }
         }
     }
-    
-    
-    
-    
 
     private void updateWelcomeMessage() {
         if (loggedInPatient != null) {
@@ -288,27 +301,17 @@ public class PatientDashboardController {
     }
 
     private String getDoctorNameById(String doctorId) {
-        try {
-            // Load doctor list from JSON file
-            File file = new File("data/Doctors.json");
-
-            if (!file.exists()) {
-                return "Unknown Doctor";
+        if (doctorId == null) return "Unknown";
+        
+        DoctorDAO doctorDAO = new DoctorDAO();
+        List<Doctor> doctors = doctorDAO.loadDoctors();
+        
+        for (Doctor doctor : doctors) {
+            if (doctor.getId() != null && doctor.getId().equals(doctorId)) {
+                return doctor.getName();
             }
-    
-            InputStream input = new FileInputStream(file);
-            ObjectMapper mapper = new ObjectMapper();
-            List<Doctor> doctors = Arrays.asList(mapper.readValue(input, Doctor[].class));
-    
-            // Find doctor with matching ID
-            for (Doctor doctor : doctors) {
-                if (doctor.getId().equals(doctorId)) {
-                    return doctor.getName();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return "Unknown Doctor";  // Fallback if doctor not found
+        
+        return "Unknown";
     }
 }

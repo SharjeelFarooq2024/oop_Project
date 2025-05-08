@@ -30,4 +30,12 @@
   "age" : 0,
   "feedbacks" : [ ],
   "vitalSigns" : [ ]
+}, {
+  "name" : "Humza",
+  "id" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+  "email" : "humza@gmail.com",
+  "password" : "password",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ]
 } ]

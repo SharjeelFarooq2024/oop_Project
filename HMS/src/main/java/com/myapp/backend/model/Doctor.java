@@ -7,17 +7,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Doctor extends User {
     private String specialization;
-    private ArrayList<String> patientIds; // Changed from ArrayList<Patient>
+    private ArrayList<String> patientIds;
     private ArrayList<Appointment> appointments;
     private ArrayList<EmergencyAlert> emergencyAlerts;
     
     public Doctor() {
-        super(); // This will generate the ID
+        super();
         initializeLists();
     }
 
     public Doctor(String name, String email, String password, String specialization) {
-        super(name, email, password); // This will generate the ID
+        super(name, email, password);
         this.specialization = specialization;
         initializeLists();
     }
@@ -83,11 +83,36 @@ public class Doctor extends User {
     }
 
     public void addAppointment(Appointment appointment) {
-        if (appointment != null && appointment.getDoctorId().equals(this.getId())) {
-            if (this.appointments == null) {
-                this.appointments = new ArrayList<>();
-            }
-            appointments.add(appointment);
+        if (appointment == null || appointment.getDoctorId() == null || 
+            !appointment.getDoctorId().equals(this.getId())) {
+            return;
+        }
+        
+        // Initialize appointments list if null
+        if (this.appointments == null) {
+            this.appointments = new ArrayList<>();
+        }
+        
+        // Remove existing appointment if it exists
+        appointments.removeIf(existingAppointment -> 
+            existingAppointment != null && 
+            existingAppointment.getAppointmentId() != null &&
+            existingAppointment.getAppointmentId().equals(appointment.getAppointmentId())
+        );
+        
+        // Add the new appointment
+        appointments.add(appointment);
+
+        // Initialize patientIds list if null
+        if (this.patientIds == null) {
+            this.patientIds = new ArrayList<>();
+        }
+        
+        // Add patient ID if not already present and the appointment is not rejected
+        if (appointment.getPatientId() != null && 
+            !this.patientIds.contains(appointment.getPatientId()) && 
+            !"Rejected".equalsIgnoreCase(appointment.getStatus())) {
+            this.patientIds.add(appointment.getPatientId());
         }
     }
 
