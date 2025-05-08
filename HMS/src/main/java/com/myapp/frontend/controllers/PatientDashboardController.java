@@ -72,22 +72,18 @@ public class PatientDashboardController {
 
     private void loadAppointments() {
         if (loggedInPatient != null) {
+            // Clear existing appointments
+            appointmentsVBox.getChildren().clear();
+            
+            // Add a header for appointments
+            Text headerText = new Text("Your Appointments");
+            headerText.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+            appointmentsVBox.getChildren().add(headerText);
+            
             // Fetch appointments for the logged-in patient
             List<Appointment> appointments = AppointmentService.getAppointmentsForPatient(loggedInPatient.getId());
             
-            // Sort appointments by date and time in descending order (latest first)
-            appointments.sort((a1, a2) -> {
-                // First compare dates in descending order
-                int dateCompare = a2.getDate().compareTo(a1.getDate());
-                if (dateCompare != 0) {
-                    return dateCompare;
-                }
-                // If dates are equal, compare times in descending order
-                return a2.getTime().compareTo(a1.getTime());
-            });
-            
-            // Clear the current list of appointments
-            appointmentsVBox.getChildren().clear();
+            // Already sorted in descending order by AppointmentService
             
             DoctorDAO doctorDAO = new DoctorDAO();
             List<Doctor> allDoctors = doctorDAO.loadDoctors();
@@ -105,19 +101,37 @@ public class PatientDashboardController {
                     }
                 }
                 
-                // Create a label for each appointment and add it to the VBox
+                // Create a styled box for each appointment
                 VBox appointmentBox = new VBox();
                 appointmentBox.setSpacing(5);
-                appointmentBox.getStyleClass().add("appointment-box");
+                appointmentBox.setPadding(new javafx.geometry.Insets(10));
+                appointmentBox.setStyle("-fx-background-color: #f5f5f5; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;");
                 
                 Text doctorText = new Text("Doctor: " + doctorName);
+                doctorText.setStyle("-fx-font-weight: bold;");
+                
                 Text dateText = new Text("Date: " + appointment.getDate());
                 Text timeText = new Text("Time: " + appointment.getTime());
+                
                 Text statusText = new Text("Status: " + appointment.getStatus());
+                statusText.setStyle("-fx-font-weight: bold; " + 
+                    (appointment.getStatus().equals("Scheduled") ? "-fx-fill: green;" :
+                    appointment.getStatus().equals("Pending") ? "-fx-fill: orange;" :
+                    appointment.getStatus().equals("Rejected") ? "-fx-fill: red;" : ""));
+                
                 Text descText = new Text("Reason: " + appointment.getDescription());
                 
                 appointmentBox.getChildren().addAll(doctorText, dateText, timeText, statusText, descText);
+                
+                // Add spacing between appointments
+                VBox.setMargin(appointmentBox, new javafx.geometry.Insets(0, 0, 10, 0));
                 appointmentsVBox.getChildren().add(appointmentBox);
+            }
+            
+            if (appointments.isEmpty()) {
+                Text noAppointmentsText = new Text("No appointments scheduled");
+                noAppointmentsText.setStyle("-fx-font-style: italic;");
+                appointmentsVBox.getChildren().add(noAppointmentsText);
             }
         }
     }

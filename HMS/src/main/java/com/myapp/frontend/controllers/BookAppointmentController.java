@@ -2,6 +2,7 @@ package com.myapp.frontend.controllers;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -133,14 +134,32 @@ public class BookAppointmentController {
         String reason = reasonField.getText();
 
         try {
-            // Validate input
-            if (selectedDoctor == null || selectedDate == null || selectedTime == null || reason.isBlank()) {
-                showAlert(Alert.AlertType.ERROR, "Please fill in all fields before booking.");
+            // Validate input with specific error messages
+            if (selectedDoctor == null) {
+                showAlert(Alert.AlertType.ERROR, "Please select a doctor.");
+                return;
+            }
+            if (selectedDate == null) {
+                showAlert(Alert.AlertType.ERROR, "Please select an appointment date.");
+                return;
+            }
+            if (selectedTime == null) {
+                showAlert(Alert.AlertType.ERROR, "Please select an appointment time.");
+                return;
+            }
+            if (reason == null || reason.trim().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Please provide a reason for the appointment.");
                 return;
             }
 
             if (selectedDate.isBefore(LocalDate.now())) {
                 showAlert(Alert.AlertType.ERROR, "Cannot book appointments for past dates.");
+                return;
+            }
+
+            // Create and validate Appointment object
+            if (loggedInPatient == null || loggedInPatient.getId() == null) {
+                showAlert(Alert.AlertType.ERROR, "Session error: Patient information not found. Please try logging in again.");
                 return;
             }
 
@@ -154,16 +173,12 @@ public class BookAppointmentController {
             appointment.setTime(selectedTime);
             appointment.setDescription(reason);
 
-            // Save appointment and sync with doctor's data
+            // Save appointment and handle response
             AppointmentStatus status = appointmentDAO.addAppointment(appointment);
             
             switch (status) {
                 case SUCCESS:
-                    // Manually update the doctor's data
-                    selectedDoctor.addAppointment(appointment);
-                    selectedDoctor.addPatientId(loggedInPatient.getId());
-                    doctorDAO.updateDoctor(selectedDoctor);
-                    
+                    // Show success message
                     Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                     successAlert.setTitle("Success");
                     successAlert.setHeaderText("Appointment Booked Successfully!");
@@ -185,16 +200,22 @@ public class BookAppointmentController {
                     break;
                     
                 case DUPLICATE:
-                    showAlert(Alert.AlertType.WARNING, "This doctor is already booked at the selected date and time.");
+                    showAlert(Alert.AlertType.WARNING, 
+                        String.format("Dr. %s is already booked at %s on %s.\nPlease select a different time slot.", 
+                            selectedDoctor.getName(), selectedTime, selectedDate));
                     break;
                     
                 case ERROR:
-                    showAlert(Alert.AlertType.ERROR, "An unexpected error occurred while booking the appointment.");
+                    showAlert(Alert.AlertType.ERROR, 
+                        "An error occurred while booking the appointment. Please try again.\n" +
+                        "If the problem persists, please contact support.");
                     break;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error booking appointment: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, 
+                "An unexpected error occurred: " + e.getMessage() + "\n" +
+                "Please try again or contact support if the problem persists.");
         }
     }
     

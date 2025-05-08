@@ -1,11 +1,7 @@
 package com.myapp.backend.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import com.myapp.backend.dao.AppointmentDAO;
 import com.myapp.backend.model.Appointment;
-import com.myapp.backend.model.Doctor;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,17 +11,16 @@ public class AppointmentService {
 
     // Fetch appointments for a specific patient
     public static List<Appointment> getAppointmentsForPatient(String patientId) {
-        return appointmentDAO.findByPatientId(patientId);
+        List<Appointment> appointments = appointmentDAO.findByPatientId(patientId);
+        // Already sorted in descending order by DAO, no need to sort again
+        return appointments;
     }
 
     public static boolean bookAppointment(Appointment appointment) {
         try {
             AppointmentDAO.AppointmentStatus status = appointmentDAO.addAppointment(appointment);
-            System.out.println("Appointment booking status: " + status); // DEBUG
-            if (status == AppointmentDAO.AppointmentStatus.SUCCESS) {
-                return true;
-            }
-            return false;
+            System.out.println("Appointment booking status: " + status);
+            return status == AppointmentDAO.AppointmentStatus.SUCCESS;
         } catch (Exception e) {
             System.err.println("Error booking appointment: " + e.getMessage());
             e.printStackTrace();
@@ -58,13 +53,6 @@ public class AppointmentService {
 
     // For manual syncing via command line
     public static void main(String[] args) {
-        System.out.println("Starting appointment synchronization...");
-        try {
-            syncAppointments();
-        } catch (Exception e) {
-            System.err.println("Error during synchronization: " + e.getMessage());
-            e.printStackTrace();
-            System.exit(1);
-        }
+        forceSyncAppointments();
     }
 }

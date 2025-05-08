@@ -98,20 +98,41 @@ public class DoctorDAO {
 
         for (int i = 0; i < doctors.size(); i++) {
             if (doctor.getId() != null && doctor.getId().equals(doctors.get(i).getId())) {
-                // Preserve existing lists if they're empty in the update
+                // Preserve existing lists if they're null in the update
                 Doctor existingDoctor = doctors.get(i);
-                if (doctor.getAppointments() == null || doctor.getAppointments().isEmpty()) {
+                
+                // Handle patientIds
+                if (doctor.getPatientIds() == null) {
+                    doctor.setPatientIds(existingDoctor.getPatientIds());
+                } else {
+                    // Merge patientIds from existingDoctor and doctor object
+ArrayList<String> mergedPatientIds = new ArrayList<>();
+if (existingDoctor.getPatientIds() != null) {
+    mergedPatientIds.addAll(existingDoctor.getPatientIds());
+}
+if (doctor.getPatientIds() != null) {
+    for (String patientId : doctor.getPatientIds()) {
+        if (!mergedPatientIds.contains(patientId)) {
+            mergedPatientIds.add(patientId);
+        }
+    }
+}
+doctor.setPatientIds(mergedPatientIds);
+
+                }
+                
+                // Handle appointments
+                if (doctor.getAppointments() == null) {
                     doctor.setAppointments(existingDoctor.getAppointments());
                 }
-                if (doctor.getPatientIds() == null || doctor.getPatientIds().isEmpty()) {
-                    doctor.setPatientIds(existingDoctor.getPatientIds());
-                }
+                
                 doctors.set(i, doctor);
                 found = true;
+                System.out.println("Updated doctor " + doctor.getName() + " with patientIds: " + 
+                    (doctor.getPatientIds() != null ? doctor.getPatientIds().toString() : "null"));
                 break;
             }
         }
-        
 
         if (!found) {
             doctors.add(doctor);

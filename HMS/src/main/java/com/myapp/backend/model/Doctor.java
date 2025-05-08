@@ -29,13 +29,27 @@ public class Doctor extends User {
     }
 
     public void addPatientId(String patientId) {
+        if (patientId == null) {
+            System.out.println("Warning: Attempted to add null patientId");
+            return;
+        }
+
+        // Initialize the list if null
         if (this.patientIds == null) {
             this.patientIds = new ArrayList<>();
+            System.out.println("Initialized new patientIds list for doctor: " + this.getName());
         }
+
+        // Add the patient ID if not already present
         if (!this.patientIds.contains(patientId)) {
-            patientIds.add(patientId);
+            this.patientIds.add(patientId);
+            System.out.println("Added patient ID " + patientId + " to doctor: " + this.getName());
+        } else {
+            System.out.println("Patient ID " + patientId + " already exists for doctor: " + this.getName());
         }
     }
+    
+
 
     public void removePatientId(String patientId) {
         if (patientIds != null) {
@@ -88,9 +102,12 @@ public class Doctor extends User {
             return;
         }
         
-        // Initialize appointments list if null
+        // Initialize lists if null
         if (this.appointments == null) {
             this.appointments = new ArrayList<>();
+        }
+        if (this.patientIds == null) {
+            this.patientIds = new ArrayList<>();
         }
         
         // Remove existing appointment if it exists
@@ -103,16 +120,12 @@ public class Doctor extends User {
         // Add the new appointment
         appointments.add(appointment);
 
-        // Initialize patientIds list if null
-        if (this.patientIds == null) {
-            this.patientIds = new ArrayList<>();
-        }
-        
-        // Add patient ID if not already present and the appointment is not rejected
-        if (appointment.getPatientId() != null && 
-            !this.patientIds.contains(appointment.getPatientId()) && 
-            !"Rejected".equalsIgnoreCase(appointment.getStatus())) {
-            this.patientIds.add(appointment.getPatientId());
+        // Always add patient ID for pending appointments
+        if (appointment.getPatientId() != null && appointment.isPending()) {
+            if (!patientIds.contains(appointment.getPatientId())) {
+                patientIds.add(appointment.getPatientId());
+                System.out.println("Added patient ID " + appointment.getPatientId() + " to doctor's patients list");
+            }
         }
     }
 
