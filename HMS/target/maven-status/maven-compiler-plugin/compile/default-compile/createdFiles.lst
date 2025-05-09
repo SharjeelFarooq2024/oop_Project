@@ -1,6 +1,7 @@
 com\myapp\backend\dao\VitalSignDAO$1.class
 com\myapp\backend\services\NotificationService.class
 com\myapp\frontend\controllers\DoctorDashboardController$1.class
+com\myapp\backend\model\Medication.class
 com\myapp\frontend\controllers\EmergencyAlertsController.class
 com\myapp\backend\model\Appointment.class
 com\myapp\backend\services\SessionManager.class
@@ -18,6 +19,7 @@ com\myapp\frontend\controllers\PatientDashboardController.class
 com\myapp\frontend\controllers\DoctorPatientsController$PatientViewModel.class
 com\myapp\backend\services\AppointmentService.class
 com\myapp\backend\model\Doctor.class
+com\myapp\backend\services\MedicalRecordsService.class
 com\myapp\backend\model\Patient.class
 com\myapp\frontend\controllers\DoctorAppointmentsController.class
 com\myapp\frontend\controllers\DoctorDashboardController.class
@@ -28,6 +30,7 @@ com\myapp\frontend\controllers\UploadVitalsController.class
 com\myapp\backend\model\User.class
 com\myapp\backend\model\ChatMessage.class
 com\myapp\backend\dao\PatientDAO$1.class
+com\myapp\backend\services\FeedbackService.class
 com\myapp\frontend\controllers\ViewReportsController.class
 com\myapp\frontend\controllers\BookAppointmentController$2.class
 com\myapp\frontend\controllers\BookAppointmentController.class
@@ -35,6 +38,7 @@ com\myapp\frontend\controllers\RegisterController.class
 com\myapp\backend\dao\AppointmentDAO$AppointmentStatus.class
 com\myapp\frontend\controllers\SignupController.class
 com\myapp\backend\util\FileUtil.class
+com\myapp\backend\services\MedicalRecordsService$MedicalSummary.class
 com\myapp\backend\model\Feedback.class
 com\myapp\backend\dao\DoctorDAO$1.class
 com\myapp\frontend\controllers\LoginController.class

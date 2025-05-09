@@ -1,8 +1,10 @@
 package com.myapp.frontend.controllers;
 
+import com.myapp.backend.dao.VitalSignDAO;
 import com.myapp.backend.model.Doctor;
 import com.myapp.backend.model.Feedback;
 import com.myapp.backend.model.Patient;
+import com.myapp.backend.model.VitalSign;
 import com.myapp.backend.services.NotificationService;
 
 import javafx.fxml.FXML;
@@ -15,32 +17,60 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser;
 
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
+import java.util.List;
+import java.io.IOException;
+import java.io.File;
 
 public class PatientDetailsController implements Initializable {
 
     @FXML private Label patientNameLabel;
     @FXML private Label patientIdLabel;
     @FXML private Label patientEmailLabel;
+    @FXML private Label patientAgeLabel;
+    
+    // Vital signs display
+    @FXML private Label heartRateLabel;
+    @FXML private Label bloodPressureLabel;
+    @FXML private Label temperatureLabel;
+    @FXML private Label oxygenLevelLabel;
+    @FXML private Label vitalDateLabel;
     
     @FXML private TextArea feedbackTextArea;
     @FXML private TextField medicationField;
+    @FXML private TextField testsField; // For prescribing tests
     @FXML private Button submitFeedbackButton;
     @FXML private Button backButton;
+    @FXML private Button exportRecordsButton;
     
     @FXML private ListView<String> previousFeedbackListView;
+    @FXML private ListView<String> vitalsHistoryListView;
     
+    @FXML private TabPane medicalTabPane;
+    @FXML private Tab vitalsTab;
+    @FXML private Tab historyTab;
+    @FXML private Tab newFeedbackTab;
+    
+    @FXML private TextField searchHistoryField;
+
     private Patient currentPatient;
     private Doctor currentDoctor;
     
+    // Modify the initialize method to remove the export records functionality
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         submitFeedbackButton.setOnAction(this::handleSubmitFeedback);
         backButton.setOnAction(this::handleBack);
+        
+        // Only setup search functionality
+        if (searchHistoryField != null) {
+            setupSearchFunctionality();
+        }
     }
     
     public void setPatientAndDoctor(Patient patient, Doctor doctor) {
@@ -49,6 +79,8 @@ public class PatientDetailsController implements Initializable {
         
         // Update the UI with patient information
         updatePatientInfo();
+        loadPatientVitals();
+        loadVitalsHistory();
         loadPreviousFeedback();
     }
     
@@ -57,7 +89,53 @@ public class PatientDetailsController implements Initializable {
             patientNameLabel.setText(currentPatient.getName());
             patientIdLabel.setText(currentPatient.getId());
             patientEmailLabel.setText(currentPatient.getEmail());
+            patientAgeLabel.setText(String.valueOf(currentPatient.getAge()));
         }
+    }
+    
+    private void loadPatientVitals() {
+        VitalSign latestVitals = VitalSignDAO.getLatestVitalByPatientId(currentPatient.getId());
+        
+        if (latestVitals != null) {
+            heartRateLabel.setText(String.format("%.1f bpm", latestVitals.getHeartRate()));
+            bloodPressureLabel.setText(latestVitals.getBloodPressure());
+            temperatureLabel.setText(String.format("%.1f °C", latestVitals.getTemperature()));
+            oxygenLevelLabel.setText(String.format("%.1f%%", latestVitals.getOxygenLevel()));
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            vitalDateLabel.setText("Recorded: " + latestVitals.getTimestamp().format(formatter));
+        } else {
+            heartRateLabel.setText("No data");
+            bloodPressureLabel.setText("No data");
+            temperatureLabel.setText("No data");
+            oxygenLevelLabel.setText("No data");
+            vitalDateLabel.setText("No vitals recorded");
+        }
+    }
+    
+    private void loadVitalsHistory() {
+        List<VitalSign> vitalsHistory = VitalSignDAO.getVitalsByPatientId(currentPatient.getId());
+        ObservableList<String> vitalsItems = FXCollections.observableArrayList();
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        
+        if (vitalsHistory == null || vitalsHistory.isEmpty()) {
+            vitalsItems.add("No vital signs recorded");
+        } else {
+            for (VitalSign vital : vitalsHistory) {
+                String vitalEntry = String.format(
+                    "[%s] BP: %s, HR: %.1f bpm, Temp: %.1f °C, O₂: %.1f%%",
+                    vital.getTimestamp().format(formatter),
+                    vital.getBloodPressure(),
+                    vital.getHeartRate(),
+                    vital.getTemperature(),
+                    vital.getOxygenLevel()
+                );
+                vitalsItems.add(vitalEntry);
+            }
+        }
+        
+        vitalsHistoryListView.setItems(vitalsItems);
     }
     
     private void loadPreviousFeedback() {
@@ -66,13 +144,25 @@ public class PatientDetailsController implements Initializable {
             
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             
-            for (Feedback feedback : currentPatient.getFeedbacks()) {
-                String formattedTime = feedback.getTimestamp().format(formatter);
-                String medicationInfo = feedback.getMedicationPrescribed() != null ? 
-                        " - Medication: " + feedback.getMedicationPrescribed() : "";
-                
-                feedbackItems.add(formattedTime + " - Dr. " + feedback.getDoctorName() + medicationInfo +
-                        "\n" + feedback.getComment());
+            if (currentPatient.getFeedbacks().isEmpty()) {
+                feedbackItems.add("No previous medical records available");
+            } else {
+                for (Feedback feedback : currentPatient.getFeedbacks()) {
+                    StringBuilder feedbackBuilder = new StringBuilder();
+                    feedbackBuilder.append("Date: ").append(feedback.getTimestamp().format(formatter))
+                                  .append("\nDoctor: ").append(feedback.getDoctorName())
+                                  .append("\nFeedback: ").append(feedback.getComment());
+                    
+                    if (feedback.getMedicationPrescribed() != null && !feedback.getMedicationPrescribed().isEmpty()) {
+                        feedbackBuilder.append("\nPrescribed Medication: ")
+                                      .append(feedback.getMedicationPrescribed());
+                    }
+                    
+                    // Add a separator between entries for better readability
+                    feedbackBuilder.append("\n----------------------------------------");
+                    
+                    feedbackItems.add(feedbackBuilder.toString());
+                }
             }
             
             previousFeedbackListView.setItems(feedbackItems);
@@ -82,51 +172,74 @@ public class PatientDetailsController implements Initializable {
     private void handleSubmitFeedback(ActionEvent event) {
         String feedbackText = feedbackTextArea.getText();
         String medication = medicationField.getText();
+        String tests = testsField.getText();
         
         if (feedbackText.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Feedback cannot be empty");
             return;
         }
         
+        // Add tests to feedback if provided
+        if (tests != null && !tests.isEmpty()) {
+            feedbackText += "\n\nPrescribed Tests: " + tests;
+        }
+        
         // Add feedback to patient
         if (currentDoctor != null && currentPatient != null) {
-            currentDoctor.giveFeedback(currentPatient, feedbackText, medication);
+            Feedback feedback = new Feedback(feedbackText, currentDoctor.getName(), medication, LocalDateTime.now());
+            currentPatient.addFeedback(feedback);
             
-            // Send notification to patient
-            NotificationService.sendNotification(currentPatient.getId(), 
-                    "New feedback from Dr. " + currentDoctor.getName());
-            
-            // If patient has email, send email notification too
-            if (currentPatient.getEmail() != null && !currentPatient.getEmail().isEmpty()) {
-                NotificationService.sendEmailNotification(
-                    currentPatient.getEmail(),
-                    "New Medical Feedback",
-                    "Dear " + currentPatient.getName() + ",\n\n" +
-                    "Dr. " + currentDoctor.getName() + " has provided new feedback on your medical condition.\n\n" +
-                    "Please log in to view the details.\n\n" +
-                    "Best regards,\nHospital Management System"
-                );
+            // Save the updated patient data
+            try {
+                new com.myapp.backend.dao.PatientDAO().updatePatient(currentPatient);
+                
+                // Send notification to patient
+                NotificationService.sendNotification(currentPatient.getId(), 
+                        "New feedback from Dr. " + currentDoctor.getName());
+                
+                // If patient has email, send email notification too
+                if (currentPatient.getEmail() != null && !currentPatient.getEmail().isEmpty()) {
+                    String subject = "New Medical Feedback";
+                    String message = "Dear " + currentPatient.getName() + ",\n\n" +
+                                    "Dr. " + currentDoctor.getName() + " has provided new feedback on your health.\n" +
+                                    "Please check your account for details.\n\n" +
+                                    "HMS Team";
+                    NotificationService.sendEmailNotification(currentPatient.getEmail(), subject, message);
+                }
+                
+                // Refresh the feedback list to show the new entry
+                loadPreviousFeedback();
+                
+                // Clear the input fields
+                feedbackTextArea.clear();
+                medicationField.clear();
+                testsField.clear();
+                
+                showAlert(Alert.AlertType.INFORMATION, "Feedback submitted successfully");
+                
+                // Switch to history tab to show the new feedback
+                medicalTabPane.getSelectionModel().select(historyTab);
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Error saving feedback: " + e.getMessage());
             }
-            
-            // Refresh the feedback list
-            loadPreviousFeedback();
-            
-            // Clear the input fields
-            feedbackTextArea.clear();
-            medicationField.clear();
-            
-            showAlert(Alert.AlertType.INFORMATION, "Feedback submitted successfully");
         }
     }
     
     private void handleBack(ActionEvent event) {
         try {
-            // Close this window and return to doctor dashboard
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DoctorPatients.fxml"));
+            Parent root = loader.load();
+            DoctorPatientsController controller = loader.getController();
+            controller.setLoggedInDoctor(currentDoctor);
+            
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.close();
+            stage.setScene(new Scene(root));
+            stage.setTitle("My Patients");
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error returning to dashboard: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error returning to patients list: " + e.getMessage());
         }
     }
     
@@ -136,5 +249,67 @@ public class PatientDetailsController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    // Remove the handleExportRecords method entirely, or replace with this simplified version
+    private void handleExportRecords() {
+        showAlert(Alert.AlertType.INFORMATION, "Medical history export is not available in this version.");
+    }
+
+    private void setupSearchFunctionality() {
+        searchHistoryField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null || newValue.isEmpty()) {
+                loadPreviousFeedback(); // Reset to show all
+            } else {
+                filterFeedbackHistory(newValue.toLowerCase());
+            }
+        });
+    }
+
+    // Add the implementation for filterFeedbackHistory method
+    private void filterFeedbackHistory(String searchTerm) {
+        if (currentPatient == null || currentPatient.getFeedbacks() == null) {
+            return;
+        }
+        
+        ObservableList<String> filteredItems = FXCollections.observableArrayList();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        
+        for (Feedback feedback : currentPatient.getFeedbacks()) {
+            // Check if any field contains the search term
+            boolean matches = feedback.getComment().toLowerCase().contains(searchTerm) || 
+                             feedback.getDoctorName().toLowerCase().contains(searchTerm) ||
+                             (feedback.getMedicationPrescribed() != null && 
+                              feedback.getMedicationPrescribed().toLowerCase().contains(searchTerm));
+            
+            if (matches) {
+                StringBuilder feedbackBuilder = new StringBuilder();
+                feedbackBuilder.append("Date: ").append(feedback.getTimestamp().format(formatter))
+                              .append("\nDoctor: ").append(feedback.getDoctorName())
+                              .append("\nFeedback: ").append(feedback.getComment());
+                
+                if (feedback.getMedicationPrescribed() != null && !feedback.getMedicationPrescribed().isEmpty()) {
+                    feedbackBuilder.append("\nPrescribed Medication: ")
+                                  .append(feedback.getMedicationPrescribed());
+                }
+                
+                feedbackBuilder.append("\n----------------------------------------");
+                filteredItems.add(feedbackBuilder.toString());
+            }
+        }
+        
+        if (filteredItems.isEmpty()) {
+            filteredItems.add("No matching records found.");
+        }
+        
+        previousFeedbackListView.setItems(filteredItems);
+    }
+
+    // Add this method to select the feedback tab directly
+    public void selectFeedbackTab() {
+        // Check to prevent NullPointerException if tabs aren't fully initialized
+        if (medicalTabPane != null && newFeedbackTab != null) {
+            medicalTabPane.getSelectionModel().select(newFeedbackTab);
+        }
     }
 }

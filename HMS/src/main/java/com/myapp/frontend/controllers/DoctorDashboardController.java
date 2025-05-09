@@ -1,44 +1,49 @@
 package com.myapp.frontend.controllers;
 
+// Standard Java imports
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import com.myapp.backend.model.*;
-import com.myapp.backend.services.*;
-import com.myapp.backend.dao.AppointmentDAO;
-import com.myapp.backend.dao.PatientDAO;  // Add this import
-// Remove the problematic import and reference the class with full package path when needed
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
+// JavaFX imports
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
+import javafx.scene.layout.HBox;
+import javafx.geometry.Pos;
 import javafx.util.Callback;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.net.URL;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-
-// Add this import at the top with your other imports
-import com.myapp.frontend.controllers.DoctorPatientsController;
+// Application-specific imports
+import com.myapp.backend.model.Appointment;
+import com.myapp.backend.model.Doctor;
+import com.myapp.backend.model.Patient; // Assuming Patient model might be needed for patient names
+import com.myapp.backend.model.EmergencyAlert; // For emergency alerts list
+import com.myapp.backend.dao.AppointmentDAO;
+import com.myapp.backend.dao.PatientDAO;
+import com.myapp.backend.services.SessionManager; // For logout or getting current session
 
 public class DoctorDashboardController implements Initializable {
 
     private Doctor loggedInDoctor;
     private AppointmentDAO appointmentDAO = new AppointmentDAO();
+    private PatientDAO patientDAO = new PatientDAO(); // To fetch patient names for appointments
 
     @FXML private Label doctorNameLabel;
     @FXML private Label specializationLabel;
@@ -46,559 +51,417 @@ public class DoctorDashboardController implements Initializable {
     @FXML private Label statusLabel;
     @FXML private Label totalPatientsLabel;
     @FXML private Label upcomingAppointmentsLabel;
-    
+
     @FXML private Button logoutButton;
     @FXML private Button dashboardButton;
     @FXML private Button appointmentsButton;
     @FXML private Button patientsButton;
     @FXML private Button emergencyAlertsButton;
     @FXML private Button videoCallButton;
-    
+
+    // Appointment requests (pending appointments)
     @FXML private TableView<AppointmentViewModel> pendingAppointmentsTable;
     @FXML private TableColumn<AppointmentViewModel, String> pendingPatientColumn;
     @FXML private TableColumn<AppointmentViewModel, String> pendingDateColumn;
     @FXML private TableColumn<AppointmentViewModel, String> pendingTimeColumn;
-    
+    @FXML private TableColumn<AppointmentViewModel, Void> pendingActionsColumn;
+
+    // Scheduled appointments
+    @FXML private TableView<AppointmentViewModel> scheduledAppointmentsTable;
+    @FXML private TableColumn<AppointmentViewModel, String> scheduledPatientColumn;
+    @FXML private TableColumn<AppointmentViewModel, String> scheduledDateColumn;
+    @FXML private TableColumn<AppointmentViewModel, String> scheduledTimeColumn;
+    @FXML private TableColumn<AppointmentViewModel, String> scheduledStatusColumn;
+
+    // Today's appointments
     @FXML private TableView<AppointmentViewModel> todaysAppointmentsTable;
     @FXML private TableColumn<AppointmentViewModel, String> todayPatientColumn;
     @FXML private TableColumn<AppointmentViewModel, String> todayTimeColumn;
     @FXML private TableColumn<AppointmentViewModel, String> todayStatusColumn;
-    
+
     @FXML private ListView<String> emergencyAlertsList;
-    
-    private ObservableList<AppointmentViewModel> pendingAppointments = FXCollections.observableArrayList();
-    private ObservableList<AppointmentViewModel> todaysAppointments = FXCollections.observableArrayList();
-    private ObservableList<String> emergencyAlerts = FXCollections.observableArrayList();
+
+    private ObservableList<AppointmentViewModel> pendingAppointmentsData = FXCollections.observableArrayList();
+    private ObservableList<AppointmentViewModel> scheduledAppointmentsData = FXCollections.observableArrayList();
+    private ObservableList<AppointmentViewModel> todaysAppointmentsData = FXCollections.observableArrayList();
+    private ObservableList<String> emergencyAlertsData = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Initialize table columns for pending appointments
-        if (pendingPatientColumn != null) {
-            pendingPatientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
-            pendingDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-            pendingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
-            pendingAppointmentsTable.setItems(pendingAppointments);
+        // Setup table columns for pending appointments
+        pendingPatientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+        pendingDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        pendingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
+        setupPendingActionsColumn();
+        pendingAppointmentsTable.setItems(pendingAppointmentsData);
+
+        // Setup table columns for scheduled appointments
+        scheduledPatientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+        scheduledDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        scheduledTimeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
+        scheduledStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        scheduledAppointmentsTable.setItems(scheduledAppointmentsData);
+
+        // Setup table columns for today's appointments
+        todayPatientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+        todayTimeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
+        todayStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        todaysAppointmentsTable.setItems(todaysAppointmentsData);
+
+        // Setup emergency alerts list
+        emergencyAlertsList.setItems(emergencyAlertsData);
+
+        // Setup button actions
+        logoutButton.setOnAction(this::handleLogout);
+        appointmentsButton.setOnAction(this::navigateToAppointments);
+        patientsButton.setOnAction(this::navigateToPatients);
+        emergencyAlertsButton.setOnAction(this::navigateToEmergencyAlerts);
+        videoCallButton.setOnAction(this::navigateToVideoCall);
+        dashboardButton.setOnAction(event -> {
+            if (loggedInDoctor != null) {
+                loadDashboardData(); // Refresh data on dashboard button click
+            } else {
+                showAlert(Alert.AlertType.INFORMATION, "Not Logged In", "Please log in to view dashboard details.");
+            }
+        });
+
+        statusLabel.setText("Status: Initializing...");
+        
+        // Add this code to handle patient navigation
+        patientsButton.setOnAction(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DoctorPatients.fxml"));
+                Parent patientsView = loader.load();
+                DoctorPatientsController controller = loader.getController();
+                controller.setLoggedInDoctor(loggedInDoctor);
+                
+                Stage stage = (Stage) patientsButton.getScene().getWindow();
+                stage.setScene(new Scene(patientsView));
+                stage.setTitle("My Patients");
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Failed to open patients view: " + e.getMessage());
+            }
+        });
+    }
+
+    private void setupPendingActionsColumn() {
+        pendingActionsColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button acceptButton = new Button("Accept");
+            private final Button rejectButton = new Button("Reject");
+            private final HBox pane = new HBox(5, acceptButton, rejectButton);
+            
+            {
+                pane.setAlignment(Pos.CENTER);
+                acceptButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+                rejectButton.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
+                
+                acceptButton.setOnAction(event -> {
+                    AppointmentViewModel appointment = getTableView().getItems().get(getIndex());
+                    acceptAppointment(appointment);
+                });
+                
+                rejectButton.setOnAction(event -> {
+                    AppointmentViewModel appointment = getTableView().getItems().get(getIndex());
+                    rejectAppointment(appointment);
+                });
+            }
+            
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : pane);
+            }
+        });
+    }
+
+    private void acceptAppointment(AppointmentViewModel appointmentVM) {
+        try {
+            Appointment appointment = appointmentDAO.getAllAppointments()
+                .stream()
+                .filter(a -> a.getAppointmentId().equals(appointmentVM.getAppointmentId()))
+                .findFirst()
+                .orElse(null);
+                
+            if (appointment != null) {
+                // Update status
+                appointment.setStatus("Scheduled");
+                appointment.setPending(false);
+                appointment.setScheduled(true);
+                
+                // Update in database
+                appointmentDAO.updateAppointment(appointment);
+                
+                // Show success message
+                showAlert(Alert.AlertType.INFORMATION, "Appointment Accepted", 
+                    "The appointment has been scheduled successfully.");
+                
+                // Refresh data
+                loadDashboardData();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", 
+                "Failed to accept appointment: " + e.getMessage());
         }
-        
-        // Initialize table columns for today's appointments
-        if (todayPatientColumn != null) {
-            todayPatientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
-            todayTimeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
-            todayStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-            todaysAppointmentsTable.setItems(todaysAppointments);
+    }
+
+    private void rejectAppointment(AppointmentViewModel appointmentVM) {
+        try {
+            Appointment appointment = appointmentDAO.getAllAppointments()
+                .stream()
+                .filter(a -> a.getAppointmentId().equals(appointmentVM.getAppointmentId()))
+                .findFirst()
+                .orElse(null);
+                
+            if (appointment != null) {
+                // Update status
+                appointment.setStatus("Rejected");
+                appointment.setPending(false);
+                appointment.setScheduled(false);
+                
+                // Update in database
+                appointmentDAO.updateAppointment(appointment);
+                
+                // Show success message
+                showAlert(Alert.AlertType.INFORMATION, "Appointment Rejected", 
+                    "The appointment has been rejected.");
+                
+                // Refresh data
+                loadDashboardData();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", 
+                "Failed to reject appointment: " + e.getMessage());
         }
-        
-        // Set up emergency alerts
-        if (emergencyAlertsList != null) {
-            emergencyAlertsList.setItems(emergencyAlerts);
-        }
-        
-        // Add context menu to pending appointments for approve/reject
-        setupPendingAppointmentContextMenu();
-        
-        // Add context menu to emergency alerts for resolving
-        setupEmergencyAlertsContextMenu();
-        
-        // Set up button actions - Make sure this line is present
-        setupButtonActions();
     }
     
     public void setLoggedInDoctor(Doctor doctor) {
         this.loggedInDoctor = doctor;
+        SessionManager.setLoggedInDoctor(doctor); 
         updateDoctorInfo();
-        loadPendingAppointments();
-        loadTodaysAppointments();
-        loadEmergencyAlerts();
-        updateStatistics();
+        loadDashboardData();
     }
-    
+
     private void updateDoctorInfo() {
         if (loggedInDoctor != null) {
             doctorNameLabel.setText(loggedInDoctor.getName());
             specializationLabel.setText(loggedInDoctor.getSpecialization());
-            // Handle single-word names
-            String[] nameParts = loggedInDoctor.getName().split(" ");
-            String displayName = nameParts.length > 1 ? nameParts[1] : nameParts[0];
-            welcomeLabel.setText("Welcome back, " + displayName + "!");
+            welcomeLabel.setText("Welcome, " + loggedInDoctor.getName());
+            statusLabel.setText("Status: Online");
+        } else {
+            doctorNameLabel.setText("N/A");
+            specializationLabel.setText("N/A");
+            welcomeLabel.setText("Welcome");
+            statusLabel.setText("Status: Offline");
+             // Clear data if no doctor is logged in
+            pendingAppointmentsData.clear();
+            scheduledAppointmentsData.clear();
+            todaysAppointmentsData.clear();
+            emergencyAlertsData.clear();
+            totalPatientsLabel.setText("0");
+            upcomingAppointmentsLabel.setText("0");
         }
     }
-    
-    // Fix loadPendingAppointments method
+
+    private void loadDashboardData() {
+        if (loggedInDoctor == null) {
+            showAlert(Alert.AlertType.WARNING, "Data Load Error", "No doctor logged in. Cannot load dashboard data.");
+            return;
+        }
+        statusLabel.setText("Status: Loading data...");
+        loadPendingAppointments();
+        loadScheduledAppointments();
+        loadTodaysAppointments();
+        loadEmergencyAlerts();
+        updateSummaryMetrics();
+        statusLabel.setText("Status: Online");
+    }
+
     private void loadPendingAppointments() {
-        if (loggedInDoctor == null) return;
-        
-        try {
-            List<Appointment> allAppointments = appointmentDAO.getAllAppointments();
-            pendingAppointments.clear();
-            
-            for (Appointment appointment : allAppointments) {
-                if (appointment.getDoctorId().equals(loggedInDoctor.getId()) && 
-                    appointment.isPending()) {
-                    
-                    Patient patient = getPatientById(appointment.getPatientId());
-                    String patientName = patient != null ? patient.getName() : "Unknown Patient";
-                    
-                    pendingAppointments.add(new AppointmentViewModel(
-                        appointment.getAppointmentId(),
-                        appointment.getPatientId(), 
-                        patientName, 
-                        appointment.getDate(), 
-                        appointment.getTime(),
-                        appointment.getStatus()
-                    ));
-                }
-            }
-            
-            System.out.println("Loaded " + pendingAppointments.size() + " pending appointments");
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error loading pending appointments");
+        pendingAppointmentsData.clear();
+        if (loggedInDoctor != null) {
+            List<Appointment> appointments = appointmentDAO.getAllAppointments().stream()
+                    .filter(app -> loggedInDoctor.getId().equals(app.getDoctorId()) && "Pending".equalsIgnoreCase(app.getStatus()))
+                    .collect(Collectors.toList());
+            appointments.forEach(app -> {
+                Patient patient = patientDAO.findById(app.getPatientId());
+                String patientName = (patient != null) ? patient.getName() : "Unknown Patient";
+                pendingAppointmentsData.add(new AppointmentViewModel(app, patientName));
+            });
         }
     }
-    
-    // Fix loadTodaysAppointments method
+
+    private void loadScheduledAppointments() {
+        scheduledAppointmentsData.clear();
+        if (loggedInDoctor != null) {
+            List<Appointment> appointments = appointmentDAO.getAllAppointments().stream()
+                    .filter(app -> loggedInDoctor.getId().equals(app.getDoctorId()) && 
+                           "Scheduled".equalsIgnoreCase(app.getStatus()))
+                    .collect(Collectors.toList());
+            
+            for (Appointment app : appointments) {
+                Patient patient = patientDAO.findById(app.getPatientId());
+                String patientName = (patient != null) ? patient.getName() : "Unknown Patient";
+                scheduledAppointmentsData.add(new AppointmentViewModel(app, patientName));
+            }
+        }
+    }
+
     private void loadTodaysAppointments() {
-        if (loggedInDoctor == null) return;
-        
-        try {
-            List<Appointment> allAppointments = appointmentDAO.getAllAppointments();
-            todaysAppointments.clear();
-            
-            String today = java.time.LocalDate.now().toString();
-            
-            for (Appointment appointment : allAppointments) {
-                if (appointment.getDoctorId().equals(loggedInDoctor.getId()) && 
-                    appointment.getDate().equals(today)) {
-                    
-                    Patient patient = getPatientById(appointment.getPatientId());
-                    String patientName = patient != null ? patient.getName() : "Unknown Patient";
-                    todaysAppointments.add(new AppointmentViewModel(
-                        appointment.getAppointmentId(),
-                        appointment.getPatientId(), 
-                        patientName, 
-                        appointment.getDate(), 
-                        appointment.getTime(),
-                        appointment.getStatus()
-                    ));
-                }
-            }
-            
-            System.out.println("Loaded " + todaysAppointments.size() + " appointments for today");
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error loading today's appointments");
+        todaysAppointmentsData.clear();
+        if (loggedInDoctor != null) {
+            String todayDateStr = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+            List<Appointment> appointments = appointmentDAO.getAllAppointments().stream()
+                    .filter(app -> loggedInDoctor.getId().equals(app.getDoctorId()) && todayDateStr.equals(app.getDate()))
+                    .collect(Collectors.toList());
+            appointments.forEach(app -> {
+                Patient patient = patientDAO.findById(app.getPatientId());
+                String patientName = (patient != null) ? patient.getName() : "Unknown Patient";
+                todaysAppointmentsData.add(new AppointmentViewModel(app, patientName));
+            });
         }
     }
-    
-    // Fix loadEmergencyAlerts method
+
     private void loadEmergencyAlerts() {
-        if (loggedInDoctor == null) return;
-        
-        try {
-            List<EmergencyAlert> alerts = EmergencyAlertService.getDoctorUnresolvedAlerts(loggedInDoctor.getId());
-            emergencyAlerts.clear();
-            
-            // If no alerts found, add some sample data for demonstration
-            if (alerts.isEmpty()) {
-                // Create a sample emergency alert
-                EmergencyAlert sampleAlert = new EmergencyAlert(
-                    "p123", "Ali Khan", "Patient reporting severe chest pain"
-                );
-                alerts.add(sampleAlert);
-                
-                // Send to the doctor's alerts
-                List<EmergencyAlert> doctorAlerts = loggedInDoctor.getEmergencyAlerts();
-                if (doctorAlerts == null) {
-                    doctorAlerts = new ArrayList<>(); // This requires java.util.ArrayList import
-                    loggedInDoctor.setEmergencyAlerts(new ArrayList<>(doctorAlerts));
-                }
-                doctorAlerts.add(sampleAlert);
-            }
-            
-            for (EmergencyAlert alert : alerts) {
-                if (!alert.isResolved()) {
-                    String alertText = String.format("[URGENT] %s: %s", alert.getPatientName(), alert.getMessage());
-                    emergencyAlerts.add(alertText);
-                }
-            }
-            
-            System.out.println("Loaded " + emergencyAlerts.size() + " emergency alerts");
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error loading emergency alerts: " + e.getMessage());
+        emergencyAlertsData.clear();
+        if (loggedInDoctor != null && loggedInDoctor.getEmergencyAlerts() != null) {
+             loggedInDoctor.getEmergencyAlerts().stream()
+                .filter(alert -> !alert.isResolved()) 
+                .forEach(alert -> emergencyAlertsData.add(
+                    String.format("From %s: %s (%s)",
+                        alert.getPatientName(),
+                        alert.getMessage(),
+                        alert.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                ));
+        }
+        if (emergencyAlertsData.isEmpty()) {
+            emergencyAlertsData.add("No new emergency alerts.");
         }
     }
-    
-    // Fix updateStatistics method
-    private void updateStatistics() {
-        if (loggedInDoctor == null) return;
-        
-        try {
-            // Count total patients
-            int totalPatients = loggedInDoctor.getPatientIds() != null ? loggedInDoctor.getPatientIds().size() : 0;
+
+    private void updateSummaryMetrics() {
+        if (loggedInDoctor != null) {
+            totalPatientsLabel.setText(String.valueOf(loggedInDoctor.getPatientIds() != null ? loggedInDoctor.getPatientIds().size() : 0));
             
-            // Count upcoming appointments
-            int upcomingAppointments = 0;
-            List<Appointment> allAppointments = appointmentDAO.getAllAppointments();
-            String today = java.time.LocalDate.now().toString();
-            
-            for (Appointment appointment : allAppointments) {
-                if (appointment.getDoctorId().equals(loggedInDoctor.getId()) && 
-                    (appointment.isScheduled() || appointment.isPending()) &&
-                    appointment.getDate().compareTo(today) >= 0) {
-                    upcomingAppointments++;
-                }
-            }
-            
-            // Update UI if the labels exist
-            if (totalPatientsLabel != null) {
-                totalPatientsLabel.setText("Total Patients: " + totalPatients);
-            }
-            
-            if (upcomingAppointmentsLabel != null) {
-                upcomingAppointmentsLabel.setText("Upcoming: " + upcomingAppointments);
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error updating statistics");
+            long upcomingCount = appointmentDAO.getAllAppointments().stream()
+                .filter(app -> loggedInDoctor.getId().equals(app.getDoctorId()) &&
+                               ("Pending".equalsIgnoreCase(app.getStatus()) || "Scheduled".equalsIgnoreCase(app.getStatus())) &&
+                               LocalDate.parse(app.getDate()).isAfter(LocalDate.now().minusDays(1)) 
+                )
+                .count();
+            upcomingAppointmentsLabel.setText(String.valueOf(upcomingCount));
+        } else {
+            totalPatientsLabel.setText("0");
+            upcomingAppointmentsLabel.setText("0");
         }
     }
-    
-    private Patient getPatientById(String patientId) {
-        try {
-            // First try from the doctor's patients list
-            if (loggedInDoctor.getPatientIds() != null) {
-                for (String id : loggedInDoctor.getPatientIds()) {
-                    if (id.equals(patientId)) {
-                        return new PatientDAO().findById(patientId);
-                    }
-                }
-            }
-            
-            // If not found, try loading from PatientDAO
-            return new PatientDAO().findById(patientId);
-        } catch (Exception e) {
-            System.err.println("Error finding patient by ID: " + e.getMessage());
-            return null;
-        }
-    }
-    
-    private void handleApproveAppointment(AppointmentViewModel appointment) {
-        try {
-            List<Appointment> allAppointments = appointmentDAO.getAllAppointments();
-            Appointment selectedAppointment = null;
-            
-            for (Appointment a : allAppointments) {
-                if (a.getAppointmentId().equals(appointment.getId())) {
-                    selectedAppointment = a;
-                    break;
-                }
-            }
-            
-            if (selectedAppointment == null) {
-                showAlert(Alert.AlertType.ERROR, "Appointment not found");
+
+    private void navigateToAppointments(ActionEvent event) {
+        if (loggedInDoctor == null) {
+            // Attempt to retrieve from SessionManager if it might have been set elsewhere
+            loggedInDoctor = SessionManager.getLoggedInDoctor(); 
+            if (loggedInDoctor == null) {
+                showAlert(Alert.AlertType.ERROR, "Authentication Error", "No doctor is currently logged in. Please log in again.");
                 return;
             }
-            
-            selectedAppointment.markAsScheduled();
-            appointmentDAO.updateAppointment(selectedAppointment);
-            
-            Patient patient = getPatientById(selectedAppointment.getPatientId());
-            if (patient != null && patient.getEmail() != null) {
-                NotificationService.sendEmailNotification(
-                    patient.getEmail(),
-                    "Appointment Confirmed",
-                    "Dear " + patient.getName() + ",\n\n" +
-                    "Your appointment with Dr. " + loggedInDoctor.getName() + " has been confirmed for " +
-                    selectedAppointment.getDate() + " at " + selectedAppointment.getTime() + ".\n\n" +
-                    "Please arrive 15 minutes early.\n\n" +
-                    "Best regards,\nHospital Management System"
-                );
-                
-                NotificationService.sendAppointmentConfirmation(
-                    patient.getId(), 
-                    loggedInDoctor.getName(),
-                    selectedAppointment.getDate(),
-                    selectedAppointment.getTime()
-                );
-            }
-            
-            loadPendingAppointments();
-            loadTodaysAppointments();
-            updateStatistics();
-            
-            showAlert(Alert.AlertType.INFORMATION, "Appointment approved successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error approving appointment: " + e.getMessage());
         }
-    }
-    
-    private void handleRejectAppointment(AppointmentViewModel appointment) {
+
         try {
-            List<Appointment> allAppointments = appointmentDAO.getAllAppointments();
-            Appointment selectedAppointment = null;
-            
-            for (Appointment a : allAppointments) {
-                if (a.getAppointmentId().equals(appointment.getId())) {
-                    selectedAppointment = a;
-                    break;
-                }
-            }
-            
-            if (selectedAppointment == null) {
-                showAlert(Alert.AlertType.ERROR, "Appointment not found");
-                return;
-            }
-            
-            selectedAppointment.setStatus("Rejected");
-            appointmentDAO.updateAppointment(selectedAppointment);
-            
-            Patient patient = getPatientById(selectedAppointment.getPatientId());
-            if (patient != null && patient.getEmail() != null) {
-                NotificationService.sendEmailNotification(
-                    patient.getEmail(),
-                    "Appointment Rejected",
-                    "Dear " + patient.getName() + ",\n\n" +
-                    "Unfortunately, your appointment with Dr. " + loggedInDoctor.getName() + " for " +
-                    selectedAppointment.getDate() + " at " + selectedAppointment.getTime() + 
-                    " cannot be accommodated at this time.\n\n" +
-                    "Please book another time slot.\n\n" +
-                    "Best regards,\nHospital Management System"
-                );
-            }
-            
-            loadPendingAppointments();
-            updateStatistics();
-            
-            showAlert(Alert.AlertType.INFORMATION, "Appointment rejected");
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error rejecting appointment: " + e.getMessage());
-        }
-    }
-    
-    private void handleResolveAlert(String alertText) {
-        try {
-            List<EmergencyAlert> alerts = EmergencyAlertService.getDoctorUnresolvedAlerts(loggedInDoctor.getId());
-            
-            for (EmergencyAlert alert : alerts) {
-                String formattedAlert = String.format("[URGENT] %s: %s", alert.getPatientName(), alert.getMessage());
-                if (formattedAlert.equals(alertText)) {
-                    EmergencyAlertService.resolveAlert(alert.getAlertId(), loggedInDoctor.getId());
-                    loadEmergencyAlerts();
-                    showAlert(Alert.AlertType.INFORMATION, "Alert marked as resolved");
-                    return;
-                }
-            }
-            
-            showAlert(Alert.AlertType.ERROR, "Alert not found");
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error resolving alert: " + e.getMessage());
-        }
-    }
-    
-    private void setupButtonActions() {
-        logoutButton.setOnAction(this::handleLogout);
-        dashboardButton.setOnAction(e -> {/* No action needed, already on dashboard */});
-        appointmentsButton.setOnAction(e -> showAppointmentsView());
-        patientsButton.setOnAction(e -> showPatientsView());
-        emergencyAlertsButton.setOnAction(e -> showEmergencyAlertsView());
-        videoCallButton.setOnAction(e -> showVideoCallView());
-        
-        // Add hover effects
-        setupHoverEffects(dashboardButton);
-        setupHoverEffects(appointmentsButton);
-        setupHoverEffects(patientsButton);
-        setupHoverEffects(emergencyAlertsButton);
-        setupHoverEffects(videoCallButton);
-    }
-    
-    private void setupHoverEffects(Button button) {
-        button.setOnMouseEntered(e -> {
-            if (!button.getStyle().contains("-fx-background-color: #1a237e")) {
-                button.setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #1a237e; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;");
-            }
-        });
-        
-        button.setOnMouseExited(e -> {
-            if (!button.getStyle().contains("-fx-background-color: #1a237e")) {
-                button.setStyle("-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;");
-            }
-        });
-    }
-    
-    private void handleLogout(ActionEvent event) {
-        try {
-            // Clear session
-            SessionManager.clearSession();
-            
-            // Navigate to login screen
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DoctorAppointments.fxml"));
             Parent root = loader.load();
             
-            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            DoctorAppointmentsController controller = loader.getController();
+            if (controller == null) {
+                showAlert(Alert.AlertType.ERROR, "Controller Error", "Could not load the controller for the appointments page.");
+                return;
+            }
+            controller.setLoggedInDoctor(loggedInDoctor); // Pass the logged-in doctor
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("Login");
+            stage.setTitle("Manage Appointments");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load the appointments page. Please check if the FXML file exists and is correctly named.\nDetails: " + e.getMessage());
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "FXML Error", "Error loading FXML for appointments page. Ensure the FXML is valid.\nDetails: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Unexpected Error", "An unexpected error occurred while navigating to appointments: " + e.getMessage());
+        }
+    }
+
+    private void navigateToPatients(ActionEvent event) {
+        navigateTo(event, "/fxml/DoctorPatients.fxml", "My Patients", true);
+    }
+
+    private void navigateToEmergencyAlerts(ActionEvent event) {
+        navigateTo(event, "/fxml/EmergencyAlerts.fxml", "Emergency Alerts", true);
+    }
+
+    private void navigateToVideoCall(ActionEvent event) {
+        // VideoCall.fxml might not need loggedInDoctor directly or handles it differently.
+        // If it does, the navigateTo method needs to be adjusted or a specific method created.
+        showAlert(Alert.AlertType.INFORMATION, "Feature Info", "Video call navigation placeholder.");
+        // navigateTo(event, "/fxml/VideoCall.fxml", "Video Call", false); // Example if no doctor passing needed
+    }
+
+    private void handleLogout(ActionEvent event) {
+        SessionManager.clearSession(); 
+        loggedInDoctor = null; // Clear local reference
+        updateDoctorInfo(); // Update UI to reflect logged-out state
+        navigateTo(event, "/fxml/login.fxml", "Login", false);
+    }
+
+    private void navigateTo(ActionEvent event, String fxmlFile, String title, boolean passDoctorContext) {
+        if (passDoctorContext && loggedInDoctor == null) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Logged in doctor information is missing. Please log in again.");
+            // Optionally redirect to login
+            // handleLogout(event); 
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            Parent root = loader.load();
+
+            if (passDoctorContext) {
+                Object controller = loader.getController();
+                // Using reflection to call setLoggedInDoctor if it exists, to avoid instanceof chain for many controllers
+                try {
+                    controller.getClass().getMethod("setLoggedInDoctor", Doctor.class).invoke(controller, loggedInDoctor);
+                } catch (NoSuchMethodException e) {
+                    // Method doesn't exist, controller might not need it or uses a different way
+                    System.out.println("Controller " + controller.getClass().getSimpleName() + " does not have setLoggedInDoctor(Doctor) method.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showAlert(Alert.AlertType.WARNING, "Controller Setup Error", "Could not set doctor for " + title);
+                }
+            }
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle(title);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error logging out: " + e.getMessage());
-        }
-    }
-    
-    private void showAppointmentsView() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DoctorAppointments.fxml"));
-            Parent appointmentsView = loader.load();
-            
-            DoctorAppointmentsController controller = loader.getController();
-            controller.setLoggedInDoctor(loggedInDoctor);
-            
-            Stage stage = (Stage) appointmentsButton.getScene().getWindow();
-            stage.setScene(new Scene(appointmentsView));
-            stage.setTitle("Doctor Appointments");
-        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load the page: " + title + "\nDetails: " + e.getMessage());
+        } catch (NullPointerException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error loading appointments view: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "FXML file not found: " + fxmlFile + "\nDetails: " + e.getMessage());
         }
     }
 
-    private void showPatientsView() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DoctorPatients.fxml"));
-            Parent patientsView = loader.load();
-            
-            Object controller = loader.getController();
-            // Use reflection to call setLoggedInDoctor method
-            if (controller != null) {
-                try {
-                    java.lang.reflect.Method method = controller.getClass().getMethod("setLoggedInDoctor", Doctor.class);
-                    method.invoke(controller, loggedInDoctor);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    System.err.println("Error setting logged in doctor: " + ex.getMessage());
-                }
-            }
-            
-            Stage stage = (Stage) patientsButton.getScene().getWindow();
-            stage.setScene(new Scene(patientsView));
-            stage.setTitle("My Patients");
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error loading patients view: " + e.getMessage());
-        }
+    private void showAlert(Alert.AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
-    private void showEmergencyAlertsView() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/EmergencyAlerts.fxml"));
-            Parent alertsView = loader.load();
-            
-            EmergencyAlertsController controller = loader.getController();
-            controller.setLoggedInDoctor(loggedInDoctor);
-            
-            Stage stage = (Stage) emergencyAlertsButton.getScene().getWindow();
-            stage.setScene(new Scene(alertsView));
-            stage.setTitle("Emergency Alerts");
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error loading emergency alerts view: " + e.getMessage());
-        }
-    }
-    
-    private void showVideoCallView() {
-        try {
-            if (loggedInDoctor == null) return;
-            
-            // Get all patients of this doctor
-            ArrayList<String> patientIds = loggedInDoctor.getPatientIds();
-            if (patientIds == null || patientIds.isEmpty()) {
-                showAlert(Alert.AlertType.INFORMATION, "You don't have any patients to call");
-                return;
-            }
-            
-            // Create a dialog to select a patient
-            Dialog<Patient> dialog = new Dialog<>();
-            dialog.setTitle("Select Patient for Video Call");
-            dialog.setHeaderText("Choose a patient to start a video call with:");
-            
-            // Set the button types
-            ButtonType startCallButtonType = new ButtonType("Start Call", ButtonBar.ButtonData.OK_DONE);
-            dialog.getDialogPane().getButtonTypes().addAll(startCallButtonType, ButtonType.CANCEL);
-            
-            // Create a ListView with all patients
-            ListView<Patient> patientListView = new ListView<>();
-            ObservableList<Patient> patientList = FXCollections.observableArrayList();
-            
-            // Get actual Patient objects
-            PatientDAO patientDAO = new PatientDAO();
-            for (String patientId : patientIds) {
-                Patient patient = patientDAO.findById(patientId);
-                if (patient != null) {
-                    patientList.add(patient);
-                }
-            }
-            
-            patientListView.setItems(patientList);
-            
-            // Set the cell factory to display patient names
-            patientListView.setCellFactory(lv -> new ListCell<Patient>() {
-                @Override
-                protected void updateItem(Patient patient, boolean empty) {
-                    super.updateItem(patient, empty);
-                    if (empty || patient == null) {
-                        setText(null);
-                    } else {
-                        setText(patient.getName());
-                    }
-                }
-            });
-            
-            // Enable the start call button only when a patient is selected
-            Node startCallButton = dialog.getDialogPane().lookupButton(startCallButtonType);
-            startCallButton.setDisable(true);
-            
-            patientListView.getSelectionModel().selectedItemProperty().addListener(
-                    (observable, oldValue, newValue) -> startCallButton.setDisable(newValue == null));
-            
-            // Add the ListView to the dialog
-            dialog.getDialogPane().setContent(patientListView);
-            
-            // Convert the result
-            dialog.setResultConverter(dialogButton -> {
-                if (dialogButton == startCallButtonType) {
-                    return patientListView.getSelectionModel().getSelectedItem();
-                }
-                return null;
-            });
-            
-            // Show dialog and handle result
-            dialog.showAndWait().ifPresent(selectedPatient -> {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/VideoCall.fxml"));
-                    Parent videoCallRoot = loader.load();
-                    
-                    VideoCallController controller = loader.getController();
-                    controller.startCall(loggedInDoctor, selectedPatient);
-                    
-                    Stage stage = new Stage();
-                    stage.setTitle("Video Call with " + selectedPatient.getName());
-                    stage.setScene(new Scene(videoCallRoot));
-                    stage.show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    showAlert(Alert.AlertType.ERROR, "Error opening video call window");
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error showing video call dialog");
-        }
-    }
-    
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(type == Alert.AlertType.ERROR ? "Error" : "Information");
@@ -606,149 +469,36 @@ public class DoctorDashboardController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    
-    // Add patient details view functionality
-    private void showPatientDetails(Patient patient) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PatientDetails.fxml"));
-            Parent patientDetailsRoot = loader.load();
-            
-            PatientDetailsController controller = loader.getController();
-            controller.setPatientAndDoctor(patient, loggedInDoctor);
-            
-            Stage patientDetailsStage = new Stage();
-            patientDetailsStage.setTitle("Patient Details - " + patient.getName());
-            patientDetailsStage.setScene(new Scene(patientDetailsRoot));
-            patientDetailsStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error showing patient details: " + e.getMessage());
-        }
-    }
 
-    private void setupPendingAppointmentContextMenu() {
-        if (pendingAppointmentsTable == null) return;
-        
-        ContextMenu appointmentContextMenu = new ContextMenu();
-        MenuItem approveItem = new MenuItem("Approve");
-        MenuItem rejectItem = new MenuItem("Reject");
-        MenuItem viewDetailsItem = new MenuItem("View Details");
-        
-        approveItem.setOnAction(event -> {
-            AppointmentViewModel selectedAppointment = pendingAppointmentsTable.getSelectionModel().getSelectedItem();
-            if (selectedAppointment != null) {
-                handleApproveAppointment(selectedAppointment);
-            }
-        });
-        
-        rejectItem.setOnAction(event -> {
-            AppointmentViewModel selectedAppointment = pendingAppointmentsTable.getSelectionModel().getSelectedItem();
-            if (selectedAppointment != null) {
-                handleRejectAppointment(selectedAppointment);
-            }
-        });
-        
-        viewDetailsItem.setOnAction(event -> {
-            AppointmentViewModel selectedAppointment = pendingAppointmentsTable.getSelectionModel().getSelectedItem();
-            if (selectedAppointment != null) {
-                showAppointmentDetails(selectedAppointment);
-            }
-        });
-        
-        appointmentContextMenu.getItems().addAll(viewDetailsItem, approveItem, rejectItem);
-        pendingAppointmentsTable.setContextMenu(appointmentContextMenu);
-    }
-
-    private void setupEmergencyAlertsContextMenu() {
-        if (emergencyAlertsList == null) return;
-        
-        ContextMenu alertContextMenu = new ContextMenu();
-        MenuItem resolveItem = new MenuItem("Mark as Resolved");
-        MenuItem contactItem = new MenuItem("Contact Patient");
-        
-        resolveItem.setOnAction(e -> {
-            String selectedAlert = emergencyAlertsList.getSelectionModel().getSelectedItem();
-            if (selectedAlert != null) {
-                handleResolveAlert(selectedAlert);
-            }
-        });
-        
-        contactItem.setOnAction(e -> {
-            String selectedAlert = emergencyAlertsList.getSelectionModel().getSelectedItem();
-            if (selectedAlert != null) {
-                // Extract patient name from alert text
-                String[] parts = selectedAlert.split(":");
-                if (parts.length > 0) {
-                    String patientName = parts[0].replace("[URGENT]", "").trim();
-                    showContactDialog(patientName);
-                }
-            }
-        });
-        
-        alertContextMenu.getItems().addAll(resolveItem, contactItem);
-        emergencyAlertsList.setContextMenu(alertContextMenu);
-    }
-
-    // You'll also need this helper method
-    private void showContactDialog(String patientName) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Contact Patient");
-        dialog.setHeaderText("Send message to " + patientName);
-        dialog.setContentText("Message:");
-        
-        dialog.showAndWait().ifPresent(message -> {
-            showAlert(Alert.AlertType.INFORMATION, "Message sent to " + patientName);
-        });
-    }
-
-    // Add a showAppointmentDetails method
-    private void showAppointmentDetails(AppointmentViewModel appointment) {
-        try {
-            // Find the actual Patient object
-            Patient patient = getPatientById(appointment.getPatientId());
-            
-            if (patient != null) {
-                showPatientDetails(patient);
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Could not find patient details");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error showing appointment details: " + e.getMessage());
-        }
-    }
-    // View model for appointments to display in TableViews
     public static class AppointmentViewModel {
-        private String id;
-        private String patientId;
-        private String patientName;
-        private String date;
-        private String time;
-        private String status;
-        
-        public AppointmentViewModel(String id, String patientName, String date, String time, String status) {
-            this.id = id;
-            this.patientName = patientName;
-            this.date = date;
-            this.time = time;
-            this.status = status;
-        }
-        
-        public AppointmentViewModel(String id, String patientId, String patientName, String date, String time, String status) {
-            this.id = id;
-            this.patientId = patientId;
-            this.patientName = patientName;
-            this.date = date;
-            this.time = time;
-            this.status = status;
-        }
-        
-        public String getId() { return id; }
-        public String getPatientId() { return patientId; }
-        public String getPatientName() { return patientName; }
-        public String getDate() { return date; }
-        public String getTime() { return time; }
-        public String getStatus() { return status; }
-    }
+        private final SimpleStringProperty appointmentId;
+        private final SimpleStringProperty patientName;
+        private final SimpleStringProperty date;
+        private final SimpleStringProperty time;
+        private final SimpleStringProperty status;
+        private final SimpleStringProperty description;
 
+        public AppointmentViewModel(Appointment appointment, String patientName) {
+            this.appointmentId = new SimpleStringProperty(appointment.getAppointmentId());
+            this.patientName = new SimpleStringProperty(patientName);
+            this.date = new SimpleStringProperty(appointment.getDate());
+            this.time = new SimpleStringProperty(appointment.getTime());
+            this.status = new SimpleStringProperty(appointment.getStatus());
+            this.description = new SimpleStringProperty(appointment.getDescription());
+        }
+
+        public String getAppointmentId() { return appointmentId.get(); }
+        public String getPatientName() { return patientName.get(); }
+        public String getDate() { return date.get(); }
+        public String getTime() { return time.get(); }
+        public String getStatus() { return status.get(); }
+        public String getDescription() { return description.get(); }
+
+        public SimpleStringProperty appointmentIdProperty() { return appointmentId; }
+        public SimpleStringProperty patientNameProperty() { return patientName; }
+        public SimpleStringProperty dateProperty() { return date; }
+        public SimpleStringProperty timeProperty() { return time; }
+        public SimpleStringProperty statusProperty() { return status; }
+        public SimpleStringProperty descriptionProperty() { return description; }
+    }
 }

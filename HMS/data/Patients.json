@@ -5,7 +5,9 @@
   "password" : "ali",
   "age" : 12,
   "feedbacks" : [ ],
-  "vitalSigns" : [ ]
+  "vitalSigns" : [ ],
+  "prescribedMedications" : [ ],
+  "latestVitalSign" : null
 }, {
   "name" : "a",
   "id" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
@@ -13,7 +15,9 @@
   "password" : "c",
   "age" : 20,
   "feedbacks" : [ ],
-  "vitalSigns" : [ ]
+  "vitalSigns" : [ ],
+  "prescribedMedications" : [ ],
+  "latestVitalSign" : null
 }, {
   "name" : "abdullah",
   "id" : "6c838500-1953-4933-be97-67166cca0f40",
@@ -21,7 +25,9 @@
   "password" : "a1",
   "age" : 20,
   "feedbacks" : [ ],
-  "vitalSigns" : [ ]
+  "vitalSigns" : [ ],
+  "prescribedMedications" : [ ],
+  "latestVitalSign" : null
 }, {
   "name" : "dogar",
   "id" : "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1",
@@ -29,7 +35,9 @@
   "password" : "qwerty",
   "age" : 0,
   "feedbacks" : [ ],
-  "vitalSigns" : [ ]
+  "vitalSigns" : [ ],
+  "prescribedMedications" : [ ],
+  "latestVitalSign" : null
 }, {
   "name" : "Humza",
   "id" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
@@ -37,5 +45,39 @@
   "password" : "password",
   "age" : 0,
   "feedbacks" : [ ],
-  "vitalSigns" : [ ]
+  "vitalSigns" : [ ],
+  "prescribedMedications" : [ ],
+  "latestVitalSign" : null
+}, {
+  "name" : "patient_1",
+  "id" : "1d390b86-c79f-41b5-9e51-7e98b52b3184",
+  "email" : "p@gmail.com",
+  "password" : "p1",
+  "age" : 0,
+  "feedbacks" : [ {
+    "comment" : "take complete bed rest\n\nPrescribed Tests: complete blood test",
+    "doctorName" : "Dr. John Smith",
+    "medicationPrescribed" : "panadol 3 times for 4 days",
+    "timestamp" : [ 2025, 5, 9, 11, 11, 31, 985075000 ],
+    "recommendedTests" : null
+  } ],
+  "vitalSigns" : [ ],
+  "prescribedMedications" : [ "panadol 3 times for 4 days" ],
+  "latestVitalSign" : null
+}, {
+  "name" : "patient 5",
+  "id" : "6530992a-5b3c-4eff-8a78-bcf23b25cd29",
+  "email" : "zrehman.bsai24seecs@seecs.edu.pk",
+  "password" : "p",
+  "age" : 0,
+  "feedbacks" : [ {
+    "comment" : "complete bed rest\n\nPrescribed Tests: complete blood test",
+    "doctorName" : "Dr. John Smith",
+    "medicationPrescribed" : "panadol 100mg 3 times a day for 7 days",
+    "timestamp" : [ 2025, 5, 9, 11, 48, 15, 213716100 ],
+    "recommendedTests" : null
+  } ],
+  "vitalSigns" : [ ],
+  "prescribedMedications" : [ "panadol 100mg 3 times a day for 7 days" ],
+  "latestVitalSign" : null
 } ]

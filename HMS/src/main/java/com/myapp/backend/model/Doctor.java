@@ -3,6 +3,7 @@ package com.myapp.backend.model;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.myapp.backend.services.NotificationService;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Doctor extends User {
@@ -83,9 +84,15 @@ public class Doctor extends User {
         System.out.println("Appointment with ID " + appointmentId + " not found.");
     }
 
-    public void giveFeedback(Patient patient, String comment, String medicationPrescribed) {
-        Feedback feedback = new Feedback(comment, this.getName(), medicationPrescribed, LocalDateTime.now());
+    public void giveFeedback(Patient patient, String comment, String medicationPrescribed, String recommendedTests) {
+        Feedback feedback = new Feedback(comment, this.getName(), medicationPrescribed, recommendedTests, LocalDateTime.now());
         patient.addFeedback(feedback);
+        
+        // Ensure this doctor has the patient in their list
+        this.addPatientId(patient.getId());
+        
+        // Send notification to the patient
+        NotificationService.sendPrescriptionNotification(patient.getId(), this.getName());
     }
 
     public void receiveEmergencyAlert(EmergencyAlert alert) {

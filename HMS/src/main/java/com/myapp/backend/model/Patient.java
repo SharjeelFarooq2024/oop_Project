@@ -43,4 +43,33 @@ public class Patient extends User {
     public void setFeedbacks(List<Feedback> feedbacks) {
         this.feedbacks = feedbacks;
     }
+
+    public void addVitalSign(VitalSign vitalSign) {
+        if (this.vitalSigns == null) {
+            this.vitalSigns = new ArrayList<>();
+        }
+        this.vitalSigns.add(vitalSign);
+    }
+
+    public VitalSign getLatestVitalSign() {
+        if (vitalSigns == null || vitalSigns.isEmpty()) {
+            return null;
+        }
+        // Sort by timestamp (newest first) and return the first one
+        return vitalSigns.stream()
+                .sorted((v1, v2) -> v2.getTimestamp().compareTo(v1.getTimestamp()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<String> getPrescribedMedications() {
+        if (feedbacks == null || feedbacks.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        return feedbacks.stream()
+                .filter(f -> f.getMedicationPrescribed() != null && !f.getMedicationPrescribed().isEmpty())
+                .map(Feedback::getMedicationPrescribed)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

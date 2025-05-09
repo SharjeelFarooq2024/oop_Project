@@ -4,6 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -29,11 +31,15 @@
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="Filter by:" style="-fx-font-size: 14px;"/>
                 <ComboBox fx:id="filterComboBox" promptText="All appointments">
-                    <String fx:value="All Appointments"/>
-                    <String fx:value="Pending"/>
-                    <String fx:value="Scheduled"/>
-                    <String fx:value="Completed"/>
-                    <String fx:value="Rejected"/>
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="All Appointments"/>
+                            <String fx:value="Pending"/>
+                            <String fx:value="Scheduled"/>
+                            <String fx:value="Completed"/>
+                            <String fx:value="Rejected"/>
+                        </FXCollections>
+                    </items>
                 </ComboBox>
                 
                 <Pane HBox.hgrow="ALWAYS"/>

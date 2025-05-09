@@ -2,13 +2,15 @@ package com.myapp.frontend.controllers;
 
 import com.myapp.backend.model.*;
 import com.myapp.backend.dao.PatientDAO;
-
+import com.myapp.frontend.controllers.PatientDetailsController;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -41,19 +43,20 @@ public class DoctorPatientsController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Set up table columns
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
-        phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        emailColumn.setCellValueFactory(cellData -> cellData.getValue().emailProperty());
+        phoneColumn.setCellValueFactory(cellData -> cellData.getValue().phoneProperty());
         
-        patientsTable.setItems(patients);
-        
-        // Setup button actions
+        // Setup button actions - This is crucial!
+        viewDetailsButton.setOnAction(e -> handleViewDetails());
+        addFeedbackButton.setOnAction(e -> handleAddFeedback());
         backButton.setOnAction(this::handleBack);
         refreshButton.setOnAction(e -> loadPatients());
         searchButton.setOnAction(this::handleSearch);
-        viewDetailsButton.setOnAction(e -> handleViewDetails());
-        addFeedbackButton.setOnAction(e -> handleAddFeedback());
         startVideoCallButton.setOnAction(e -> handleStartVideoCall());
+        
+        // Initialize table data
+        patientsTable.setItems(patients);
     }
     
     public void setLoggedInDoctor(Doctor doctor) {
@@ -62,25 +65,27 @@ public class DoctorPatientsController implements Initializable {
     }
     
     private void loadPatients() {
-        if (loggedInDoctor == null) return;
-        
+        if (loggedInDoctor == null) {
+            // Handle case where doctor is not logged in or not set
+            return;
+        }
+    
         patients.clear();
-        
+        PatientDAO patientDAO = new PatientDAO();
         ArrayList<String> patientIds = loggedInDoctor.getPatientIds();
+        
         if (patientIds == null || patientIds.isEmpty()) {
-            // Add sample data if no patients
-            patients.add(new PatientViewModel("John Doe", "john@example.com", "555-1234"));
-            patients.add(new PatientViewModel("Jane Smith", "jane@example.com", "555-5678"));
-            patients.add(new PatientViewModel("Ali Khan", "ali@example.com", "555-9012"));
+            // No patients assigned or list is null
+            patientsTable.setPlaceholder(new Label("No patients assigned to you."));
         } else {
-            PatientDAO patientDAO = new PatientDAO();
             for (String patientId : patientIds) {
                 Patient patient = patientDAO.findById(patientId);
                 if (patient != null) {
                     patients.add(new PatientViewModel(
-                        patient.getName(),
-                        patient.getEmail(),
-                        "N/A" // Phone not implemented in Patient model
+                        patient.getId(), 
+                        patient.getName(), 
+                        patient.getEmail(), 
+                        "N/A"  // Phone not available in current model
                     ));
                 }
             }
@@ -123,56 +128,71 @@ public class DoctorPatientsController implements Initializable {
     }
     
     private void handleViewDetails() {
-        PatientViewModel selectedPatient = patientsTable.getSelectionModel().getSelectedItem();
-        if (selectedPatient == null) {
-            showAlert(Alert.AlertType.WARNING, "Please select a patient");
+        PatientViewModel selectedPatientViewModel = patientsTable.getSelectionModel().getSelectedItem();
+        if (selectedPatientViewModel == null) {
+            showAlert(Alert.AlertType.WARNING, "Please select a patient first");
             return;
         }
-        
+
         try {
-            // Find the actual Patient object
-            Patient patient = null;
+            // Get the full patient object
             PatientDAO patientDAO = new PatientDAO();
-            ArrayList<String> patientIds = loggedInDoctor.getPatientIds();
-            if (patientIds != null) {
-                for (String patientId : patientIds) {
-                    Patient p = patientDAO.findById(patientId);
-                    if (p != null && p.getName().equals(selectedPatient.getName()) && 
-                        p.getEmail().equals(selectedPatient.getEmail())) {
-                        patient = p;
-                        break;
-                    }
-                }
-            }
+            Patient selectedPatient = patientDAO.findById(selectedPatientViewModel.getId());
             
-            // If patient not found in doctor's list, create one for demo
-            if (patient == null) {
-                patient = new Patient();
-                patient.setName(selectedPatient.getName());
-                patient.setEmail(selectedPatient.getEmail());
-                patient.setId("p" + System.currentTimeMillis());
-            }
-            
-            // Load the patient details view
+            // Load the PatientDetails view
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PatientDetails.fxml"));
-            Parent patientDetailsRoot = loader.load();
+            Parent root = loader.load();
             
+            // Pass data to the controller
             PatientDetailsController controller = loader.getController();
-            controller.setPatientAndDoctor(patient, loggedInDoctor);
+            controller.setPatientAndDoctor(selectedPatient, loggedInDoctor);
             
-            Stage stage = new Stage();
-            stage.setTitle("Patient Details - " + patient.getName());
-            stage.setScene(new Scene(patientDetailsRoot));
-            stage.show();
-        } catch (Exception e) {
+            // Show the view
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) viewDetailsButton.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error showing patient details: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error loading patient details: " + e.getMessage());
         }
     }
     
     private void handleAddFeedback() {
-        // Same as view details, then focus on feedback tab
-        handleViewDetails();
+        PatientViewModel selectedPatientViewModel = patientsTable.getSelectionModel().getSelectedItem();
+        if (selectedPatientViewModel == null) {
+            showAlert(Alert.AlertType.WARNING, "Please select a patient first");
+            return;
+        }
+
+        try {
+            // Get the full patient object using the ID from the view model
+            PatientDAO patientDAO = new PatientDAO();
+            Patient selectedPatient = patientDAO.findById(selectedPatientViewModel.getId());
+            
+            if (selectedPatient == null) {
+                showAlert(Alert.AlertType.ERROR, "Could not load patient data");
+                return;
+            }
+
+            // Load the PatientDetails view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PatientDetails.fxml"));
+            Parent root = loader.load();
+            
+            // Get the controller and pass the patient and doctor data
+            PatientDetailsController controller = loader.getController();
+            controller.setPatientAndDoctor(selectedPatient, loggedInDoctor);
+            controller.selectFeedbackTab(); // This method will select the feedback tab directly
+            
+            // Show the PatientDetails view
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) addFeedbackButton.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Add Feedback - " + selectedPatient.getName());
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error loading patient details: " + e.getMessage());
+        }
     }
     
     private void handleStartVideoCall() {
@@ -216,22 +236,27 @@ public class DoctorPatientsController implements Initializable {
     
     // View model for patients to display in TableView
     public static class PatientViewModel {
-        private String name;
-        private String email;
-        private String phone;
-        
-        public PatientViewModel(String name, String email, String phone) {
-            this.name = name;
-            this.email = email;
-            this.phone = phone;
+        private final SimpleStringProperty id; 
+        private final SimpleStringProperty name;
+        private final SimpleStringProperty email;
+        private final SimpleStringProperty phone; 
+
+        public PatientViewModel(String id, String name, String email, String phone) {
+            this.id = new SimpleStringProperty(id); 
+            this.name = new SimpleStringProperty(name);
+            this.email = new SimpleStringProperty(email);
+            this.phone = new SimpleStringProperty(phone);
         }
+
+        public String getId() { return id.get(); } 
+        public String getName() { return name.get(); }
+        public String getEmail() { return email.get(); }
+        public String getPhone() { return phone.get(); }
         
-        public String getName() { return name; }
-        public String getEmail() { return email; }
-        public String getPhone() { return phone; }
-        
-        public void setName(String name) { this.name = name; }
-        public void setEmail(String email) { this.email = email; }
-        public void setPhone(String phone) { this.phone = phone; }
+        // Property getters for TableView
+        public SimpleStringProperty idProperty() { return id; } 
+        public SimpleStringProperty nameProperty() { return name; }
+        public SimpleStringProperty emailProperty() { return email; }
+        public SimpleStringProperty phoneProperty() { return phone; }
     }
 }

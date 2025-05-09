@@ -7,6 +7,7 @@ public class Feedback {
     private String doctorName;
     private String medicationPrescribed;
     private LocalDateTime timestamp;
+    private String recommendedTests;
 
     public Feedback() {
         // Default constructor for Jackson
@@ -22,6 +23,14 @@ public class Feedback {
         this.comment = comment;
         this.doctorName = doctorName;
         this.medicationPrescribed = medicationPrescribed;
+        this.timestamp = timestamp;
+    }
+
+    public Feedback(String comment, String doctorName, String medicationPrescribed, String recommendedTests, LocalDateTime timestamp) {
+        this.comment = comment;
+        this.doctorName = doctorName;
+        this.medicationPrescribed = medicationPrescribed;
+        this.recommendedTests = recommendedTests;
         this.timestamp = timestamp;
     }
 
@@ -41,6 +50,10 @@ public class Feedback {
         return timestamp;
     }
     
+    public String getRecommendedTests() {
+        return recommendedTests;
+    }
+
     public void setComment(String comment) {
         this.comment = comment;
     }
@@ -55,5 +68,9 @@ public class Feedback {
     
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setRecommendedTests(String recommendedTests) {
+        this.recommendedTests = recommendedTests;
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import com.myapp.backend.model.Patient;
 import com.myapp.backend.model.VitalSign;
 
 import java.io.File;
@@ -18,6 +19,10 @@ public class VitalSignDAO {
     private static final String FILE_PATH = "data/vitals.json";
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    static { // Initialize mapper with JavaTimeModule
+        mapper.registerModule(new JavaTimeModule());
+    }
+
     // Save a new VitalSign entry
     public static void saveVital(VitalSign vital) {
         List<VitalSign> vitals = getAllVitals();
@@ -30,11 +35,11 @@ public class VitalSignDAO {
     }
 
     public static Optional<VitalSign> getLatestVitalForPatient(String patientId) {
-    List<VitalSign> allVitals = getAllVitals();
-    return allVitals.stream()
-        .filter(v -> v.getPatientId().equals(patientId))
-        .max(Comparator.comparing(VitalSign::getTimestamp));
-}
+        List<VitalSign> allVitals = getAllVitals();
+        return allVitals.stream()
+            .filter(v -> v.getPatientId().equals(patientId))
+            .max(Comparator.comparing(VitalSign::getTimestamp));
+    }
 
     // Get all vitals (used internally)
     public static List<VitalSign> getAllVitals() {
@@ -70,5 +75,23 @@ public class VitalSignDAO {
         if (vitals.isEmpty()) return null;
         vitals.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp())); // descending
         return vitals.get(0);
+    }
+
+    public static void saveVitalSignForPatient(String patientId, VitalSign vitalSign) {
+        // Save to vitals.json
+        saveVital(vitalSign);
+        
+        // Update the patient object directly
+        try {
+            PatientDAO patientDAO = new PatientDAO();
+            Patient patient = patientDAO.findById(patientId);
+            if (patient != null) {
+                patient.addVitalSign(vitalSign); // Make sure Patient class has addVitalSign
+                patientDAO.updatePatient(patient);
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to update patient with new vital sign: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

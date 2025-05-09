@@ -79,4 +79,28 @@ public class PatientDAO {
         }
         return null;
     }
+
+    // Add this method to the PatientDAO class
+    public void updatePatient(Patient updatedPatient) throws IOException {
+        if (updatedPatient == null || updatedPatient.getId() == null) {
+            throw new IllegalArgumentException("Invalid patient data for update");
+        }
+
+        List<Patient> patients = loadPatients();
+        boolean found = false;
+
+        for (int i = 0; i < patients.size(); i++) {
+            if (patients.get(i).getId().equals(updatedPatient.getId())) {
+                patients.set(i, updatedPatient);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new IllegalArgumentException("Patient with ID " + updatedPatient.getId() + " not found");
+        }
+
+        savePatients(patients);
+    }
 }

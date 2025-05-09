@@ -26,28 +26,34 @@
     
     <center>
         <VBox spacing="20" style="-fx-padding: 20;">
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField" promptText="Search patients..." prefWidth="300"/>
-                <Button fx:id="searchButton" text="Search" style="-fx-background-color: #1a237e; -fx-text-fill: white;"/>
+            <children>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="searchField" promptText="Search patients..." prefWidth="300"/>
+                    <Button fx:id="searchButton" text="Search" style="-fx-background-color: #1a237e; -fx-text-fill: white;"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="refreshButton" text="Refresh" style="-fx-background-color: #1a237e; -fx-text-fill: white;"/>
+                </HBox>
                 
-                <Pane HBox.hgrow="ALWAYS"/>
-                
-                <Button fx:id="refreshButton" text="Refresh" style="-fx-background-color: #1a237e; -fx-text-fill: white;"/>
-            </HBox>
-            
-            <TableView fx:id="patientsTable" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="nameColumn" text="Name" prefWidth="200"/>
-                    <TableColumn fx:id="emailColumn" text="Email" prefWidth="200"/>
-                    <TableColumn fx:id="phoneColumn" text="Phone" prefWidth="150"/>
-                </columns>
-            </TableView>
-            
-            <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button fx:id="viewDetailsButton" text="View Details" style="-fx-background-color: #1a237e; -fx-text-fill: white;"/>
-                <Button fx:id="addFeedbackButton" text="Add Feedback" style="-fx-background-color: #4caf50; -fx-text-fill: white;"/>
-                <Button fx:id="startVideoCallButton" text="Start Video Call" style="-fx-background-color: #2196f3; -fx-text-fill: white;"/>
-            </HBox>
+                <!-- New BorderPane to manage TableView and buttons -->
+                <BorderPane VBox.vgrow="ALWAYS">
+                    <center>
+                        <TableView fx:id="patientsTable">
+                            <columns>
+                                <TableColumn fx:id="nameColumn" text="Name" prefWidth="200"/>
+                                <TableColumn fx:id="emailColumn" text="Email" prefWidth="200"/>
+                                <TableColumn fx:id="phoneColumn" text="Phone" prefWidth="150"/>
+                            </columns>
+                        </TableView>
+                    </center>
+                    <bottom>
+                        <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+                            <Button fx:id="viewDetailsButton" text="View Details" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 12;"/>
+                            <Button fx:id="addFeedbackButton" text="Add Feedback" style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 12;"/>
+                            <Button fx:id="startVideoCallButton" text="Start Video Call" style="-fx-background-color: #2196f3; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 12;"/>
+                        </HBox>
+                    </bottom>
+                </BorderPane>
+            </children>
         </VBox>
     </center>
 </BorderPane>

@@ -1,12 +1,1 @@
-[
-    {
-      "vitalId": "5ba2c6cb-e2c4-44c8-8f23-d8088a4698d6",
-      "patientId": "8118d4f2-be80-4b79-80d5-ba8d2afe27ec",
-      "heartRate": 5.0,
-      "oxygenLevel": 6.0,
-      "bloodPressure": "3",
-      "temperature": 4.0,
-      "timestamp": "2025-05-04T10:00:00Z"
-    }
-  ]
-  
+[{"vitalId":"5ba2c6cb-e2c4-44c8-8f23-d8088a4698d6","patientId":"8118d4f2-be80-4b79-80d5-ba8d2afe27ec","heartRate":5.0,"oxygenLevel":6.0,"bloodPressure":"3","temperature":4.0,"timestamp":[2025,5,4,10,0]},{"vitalId":"a57c1e5d-567a-4af5-8a92-c01656d184ba","patientId":"1d390b86-c79f-41b5-9e51-7e98b52b3184","heartRate":40.0,"oxygenLevel":60.0,"bloodPressure":"100/70","temperature":102.0,"timestamp":[2025,5,9,10,47,55,266997100]},{"vitalId":"2125ef84-0c2f-49ee-9ade-ac8d41406a01","patientId":"6530992a-5b3c-4eff-8a78-bcf23b25cd29","heartRate":38.0,"oxygenLevel":89.0,"bloodPressure":"130/90","temperature":103.0,"timestamp":[2025,5,9,11,38,56,32079100]}]
