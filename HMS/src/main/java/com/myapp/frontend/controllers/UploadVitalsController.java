@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import com.myapp.backend.model.Patient;
 import com.myapp.backend.model.VitalSign;
+import com.myapp.backend.services.EmergencyAlertService;
+import com.myapp.backend.services.NotificationService;
 import com.myapp.backend.services.SessionManager;
 import com.myapp.backend.services.VitalSignService;
 
@@ -76,7 +78,7 @@ public class UploadVitalsController {
     private void handleSubmit() {
         try {
             if (loggedInPatient == null) {
-                showAlert("Error", "No patient logged in.");
+                showAlert("Error", "No patient is logged in.");
                 return;
             }
 
@@ -86,7 +88,7 @@ public class UploadVitalsController {
             double oxygenLevel = Double.parseDouble(oxygenField.getText().trim());
 
             if (bloodPressure.isEmpty()) {
-                showAlert("Validation Error", "Blood Pressure cannot be empty.");
+                showAlert("Error", "Please enter blood pressure.");
                 return;
             }
 
@@ -98,6 +100,35 @@ public class UploadVitalsController {
 
             // Add the vitals to the service
             VitalSignService.addVitals(loggedInPatient.getId(), vitals);
+            
+            // Check if vitals are in emergency range
+            if (isEmergencyVitals(vitals)) {
+                // Generate emergency message
+                String emergencyMessage = generateEmergencyMessage(vitals);
+                
+                // Create emergency alert for all doctors
+                EmergencyAlertService.createEmergencyAlert(loggedInPatient, emergencyMessage);
+                
+                // Send email notification to the patient
+                String emailSubject = "URGENT: Abnormal Vital Signs Detected";
+                String emailMessage = 
+                    "Dear " + loggedInPatient.getName() + ",\n\n" +
+                    "Our system has detected potentially concerning vital signs in your recent submission:\n\n" +
+                    "- Heart Rate: " + heartRate + " bpm\n" +
+                    "- Oxygen Level: " + oxygenLevel + "%\n" +
+                    "- Blood Pressure: " + bloodPressure + "\n" +
+                    "- Temperature: " + temperature + "°C\n\n" +
+                    "Please seek immediate medical attention if you are experiencing any concerning symptoms.\n" +
+                    "Your healthcare providers have been notified of these readings.\n\n" +
+                    "Regards,\nHMS Team";
+                
+                NotificationService.sendEmailNotification(loggedInPatient.getEmail(), emailSubject, emailMessage);
+                
+                // Show alert to the patient
+                showAlert("Medical Alert", "Your vital signs indicate a potential emergency situation. " +
+                         "Your doctors have been notified. Please seek medical attention if you are feeling unwell.");
+            }
+            
             showAlert("Success", "Vitals submitted successfully.");
             clearForm();
 
@@ -153,6 +184,86 @@ public class UploadVitalsController {
         alert.setTitle(title);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Checks if vital signs exceed emergency thresholds
+     */
+    private boolean isEmergencyVitals(VitalSign vitals) {
+        // Check heart rate
+        if (vitals.getHeartRate() < 40 || vitals.getHeartRate() > 130) {
+            return true;
+        }
+        
+        // Check oxygen level
+        if (vitals.getOxygenLevel() < 90) {
+            return true;
+        }
+        
+        // Check blood pressure (assuming format is "120/80")
+        try {
+            String[] bpParts = vitals.getBloodPressure().split("/");
+            if (bpParts.length == 2) {
+                int systolic = Integer.parseInt(bpParts[0].trim());
+                int diastolic = Integer.parseInt(bpParts[1].trim());
+                
+                if (systolic > 180 || diastolic > 120) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            // If we can't parse the blood pressure, log error
+            System.err.println("Error parsing blood pressure: " + vitals.getBloodPressure());
+        }
+        
+        // Check temperature
+        if (vitals.getTemperature() >= 39.4) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Generates a descriptive emergency message based on which vitals are abnormal
+     */
+    private String generateEmergencyMessage(VitalSign vitals) {
+        StringBuilder message = new StringBuilder("EMERGENCY ALERT: ");
+        
+        if (vitals.getHeartRate() < 40) {
+            message.append("Low heart rate (").append(vitals.getHeartRate()).append(" bpm). ");
+        } else if (vitals.getHeartRate() > 130) {
+            message.append("High heart rate (").append(vitals.getHeartRate()).append(" bpm). ");
+        }
+        
+        if (vitals.getOxygenLevel() < 90) {
+            message.append("Low oxygen saturation (").append(vitals.getOxygenLevel()).append("%). ");
+        }
+        
+        try {
+            String[] bpParts = vitals.getBloodPressure().split("/");
+            if (bpParts.length == 2) {
+                int systolic = Integer.parseInt(bpParts[0].trim());
+                int diastolic = Integer.parseInt(bpParts[1].trim());
+                
+                if (systolic > 180) {
+                    message.append("High systolic pressure (").append(systolic).append(" mmHg). ");
+                }
+                if (diastolic > 120) {
+                    message.append("High diastolic pressure (").append(diastolic).append(" mmHg). ");
+                }
+            }
+        } catch (Exception e) {
+            // Skip blood pressure message if we can't parse it
+        }
+        
+        if (vitals.getTemperature() >= 39.4) {
+            message.append("High fever (").append(vitals.getTemperature()).append("°C). ");
+        }
+        
+        message.append("Immediate medical attention may be required.");
+        
+        return message.toString();
     }
 }
 

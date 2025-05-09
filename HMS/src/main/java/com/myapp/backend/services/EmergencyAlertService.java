@@ -5,6 +5,8 @@ import com.myapp.backend.model.EmergencyAlert;
 import com.myapp.backend.model.Patient;
 import com.myapp.backend.dao.DoctorDAO;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,12 +30,27 @@ public class EmergencyAlertService {
             }
             doctorAlerts.get(doctor.getId()).add(alert);
             
-            // Optional: You can also send a notification to the doctor
+            // Send a notification to the doctor
             NotificationService.sendNotification(doctor.getId(), 
                 "EMERGENCY ALERT: Patient " + patient.getName() + " requires immediate attention!");
+            
+            // Send email notification to doctors if they have email addresses
+            if (doctor.getEmail() != null && !doctor.getEmail().isEmpty()) {
+                String subject = "URGENT: Patient " + patient.getName() + " - Critical Vital Signs";
+                String emailContent = 
+                    "Dear Dr. " + doctor.getName() + ",\n\n" +
+                    "An emergency alert has been generated for patient " + patient.getName() + ":\n\n" +
+                    message + "\n\n" +
+                    "Please log in to the HMS system to view details and take appropriate action.\n\n" +
+                    "This is an automated alert generated at " + 
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "\n\n" +
+                    "Regards,\nHMS Alert System";
+                
+                NotificationService.sendEmailNotification(doctor.getEmail(), subject, emailContent);
+            }
         }
         
-        System.out.println("Emergency alert created by patient " + patient.getName());
+        System.out.println("Emergency alert created for patient " + patient.getName());
         return alert;
     }
     

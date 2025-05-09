@@ -1,6 +1,10 @@
 package com.myapp.backend.services;
 
 import com.myapp.backend.model.ChatMessage;
+import com.myapp.backend.model.Doctor;
+import com.myapp.backend.model.Patient;
+import com.myapp.backend.dao.DoctorDAO;
+import com.myapp.backend.dao.PatientDAO;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,6 +15,8 @@ import java.util.Map;
 public class ChatService {
     // Map of conversation ID to list of messages
     private static final Map<String, List<ChatMessage>> conversations = new HashMap<>();
+    private static final DoctorDAO doctorDAO = new DoctorDAO();
+    private static final PatientDAO patientDAO = new PatientDAO();
     
     // Create a unique conversation ID from two user IDs
     public static String createConversationId(String userIdA, String userIdB) {
@@ -22,8 +28,8 @@ public class ChatService {
         }
     }
     
-    // Send a message in a conversation
-    public static void sendMessage(String senderId, String receiverId, String content) {
+    // Send a message in a conversation with option to send email notification
+    public static void sendMessage(String senderId, String receiverId, String content, boolean sendEmailNotification) {
         String conversationId = createConversationId(senderId, receiverId);
         
         if (!conversations.containsKey(conversationId)) {
@@ -33,8 +39,56 @@ public class ChatService {
         ChatMessage message = new ChatMessage(senderId, receiverId, content, LocalDateTime.now());
         conversations.get(conversationId).add(message);
         
-        // Optionally notify the receiver
+        // Notify the receiver through the app
         NotificationService.sendNotification(receiverId, "New message from user ID: " + senderId);
+        
+        // Send email notification if requested
+        if (sendEmailNotification) {
+            sendEmailForMessage(senderId, receiverId, content);
+        }
+    }
+    
+    // Original method for backward compatibility
+    public static void sendMessage(String senderId, String receiverId, String content) {
+        sendMessage(senderId, receiverId, content, false);
+    }
+    
+    private static void sendEmailForMessage(String senderId, String receiverId, String content) {
+        // Get sender and receiver information
+        String senderName = "User";
+        String receiverEmail = null;
+        
+        // Identify if sender is doctor or patient
+        Doctor doctor = doctorDAO.findById(senderId);
+        if (doctor != null) {
+            senderName = "Dr. " + doctor.getName();
+            Patient patient = patientDAO.findById(receiverId);
+            if (patient != null) {
+                receiverEmail = patient.getEmail();
+            }
+        } else {
+            Patient patient = patientDAO.findById(senderId);
+            if (patient != null) {
+                senderName = patient.getName();
+                Doctor receiverDoctor = doctorDAO.findById(receiverId);
+                if (receiverDoctor != null) {
+                    receiverEmail = receiverDoctor.getEmail();
+                }
+            }
+        }
+        
+        // Send email if we have receiver email
+        if (receiverEmail != null && !receiverEmail.isEmpty()) {
+            String subject = "New HMS Message from " + senderName;
+            String emailContent = 
+                "Hello,\n\n" +
+                "You have received a new message from " + senderName + " in the Hospital Management System:\n\n" +
+                "\"" + content + "\"\n\n" +
+                "Please log in to the HMS system to respond.\n\n" +
+                "Regards,\nHMS Team";
+                
+            NotificationService.sendEmailNotification(receiverEmail, subject, emailContent);
+        }
     }
     
     // Get all messages for a conversation between two users

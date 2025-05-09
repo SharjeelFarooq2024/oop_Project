@@ -3,6 +3,7 @@ package com.myapp.frontend.controllers;
 import com.myapp.backend.model.*;
 import com.myapp.backend.dao.PatientDAO;
 import com.myapp.frontend.controllers.PatientDetailsController;
+import com.myapp.frontend.controllers.VideoCallController; // Add this import
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,7 +18,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -196,39 +199,70 @@ public class DoctorPatientsController implements Initializable {
     }
     
     private void handleStartVideoCall() {
-        PatientViewModel selectedPatient = patientsTable.getSelectionModel().getSelectedItem();
-        if (selectedPatient == null) {
-            showAlert(Alert.AlertType.WARNING, "Please select a patient");
+        PatientViewModel selectedPatientViewModel = patientsTable.getSelectionModel().getSelectedItem();
+        if (selectedPatientViewModel == null) {
+            showAlert(Alert.AlertType.WARNING, "No Patient Selected", 
+                     "Please select a patient from the table to start a video call.");
             return;
         }
-        
+
         try {
-            // Find the actual Patient object or create a placeholder
-            Patient patient = new Patient();
-            patient.setName(selectedPatient.getName());
-            patient.setEmail(selectedPatient.getEmail());
-            patient.setId("p" + System.currentTimeMillis());
+            PatientDAO patientDAO = new PatientDAO();
+            Patient selectedPatient = patientDAO.findById(selectedPatientViewModel.getId());
+
+            if (selectedPatient == null) {
+                showAlert(Alert.AlertType.ERROR, "Error", 
+                         "Could not load patient data for ID: " + selectedPatientViewModel.getId());
+                return;
+            }
             
-            // Load the video call view
+            // Use a fixed Zoom meeting URL
+            String zoomUrl = "https://us05web.zoom.us/j/86573083865?pwd=2f3nVb2EDpaSz4P5OouLIaKoCuepHj.1";
+            
+            // First open the Zoom link directly in browser
+            try {
+                Desktop.getDesktop().browse(new URI(zoomUrl));
+                System.out.println("Opening Zoom URL: " + zoomUrl);
+            } catch (Exception ex) {
+                System.err.println("Failed to open Zoom URL: " + ex.getMessage());
+                // Continue anyway - we'll still show the call UI
+            }
+
+            // Then load the video call screen
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/VideoCall.fxml"));
             Parent videoCallRoot = loader.load();
-            
+
             VideoCallController controller = loader.getController();
-            controller.startCall(loggedInDoctor, patient);
-            
-            Stage stage = new Stage();
-            stage.setTitle("Video Call with " + patient.getName());
+            controller.setZoomMeetingLink(zoomUrl);
+            controller.setupCall(loggedInDoctor, selectedPatient);
+
+            Stage stage = (Stage) startVideoCallButton.getScene().getWindow(); 
             stage.setScene(new Scene(videoCallRoot));
+            stage.setTitle("Video Call with " + selectedPatient.getName());
             stage.show();
-        } catch (Exception e) {
+
+        } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error starting video call: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", 
+                     "Failed to load video call screen: " + e.getMessage());
+        } catch (Exception e) { 
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", 
+                     "An unexpected error occurred: " + e.getMessage());
         }
     }
     
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(type == Alert.AlertType.ERROR ? "Error" : "Information");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

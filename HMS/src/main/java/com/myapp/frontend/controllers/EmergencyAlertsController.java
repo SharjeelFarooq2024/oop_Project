@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 
 public class EmergencyAlertsController implements Initializable {
     
@@ -28,8 +29,6 @@ public class EmergencyAlertsController implements Initializable {
     @FXML private ToggleButton showUnresolvedToggle;
     @FXML private Button refreshButton;
     @FXML private Button resolveButton;
-    @FXML private Button contactPatientButton;
-    @FXML private Button startEmergencyCallButton;
     @FXML private Button backButton;
     
     private Doctor loggedInDoctor;
@@ -43,20 +42,26 @@ public class EmergencyAlertsController implements Initializable {
         
         // Setup toggle buttons
         showAllToggle.setOnAction(e -> {
-            showUnresolvedToggle.setSelected(!showAllToggle.isSelected());
-            loadAlerts();
+            if (showAllToggle.isSelected()) {
+                showUnresolvedToggle.setSelected(false);
+                loadAlerts();
+            } else if (!showUnresolvedToggle.isSelected()) {
+                showAllToggle.setSelected(true);
+            }
         });
         
         showUnresolvedToggle.setOnAction(e -> {
-            showAllToggle.setSelected(!showUnresolvedToggle.isSelected());
-            loadAlerts();
+            if (showUnresolvedToggle.isSelected()) {
+                showAllToggle.setSelected(false);
+                loadAlerts();
+            } else if (!showAllToggle.isSelected()) {
+                showUnresolvedToggle.setSelected(true);
+            }
         });
         
         // Setup other buttons
         refreshButton.setOnAction(e -> loadAlerts());
         resolveButton.setOnAction(this::handleResolve);
-        contactPatientButton.setOnAction(this::handleContactPatient);
-        startEmergencyCallButton.setOnAction(this::handleEmergencyCall);
         backButton.setOnAction(this::handleBack);
     }
     
@@ -66,137 +71,89 @@ public class EmergencyAlertsController implements Initializable {
     }
     
     private void loadAlerts() {
-        if (loggedInDoctor == null) return;
+        if (loggedInDoctor == null) {
+            return;
+        }
         
         alerts.clear();
         
         if (showAllToggle.isSelected()) {
-            // Load all alerts for this doctor
             alertObjects = EmergencyAlertService.getDoctorAlerts(loggedInDoctor.getId());
         } else {
-            // Load only unresolved alerts
             alertObjects = EmergencyAlertService.getDoctorUnresolvedAlerts(loggedInDoctor.getId());
         }
         
         // If no alerts, add sample data
         if (alertObjects == null || alertObjects.isEmpty()) {
-            // Add sample alerts
-            EmergencyAlert sampleAlert = new EmergencyAlert("p123", "Ali Khan", "Patient reporting severe chest pain");
-            EmergencyAlert sampleAlert2 = new EmergencyAlert("p456", "Maria Garcia", "High fever and difficulty breathing");
-            
-            List<EmergencyAlert> newAlerts = new ArrayList<>();
-            alertObjects = newAlerts;
-            
-            alertObjects.add(sampleAlert);
-            alertObjects.add(sampleAlert2);
-            
-            // Add the alerts to the doctor
-            ArrayList<EmergencyAlert> doctorAlerts = loggedInDoctor.getEmergencyAlerts();
-            if (doctorAlerts == null) {
-                doctorAlerts = new ArrayList<>();
-                loggedInDoctor.setEmergencyAlerts(doctorAlerts);
-            }
-            doctorAlerts.add(sampleAlert);
-            doctorAlerts.add(sampleAlert2);
+            alertObjects = new ArrayList<>();
         }
         
-        // Add alert strings to the observable list
+        // Sort alerts by timestamp (newest first)
+        alertObjects.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
+        
+        // Add alert strings to the observable list with priority formatting for vital sign emergencies
         for (EmergencyAlert alert : alertObjects) {
-            String status = alert.isResolved() ? "[RESOLVED] " : "[URGENT] ";
-            alerts.add(status + alert.getPatientName() + ": " + alert.getMessage());
+            String alertStatus = alert.isResolved() ? "[RESOLVED] " : "[ACTIVE] ";
+            String alertType = alert.getMessage().startsWith("EMERGENCY ALERT:") ? 
+                "[CRITICAL VITALS] " : "";
+            
+            String formattedTimestamp = alert.getTimestamp().format(
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            
+            String alertText = alertStatus + alertType + 
+                formattedTimestamp + " - Patient: " + alert.getPatientName() + 
+                "\n" + alert.getMessage();
+            
+            alerts.add(alertText);
         }
     }
     
     private void handleResolve(ActionEvent event) {
         int selectedIndex = alertsListView.getSelectionModel().getSelectedIndex();
         if (selectedIndex < 0 || selectedIndex >= alertObjects.size()) {
-            showAlert(Alert.AlertType.WARNING, "Please select an alert to resolve");
+            showAlert(Alert.AlertType.WARNING, "No Alert Selected", "Please select an alert to resolve.");
             return;
         }
         
         EmergencyAlert selectedAlert = alertObjects.get(selectedIndex);
+        
+        // Skip if already resolved
+        if (selectedAlert.isResolved()) {
+            showAlert(Alert.AlertType.INFORMATION, "Already Resolved", 
+                     "This alert has already been marked as resolved.");
+            return;
+        }
+        
+        // Mark as resolved in service
+        EmergencyAlertService.resolveAlert(selectedAlert.getAlertId(), loggedInDoctor.getId());
+        
+        // Mark as resolved in local object
         selectedAlert.resolve();
         
-        showAlert(Alert.AlertType.INFORMATION, "Alert marked as resolved");
+        showAlert(Alert.AlertType.INFORMATION, "Success", "Alert marked as resolved successfully.");
         loadAlerts(); // Refresh the list
-    }
-    
-    private void handleContactPatient(ActionEvent event) {
-        int selectedIndex = alertsListView.getSelectionModel().getSelectedIndex();
-        if (selectedIndex < 0 || selectedIndex >= alertObjects.size()) {
-            showAlert(Alert.AlertType.WARNING, "Please select an alert first");
-            return;
-        }
-        
-        EmergencyAlert selectedAlert = alertObjects.get(selectedIndex);
-        
-        // Create a dialog to send message
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Contact Patient");
-        dialog.setHeaderText("Send a message to " + selectedAlert.getPatientName());
-        dialog.setContentText("Message:");
-        
-        dialog.showAndWait().ifPresent(message -> {
-            // In a real app, we would send this message to the patient
-            NotificationService.sendNotification(selectedAlert.getPatientId(), 
-                    "Message from Dr. " + loggedInDoctor.getName() + ": " + message);
-            
-            showAlert(Alert.AlertType.INFORMATION, "Message sent to " + selectedAlert.getPatientName());
-        });
-    }
-    
-    private void handleEmergencyCall(ActionEvent event) {
-        int selectedIndex = alertsListView.getSelectionModel().getSelectedIndex();
-        if (selectedIndex < 0 || selectedIndex >= alertObjects.size()) {
-            showAlert(Alert.AlertType.WARNING, "Please select an alert first");
-            return;
-        }
-        
-        EmergencyAlert selectedAlert = alertObjects.get(selectedIndex);
-        
-        try {
-            // Create a temporary patient for the video call
-            Patient patient = new Patient();
-            patient.setId(selectedAlert.getPatientId());
-            patient.setName(selectedAlert.getPatientName());
-            
-            // Load the video call view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/VideoCall.fxml"));
-            Parent videoCallRoot = loader.load();
-            
-            VideoCallController controller = loader.getController();
-            controller.startCall(loggedInDoctor, patient);
-            
-            Stage stage = new Stage();
-            stage.setTitle("Emergency Call with " + patient.getName());
-            stage.setScene(new Scene(videoCallRoot));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error starting emergency call: " + e.getMessage());
-        }
     }
     
     private void handleBack(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DoctorDashboard.fxml"));
-            Parent dashboardRoot = loader.load();
+            Parent root = loader.load();
             
             DoctorDashboardController controller = loader.getController();
             controller.setLoggedInDoctor(loggedInDoctor);
             
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(new Scene(dashboardRoot));
+            stage.setScene(new Scene(root));
             stage.setTitle("Doctor Dashboard");
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error returning to dashboard");
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not return to dashboard.");
         }
     }
     
-    private void showAlert(Alert.AlertType type, String message) {
+    private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
-        alert.setTitle(type == Alert.AlertType.ERROR ? "Error" : "Information");
+        alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

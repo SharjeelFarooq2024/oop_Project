@@ -8,15 +8,28 @@
                 style="-fx-background-color: #f5f5f5;">
         <!-- Top Bar -->
         <top>
-            <HBox style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
-                <padding>
-                    <Insets top="15" right="20" bottom="15" left="20"/>
-                </padding>
-                <Label text="HMS" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1a237e;"/>
-                <Pane HBox.hgrow="ALWAYS"/>
-                <Button fx:id="logoutButton" text="Logout"
-                        style="-fx-background-color: transparent; -fx-text-fill: #757575; -fx-font-size: 14px;"/>
-            </HBox>
+            <VBox>
+                <!-- Existing top bar -->
+                <HBox style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <padding>
+                        <Insets top="15" right="20" bottom="15" left="20"/>
+                    </padding>
+                    <Label text="HMS" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1a237e;"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="logoutButton" text="Logout"
+                            style="-fx-background-color: transparent; -fx-text-fill: #757575; -fx-font-size: 14px;"/>
+                </HBox>
+                
+                <!-- New panic button bar -->
+                <HBox alignment="CENTER" style="-fx-background-color: #ffebee; -fx-padding: 10;">
+                    <Button fx:id="panicButton" text="EMERGENCY PANIC BUTTON" 
+                            style="-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 2);">
+                        <graphic>
+                            <Label text="⚠️" style="-fx-font-size: 18px;"/>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </VBox>
         </top>
     
         <!-- Left Sidebar -->
@@ -38,6 +51,10 @@
                 <Button fx:id="viewReportsButton" text="Medical Reports"
                         style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
                 <Button fx:id="uploadVitalsButton" text="Upload Vitals"
+                        style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
+                <Button fx:id="chatButton" text="Messages"
+                        style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
+                <Button fx:id="videoCallButton" text="Video Call"
                         style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
             </VBox>
         </left>

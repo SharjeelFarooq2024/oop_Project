@@ -41,7 +41,7 @@
                     style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
             <Button fx:id="emergencyAlertsButton" text="Emergency Alerts"
                     style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
-            <Button fx:id="videoCallButton" text="Video Calls"
+            <Button fx:id="chatButton" text="Messages"
                     style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
         </VBox>
     </left>

@@ -57,7 +57,7 @@ public class DoctorDashboardController implements Initializable {
     @FXML private Button appointmentsButton;
     @FXML private Button patientsButton;
     @FXML private Button emergencyAlertsButton;
-    @FXML private Button videoCallButton;
+    @FXML private Button chatButton; // Add this to your existing FXML button declarations
 
     // Appointment requests (pending appointments)
     @FXML private TableView<AppointmentViewModel> pendingAppointmentsTable;
@@ -116,7 +116,7 @@ public class DoctorDashboardController implements Initializable {
         appointmentsButton.setOnAction(this::navigateToAppointments);
         patientsButton.setOnAction(this::navigateToPatients);
         emergencyAlertsButton.setOnAction(this::navigateToEmergencyAlerts);
-        videoCallButton.setOnAction(this::navigateToVideoCall);
+        chatButton.setOnAction(event -> openChatInterface());
         dashboardButton.setOnAction(event -> {
             if (loggedInDoctor != null) {
                 loadDashboardData(); // Refresh data on dashboard button click
@@ -402,13 +402,6 @@ public class DoctorDashboardController implements Initializable {
         navigateTo(event, "/fxml/EmergencyAlerts.fxml", "Emergency Alerts", true);
     }
 
-    private void navigateToVideoCall(ActionEvent event) {
-        // VideoCall.fxml might not need loggedInDoctor directly or handles it differently.
-        // If it does, the navigateTo method needs to be adjusted or a specific method created.
-        showAlert(Alert.AlertType.INFORMATION, "Feature Info", "Video call navigation placeholder.");
-        // navigateTo(event, "/fxml/VideoCall.fxml", "Video Call", false); // Example if no doctor passing needed
-    }
-
     private void handleLogout(ActionEvent event) {
         SessionManager.clearSession(); 
         loggedInDoctor = null; // Clear local reference
@@ -468,6 +461,24 @@ public class DoctorDashboardController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void openChatInterface() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ChatView.fxml"));
+            Parent chatRoot = loader.load();
+            
+            ChatViewController controller = loader.getController();
+            controller.setCurrentUser(loggedInDoctor, true);
+            
+            Stage stage = (Stage) chatButton.getScene().getWindow();
+            stage.setScene(new Scene(chatRoot));
+            stage.setTitle("HMS - Doctor Chat");
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not open chat interface.");
+        }
     }
 
     public static class AppointmentViewModel {

@@ -5,15 +5,19 @@ com\myapp\backend\model\Medication.class
 com\myapp\frontend\controllers\EmergencyAlertsController.class
 com\myapp\backend\model\Appointment.class
 com\myapp\backend\services\SessionManager.class
+com\myapp\frontend\controllers\PatientDashboardController$2.class
 com\myapp\backend\services\DoctorService.class
+com\myapp\frontend\controllers\ChatViewController$1.class
 com\myapp\frontend\controllers\VideoCallController.class
 com\myapp\backend\services\VideoCallService.class
 com\myapp\backend\dao\DoctorDAO.class
 com\myapp\backend\model\VideoCallSession.class
 com\myapp\backend\util\ErrorHandler.class
+com\myapp\frontend\controllers\ChatViewController$1$1.class
 com\myapp\frontend\controllers\BookAppointmentController$3.class
 com\myapp\backend\dao\AppointmentDAO.class
 com\myapp\backend\services\ChatService.class
+com\myapp\frontend\controllers\ChatViewController.class
 com\myapp\frontend\controllers\DoctorAppointmentsController$AppointmentViewModel.class
 com\myapp\frontend\controllers\PatientDashboardController.class
 com\myapp\frontend\controllers\DoctorPatientsController$PatientViewModel.class
@@ -36,6 +40,7 @@ com\myapp\frontend\controllers\BookAppointmentController$2.class
 com\myapp\frontend\controllers\BookAppointmentController.class
 com\myapp\frontend\controllers\RegisterController.class
 com\myapp\backend\dao\AppointmentDAO$AppointmentStatus.class
+com\myapp\frontend\controllers\PatientDashboardController$1.class
 com\myapp\frontend\controllers\SignupController.class
 com\myapp\backend\util\FileUtil.class
 com\myapp\backend\services\MedicalRecordsService$MedicalSummary.class
