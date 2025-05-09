@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+    
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.myapp.frontend.controllers.ViewReportsController">
+    <top>
+        <HBox spacing="10" style="-fx-background-color: #2C3E50;">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <Button fx:id="backButton" text="Back" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+        </HBox>
+    </top>
+    <center>
+        <VBox alignment="CENTER" spacing="15">
+            <padding><Insets top="20"/></padding>
+            <Label text="Your Medical Reports" style="-fx-font-size: 20px;"/>
+            <ListView fx:id="reportListView" prefHeight="200" prefWidth="300"/>
+        </VBox>
+    </center>
+</BorderPane>

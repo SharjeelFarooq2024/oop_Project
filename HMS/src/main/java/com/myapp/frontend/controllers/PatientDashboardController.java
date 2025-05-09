@@ -1,6 +1,13 @@
 package com.myapp.frontend.controllers;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+// Add these imports at the top of the file with your other imports
+import java.awt.Desktop;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import com.myapp.backend.dao.DoctorDAO;
 import com.myapp.backend.model.Appointment;
@@ -11,6 +18,13 @@ import com.myapp.backend.services.AppointmentService;
 import com.myapp.backend.services.SessionManager;
 import com.myapp.backend.services.VitalSignService;
 
+// Add these imports at the top of the file if not already present
+import com.myapp.backend.services.EmergencyAlertService;
+import com.myapp.backend.services.NotificationService;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import java.util.Optional;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,7 +33,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -53,6 +72,14 @@ public class PatientDashboardController {
     private Text latestVitalsLabel;
     @FXML
     private Text oxygenLevelLabel;
+
+    @FXML 
+    private Button chatButton; // Add this to your existing FXML button declarations
+    
+    @FXML
+    private Button videoCallButton; // Button for video calls
+
+    @FXML private Button panicButton; // Add this field with other FXML button declarations
 
     private Patient loggedInPatient;  // This is where we store the logged-in patient
 
@@ -176,6 +203,11 @@ public class PatientDashboardController {
     public void initialize() {
         setupButtonHoverEffects();
         setupButtonHandlers();
+        chatButton.setOnAction(event -> openChatInterface());
+        videoCallButton.setOnAction(event -> handleStartVideoCall());
+        
+        // Add panic button handler
+        panicButton.setOnAction(event -> handlePanicButton());
     }
 
     private void setupButtonHoverEffects() {
@@ -199,6 +231,11 @@ public class PatientDashboardController {
             logoutButton.setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #d32f2f; -fx-font-size: 14px;"));
         logoutButton.setOnMouseExited(e -> 
             logoutButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #757575; -fx-font-size: 14px;"));
+
+        videoCallButton.setOnMouseEntered(e -> 
+            videoCallButton.setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #1a237e; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"));
+        videoCallButton.setOnMouseExited(e -> 
+            videoCallButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"));
     }
 
     private void setupButtonHandlers() {
@@ -303,14 +340,28 @@ public class PatientDashboardController {
     
 
     private void handleViewReports(ActionEvent event) {
+        // Placeholder method - feature not yet implemented
+        showAlert("Coming Soon", "The medical reports feature is not yet available.");
+        
+        // Alternatively, you could disable this button entirely in the initialize() method:
+        // viewReportsButton.setDisable(true);
+    }
+
+    private void openChatInterface() {
         try {
-            // Handle the "view reports" action
-            System.out.println("View Reports clicked!");
-            // For example, navigate to the reports page or show reports to the user
-            // You can use the same structure as other methods to load the next screen
-        } catch (Exception e) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ChatView.fxml"));
+            Parent chatRoot = loader.load();
+            
+            ChatViewController controller = loader.getController();
+            controller.setCurrentUser(loggedInPatient, false);
+            
+            Stage stage = (Stage) chatButton.getScene().getWindow();
+            stage.setScene(new Scene(chatRoot));
+            stage.setTitle("HMS - Patient Chat");
+            
+        } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Error", "Unable to load the reports page.");
+            showAlert("Error", "Could not open chat interface: " + e.getMessage());
         }
     }
 
@@ -327,5 +378,131 @@ public class PatientDashboardController {
         }
         
         return "Unknown";
+    }
+
+    private void handleStartVideoCall() {
+        try {
+            // Get the list of doctors assigned to this patient
+            List<Doctor> assignedDoctors = new ArrayList<>();
+            DoctorDAO doctorDAO = new DoctorDAO();
+            
+            for (Doctor doctor : doctorDAO.loadDoctors()) {
+                if (doctor.getPatientIds() != null && doctor.getPatientIds().contains(loggedInPatient.getId())) {
+                    assignedDoctors.add(doctor);
+                }
+            }
+            
+            if (assignedDoctors.isEmpty()) {
+                showAlert("No Doctors Available", "You have no assigned doctors to call.");
+                return;
+            }
+            
+            // Create doctor selection dialog
+            ChoiceDialog<Doctor> dialog = new ChoiceDialog<>(assignedDoctors.get(0), assignedDoctors);
+            dialog.setTitle("Select Doctor");
+            dialog.setHeaderText("Select a doctor to call");
+            dialog.setContentText("Doctor:");
+            
+            // Set a custom string converter to display doctor names properly
+            ComboBox<Doctor> comboBox = (ComboBox<Doctor>) dialog.getDialogPane().lookup(".combo-box");
+            if (comboBox != null) {
+                comboBox.setCellFactory(lv -> new ListCell<Doctor>() {
+                    @Override
+                    protected void updateItem(Doctor doctor, boolean empty) {
+                        super.updateItem(doctor, empty);
+                        if (empty || doctor == null) {
+                            setText(null);
+                        } else {
+                            setText("Dr. " + doctor.getName() + " (" + doctor.getSpecialization() + ")");
+                        }
+                    }
+                });
+                
+                comboBox.setButtonCell(new ListCell<Doctor>() {
+                    @Override
+                    protected void updateItem(Doctor doctor, boolean empty) {
+                        super.updateItem(doctor, empty);
+                        if (empty || doctor == null) {
+                            setText(null);
+                        } else {
+                            setText("Dr. " + doctor.getName() + " (" + doctor.getSpecialization() + ")");
+                        }
+                    }
+                });
+            }
+            
+            // Fixed zoom link
+            String zoomUrl = "https://us05web.zoom.us/j/86573083865?pwd=2f3nVb2EDpaSz4P5OouLIaKoCuepHj.1";
+            
+            // Show the dialog and handle the result
+            dialog.showAndWait().ifPresent(selectedDoctor -> {
+                try {
+                    // Open Zoom link directly in browser
+                    try {
+                        Desktop.getDesktop().browse(new URI(zoomUrl));
+                    } catch (Exception ex) {
+                        System.err.println("Failed to open Zoom link: " + ex.getMessage());
+                    }
+
+                    // Then load the video call UI
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/VideoCall.fxml"));
+                    Parent videoCallRoot = loader.load();
+
+                    VideoCallController controller = loader.getController();
+                    controller.setZoomMeetingLink(zoomUrl);
+                    controller.setupCall(selectedDoctor, loggedInPatient);
+
+                    Stage stage = (Stage) videoCallButton.getScene().getWindow();
+                    stage.setScene(new Scene(videoCallRoot));
+                    stage.setTitle("Video Call with Dr. " + selectedDoctor.getName());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    showAlert("Error", "Failed to start video call: " + e.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    // Add this new method to handle panic button press
+    private void handlePanicButton() {
+        if (loggedInPatient == null) {
+            showAlert("Error", "You must be logged in to use the panic button");
+            return;
+        }
+        
+        // Show confirmation dialog
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Emergency Panic Button");
+        confirmAlert.setHeaderText("Are you sure you want to send an emergency alert?");
+        confirmAlert.setContentText("This will notify all doctors that you need immediate medical assistance.");
+        
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // Create emergency message
+            String message = "EMERGENCY ALERT: Patient " + loggedInPatient.getName() + 
+                             " has pressed the panic button and needs immediate medical assistance!";
+            
+            // Use EmergencyAlertService to create an alert for all doctors
+            EmergencyAlertService.createEmergencyAlert(loggedInPatient, message);
+            
+            // Send email notification if patient has provided email
+            if (loggedInPatient.getEmail() != null && !loggedInPatient.getEmail().isEmpty()) {
+                String subject = "HMS Emergency Alert Confirmation";
+                String emailContent = 
+                    "Dear " + loggedInPatient.getName() + ",\n\n" +
+                    "This is to confirm that your emergency alert has been sent to all available doctors.\n\n" +
+                    "A medical professional should contact you shortly.\n\n" +
+                    "HMS Emergency Response System";
+                
+                NotificationService.sendEmailNotification(loggedInPatient.getEmail(), subject, emailContent);
+            }
+            
+            // Show confirmation to the user
+            showAlert("Alert Sent", "Your emergency alert has been sent to all doctors. " +
+                     "A medical professional will contact you as soon as possible.");
+        }
     }
 }

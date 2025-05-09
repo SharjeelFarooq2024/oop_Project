@@ -6,8 +6,8 @@
   "age" : 12,
   "feedbacks" : [ ],
   "vitalSigns" : [ ],
-  "prescribedMedications" : [ ],
-  "latestVitalSign" : null
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
 }, {
   "name" : "a",
   "id" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
@@ -16,8 +16,8 @@
   "age" : 20,
   "feedbacks" : [ ],
   "vitalSigns" : [ ],
-  "prescribedMedications" : [ ],
-  "latestVitalSign" : null
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
 }, {
   "name" : "abdullah",
   "id" : "6c838500-1953-4933-be97-67166cca0f40",
@@ -26,8 +26,8 @@
   "age" : 20,
   "feedbacks" : [ ],
   "vitalSigns" : [ ],
-  "prescribedMedications" : [ ],
-  "latestVitalSign" : null
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
 }, {
   "name" : "dogar",
   "id" : "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1",
@@ -36,8 +36,8 @@
   "age" : 0,
   "feedbacks" : [ ],
   "vitalSigns" : [ ],
-  "prescribedMedications" : [ ],
-  "latestVitalSign" : null
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
 }, {
   "name" : "Humza",
   "id" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
@@ -46,8 +46,8 @@
   "age" : 0,
   "feedbacks" : [ ],
   "vitalSigns" : [ ],
-  "prescribedMedications" : [ ],
-  "latestVitalSign" : null
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
 }, {
   "name" : "patient_1",
   "id" : "1d390b86-c79f-41b5-9e51-7e98b52b3184",
@@ -62,8 +62,8 @@
     "recommendedTests" : null
   } ],
   "vitalSigns" : [ ],
-  "prescribedMedications" : [ "panadol 3 times for 4 days" ],
-  "latestVitalSign" : null
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ "panadol 3 times for 4 days" ]
 }, {
   "name" : "patient 5",
   "id" : "6530992a-5b3c-4eff-8a78-bcf23b25cd29",
@@ -78,6 +78,26 @@
     "recommendedTests" : null
   } ],
   "vitalSigns" : [ ],
-  "prescribedMedications" : [ "panadol 100mg 3 times a day for 7 days" ],
-  "latestVitalSign" : null
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ "panadol 100mg 3 times a day for 7 days" ]
+}, {
+  "name" : "talha",
+  "id" : "45e4c2e1-00dc-45ff-b41a-5472f3dd8d54",
+  "email" : "talha",
+  "password" : "talha",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "haris",
+  "id" : "e65222f9-af45-44df-b63d-24ceebf40ef1",
+  "email" : "haris@gmail.com",
+  "password" : "Asdfgg/&",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
 } ]

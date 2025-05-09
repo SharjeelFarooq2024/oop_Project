@@ -659,4 +659,14 @@
     "scheduled" : false
   } ],
   "emergencyAlerts" : [ ]
+}, {
+  "name" : "ali",
+  "id" : "0c9fb1c5-6f5e-4e96-839b-cc00556f3ff6",
+  "email" : "ali",
+  "password" : "ali",
+  "age" : 0,
+  "specialization" : "ali",
+  "patientIds" : [ ],
+  "appointments" : [ ],
+  "emergencyAlerts" : [ ]
 } ]

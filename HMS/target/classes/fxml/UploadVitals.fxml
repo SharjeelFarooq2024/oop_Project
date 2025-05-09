@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.myapp.frontend.controllers.UploadVitalsController"
+    prefWidth="800" prefHeight="600">
+    <top>
+        <HBox spacing="10" style="-fx-background-color: #1a237e;">
+            <padding><Insets top="15" right="20" bottom="15" left="20"/></padding>
+            <Button fx:id="backButton" text="Back"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px;" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="25" style="-fx-background-color: white;">
+            <padding>
+                <Insets top="30" right="40" bottom="40" left="40"/>
+            </padding>
+
+            <VBox spacing="30" VBox.vgrow="NEVER">
+                <Text text="Upload Vital Signs" 
+                      style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-fill: #1a237e;"/>
+
+                <GridPane vgap="20" hgap="20">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="50" minWidth="200"/>
+                        <ColumnConstraints percentWidth="50" minWidth="200"/>
+                    </columnConstraints>
+
+                    <!-- Blood Pressure -->
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Blood Pressure (e.g., 120/80)" style="-fx-font-size: 14px;"/>
+                        <TextField fx:id="bloodPressureField" promptText="Enter blood pressure" 
+                                 style="-fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <!-- Heart Rate -->
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Heart Rate (bpm)" style="-fx-font-size: 14px;"/>
+                        <TextField fx:id="heartRateField" promptText="Enter heart rate" 
+                                 style="-fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <!-- Temperature -->
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label text="Temperature (°C)" style="-fx-font-size: 14px;"/>
+                        <TextField fx:id="temperatureField" promptText="Enter temperature" 
+                                 style="-fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <!-- Oxygen Saturation -->
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Label text="Oxygen Saturation (%)" style="-fx-font-size: 14px;"/>
+                        <TextField fx:id="oxygenField" promptText="Enter oxygen level" 
+                                 style="-fx-font-size: 14px;"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS" /> <!-- Spacer -->
+
+            <!-- Submit & Clear Buttons -->
+            <HBox spacing="10" alignment="CENTER_RIGHT" VBox.vgrow="NEVER">
+                <Button fx:id="clearVitalsButton" text="Clear" minWidth="120" minHeight="40"
+                        style="-fx-background-color: #e0e0e0; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                <Button fx:id="submitVitalsButton" text="Submit" minWidth="120" minHeight="40"
+                        style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

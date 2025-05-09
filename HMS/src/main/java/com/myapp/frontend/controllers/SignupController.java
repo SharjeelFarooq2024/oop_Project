@@ -39,6 +39,27 @@ public class SignupController {
         });
     }
 
+    private boolean validateSignup(String email, String password) {
+        if (email == null || !email.contains("@") || !email.contains(".com")) {
+            showAlert("Error", "Invalid email! Email must contain '@' and '.com'.");
+            return false;
+        }
+        if (password == null || password.length() < 6) {
+            showAlert("Error", "Password must be at least 6 characters long.");
+            return false;
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            showAlert("Error", "Password must contain at least one uppercase letter.");
+            return false;
+        }
+        if (!password.matches(".*[!@#$%^&*()].*")) {
+    showAlert("Error", "Password must contain at least one special character (e.g. !@#$%^&* etc).");
+    return false;
+}
+
+        return true;
+    }
+
     @FXML
     private void goToLogin(ActionEvent event) {
         try {
@@ -64,6 +85,10 @@ public class SignupController {
         // Validation
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
             showAlert("Error", "All fields are required.");
+            return;
+        }
+        // Email and password validation
+        if (!validateSignup(email, password)) {
             return;
         }
 
