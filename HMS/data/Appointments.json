@@ -24,13 +24,13 @@
   "appointmentId" : "eaccebca-244f-4a38-8e4b-4252dd09be6f",
   "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
   "doctorId" : "6a2c963e-77af-46ff-a00e-2f1ac89bb0db",
-  "status" : "Pending",
+  "status" : "Scheduled",
   "date" : "2025-05-22",
   "time" : "02:00 PM",
   "description" : "g",
   "completed" : false,
-  "pending" : true,
-  "scheduled" : false
+  "pending" : false,
+  "scheduled" : true
 }, {
   "appointmentId" : "547236ae-b215-4509-91fe-5df280160d63",
   "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",

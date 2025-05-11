@@ -16,7 +16,7 @@
     </top>
 
     <center>
-        <VBox spacing="25" style="-fx-background-color: white;">
+        <VBox spacing="25" style="-fx-background-color: white;" VBox.vgrow="ALWAYS">
             <padding>
                 <Insets top="30" right="40" bottom="40" left="40"/>
             </padding>
@@ -61,7 +61,7 @@
                 </GridPane>
             </VBox>
 
-            <Region VBox.vgrow="ALWAYS" /> <!-- Spacer -->
+            <Region VBox.vgrow="ALWAYS" minHeight="20" /> <!-- Spacer with minHeight to help layout -->
 
             <!-- Submit & Clear Buttons -->
             <HBox spacing="10" alignment="CENTER_RIGHT" VBox.vgrow="NEVER">

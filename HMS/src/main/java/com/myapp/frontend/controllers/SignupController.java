@@ -52,11 +52,10 @@ public class SignupController {
             showAlert("Error", "Password must contain at least one uppercase letter.");
             return false;
         }
-        if (!password.matches(".*[!@#$%^&*()].*")) {
-    showAlert("Error", "Password must contain at least one special character (e.g. !@#$%^&* etc).");
-    return false;
-}
-
+        if (!password.matches(".*[!@#$%^&*()_+\\-=[\\]{};':\"\\\\|,.<>/?].*")) {
+            showAlert("Error", "Password must contain at least one special character (e.g. !@#$%^&* etc).");
+            return false;
+        }
         return true;
     }
 

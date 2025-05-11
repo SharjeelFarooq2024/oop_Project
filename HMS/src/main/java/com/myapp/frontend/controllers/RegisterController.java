@@ -19,11 +19,10 @@ public class RegisterController {
             showAlert("Password must contain at least one uppercase letter.");
             return false;
         }
-        if (!password.matches(".*[!@#$%^&*()].*")) {
-    showAlert("Password must contain at least one special character (e.g. !@#$%^&* etc).");
-    return false;
-}
-
+        if (!password.matches(".*[!@#$%^&*()_+\\-=[\\]{};':\"\\\\|,.<>/?].*")) {
+            showAlert("Password must contain at least one special character.");
+            return false;
+        }
         return true;
     }
 

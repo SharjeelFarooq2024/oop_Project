@@ -156,6 +156,7 @@ public class UploadVitalsController {
             // Pass the logged-in patient to the dashboard controller
             PatientDashboardController controller = loader.getController();
             controller.setLoggedInPatient(loggedInPatient);
+            // No need to call updateVitalsDisplay() here; setLoggedInPatient already updates vitals and chart
     
             Scene scene = new Scene(dashboardRoot);
             stage.setScene(scene);

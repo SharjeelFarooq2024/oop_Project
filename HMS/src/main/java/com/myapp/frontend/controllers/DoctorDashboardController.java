@@ -403,10 +403,25 @@ public class DoctorDashboardController implements Initializable {
     }
 
     private void handleLogout(ActionEvent event) {
-        SessionManager.clearSession(); 
-        loggedInDoctor = null; // Clear local reference
-        updateDoctorInfo(); // Update UI to reflect logged-out state
-        navigateTo(event, "/fxml/login.fxml", "Login", false);
+        try {
+            // Clear the session
+            SessionManager.clearSession();
+
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            double width = stage.getWidth();
+            double height = stage.getHeight();
+
+            Parent root = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Login");
+            stage.setWidth(width);
+            stage.setHeight(height);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Logout Failed", "Could not return to login page.");
+        }
     }
 
     private void navigateTo(ActionEvent event, String fxmlFile, String title, boolean passDoctorContext) {
