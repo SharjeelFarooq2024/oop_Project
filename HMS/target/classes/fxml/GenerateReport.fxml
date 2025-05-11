@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.myapp.frontend.controllers.GenerateReportScreenController"
+      alignment="CENTER"
+      style="-fx-background-color: linear-gradient(to bottom right, #0f4c81, #38b6ff);"
+      spacing="30"
+      padding="40">
+      
+    <Label text="Generate Reports"
+           style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;" />
+    
+    <VBox spacing="20" 
+          alignment="CENTER"
+          style="-fx-background-color: white; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 0);"
+          minWidth="400"
+          maxWidth="500"
+          padding="30">
+          
+        <Label text="Select Report Type:" 
+               style="-fx-font-size: 16px; -fx-text-fill: #333333;" />
+               
+        <ComboBox fx:id="reportTypeComboBox" 
+                  prefWidth="300" />
+                  
+        <Button fx:id="generateButton" 
+                text="Generate Report"
+                style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 5;"
+                prefWidth="200" />
+                
+        <Button fx:id="backButton" 
+                text="Back to Dashboard"
+                style="-fx-background-color: #e0e0e0; -fx-text-fill: #333333; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 5;"
+                prefWidth="200" />
+    </VBox>
+</VBox>

@@ -124,10 +124,36 @@ public class LoginController {
                     System.out.println("Login failed - Invalid patient credentials");
                     showAlert("Error", "Invalid patient credentials.");
                 }
+            } else if (selectedType == adminRadio) {
+                // Admin login
+                handleAdminLogin(email, password);
             }
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Error", "An error occurred during login: " + e.getMessage());
+        }
+    }
+
+    private void handleAdminLogin(String email, String password) {
+        // For simplicity, hardcoded admin credentials
+        if ("admin@hospital.com".equals(email) && "admin123".equals(password)) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminDashboard.fxml"));
+                Parent root = loader.load();
+                
+                AdminDashboardController controller = loader.getController();
+                controller.setPrimaryStage((Stage) loginButton.getScene().getWindow());
+                
+                Scene scene = new Scene(root);
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                stage.setScene(scene);
+                stage.setTitle("HMS - Admin Dashboard");
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert("Error", "Could not load admin dashboard.");
+            }
+        } else {
+            showAlert("Login Failed", "Invalid admin credentials.");
         }
     }
 

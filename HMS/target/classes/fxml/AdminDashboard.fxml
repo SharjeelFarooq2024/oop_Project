@@ -1,0 +1,34 @@
+d.fxml -->
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.myapp.frontend.controllers.AdminDashboardController"
+      alignment="TOP_CENTER"
+      style="-fx-background-color: linear-gradient(to bottom right, #0f4c81, #38b6ff);"
+      spacing="30"
+      padding="40">
+      
+    <Label text="Hospital Management System"
+           style="-fx-font-size: 26px; -fx-text-fill: white;" />
+    
+    <VBox spacing="20" 
+          alignment="CENTER"
+          style="-fx-background-color: white; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 0);"
+          padding="30">
+          
+        <Label fx:id="title" text="Admin Dashboard"
+               style="-fx-font-size: 20px; -fx-text-fill: #1e1e2f;" />
+               
+        <Button fx:id="viewUsersBtn" text="View All Users" />
+        <Button fx:id="addUserBtn" text="Add New User" />
+        <Button fx:id="deleteUserBtn" text="Delete User" />
+        <Button fx:id="generateReportBtn" text="Generate Report" />
+        <Button fx:id="backToLoginBtn" text="Back to Login" />
+    </VBox>
+</VBox>

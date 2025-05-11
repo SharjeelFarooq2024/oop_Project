@@ -9,6 +9,7 @@ import com.myapp.backend.model.Patient;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PatientDAO {
@@ -23,10 +24,17 @@ public class PatientDAO {
     // Load patients from the file
     private List<Patient> loadPatients() throws IOException {
         File file = new File(FILE_PATH);
-        if (!file.exists()) {
+        if (!file.exists() || file.length() == 0) { // Handle empty file
             return new ArrayList<>();
         }
-        return mapper.readValue(file, new TypeReference<List<Patient>>() {});
+        try {
+            return mapper.readValue(file, new TypeReference<List<Patient>>() {});
+        } catch (IOException e) {
+            System.err.println("Error reading patients file: " + FILE_PATH + ". Returning empty list. Error: " + e.getMessage());
+            // Optionally, create an empty file or return an empty list to prevent further errors.
+            // For now, just returning an empty list.
+            return new ArrayList<>();
+        }
     }
 
     // Save patients to the file
@@ -80,7 +88,6 @@ public class PatientDAO {
         return null;
     }
 
-    // Add this method to the PatientDAO class
     public void updatePatient(Patient updatedPatient) throws IOException {
         if (updatedPatient == null || updatedPatient.getId() == null) {
             throw new IllegalArgumentException("Invalid patient data for update");
@@ -102,5 +109,19 @@ public class PatientDAO {
         }
 
         savePatients(patients);
+    }
+
+    /**
+     * Retrieves all patients from the data source.
+     * @return A list of all patients.
+     */
+    public List<Patient> getAllPatients() {
+        try {
+            return loadPatients();
+        } catch (IOException e) {
+            System.err.println("Failed to load all patients: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList(); // Return an empty list on error
+        }
     }
 }
