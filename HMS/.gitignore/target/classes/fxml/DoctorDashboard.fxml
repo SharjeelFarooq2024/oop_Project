@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.myapp.frontend.controllers.DoctorDashboardController"
+            style="-fx-background-color: #f5f5f5;">
+
+    <!-- Top Bar -->
+    <top>
+        <HBox style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+            <padding>
+                <Insets top="15" right="20" bottom="15" left="20"/>
+            </padding>
+            <Label text="HMS" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1a237e;"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button fx:id="logoutButton" text="Logout"
+                    style="-fx-background-color: transparent; -fx-text-fill: #757575; -fx-font-size: 14px;"/>
+        </HBox>
+    </top>
+
+    <!-- Left Sidebar -->
+    <left>
+        <VBox spacing="10" prefWidth="250"
+              style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+            <padding>
+                <Insets top="20" right="15" bottom="20" left="15"/>
+            </padding>
+
+            <Label fx:id="doctorNameLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Label fx:id="specializationLabel" style="-fx-font-size: 14px; -fx-text-fill: #757575;"/>
+            <Separator style="-fx-padding: 10 0 10 0;"/>
+
+            <Button fx:id="dashboardButton" text="Dashboard"
+                    style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
+            <Button fx:id="appointmentsButton" text="Appointments"
+                    style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
+            <Button fx:id="patientsButton" text="My Patients"
+                    style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
+            <Button fx:id="emergencyAlertsButton" text="Emergency Alerts"
+                    style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
+            <Button fx:id="videoCallButton" text="Video Calls"
+                    style="-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"/>
+        </VBox>
+    </left>
+
+    <!-- Main Content Area -->
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background: #f5f5f5; -fx-background-color: #f5f5f5;">
+            <VBox spacing="20">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+
+                <!-- Welcome Section -->
+                <VBox style="-fx-background-color: #1a237e; -fx-background-radius: 10;" spacing="10">
+                    <padding>
+                        <Insets top="30" right="30" bottom="30" left="30"/>
+                    </padding>
+                    <Label fx:id="welcomeLabel" text="Welcome back" style="-fx-text-fill: white; -fx-font-size: 24px;"/>
+                    <Text text="Here's your workflow overview" style="-fx-fill: white; -fx-font-size: 16px; -fx-opacity: 0.9;"/>
+                    
+                    <HBox spacing="40" style="-fx-padding: 20 0 0 0;">
+                        <VBox>
+                            <Label text="Total Patients" style="-fx-text-fill: white; -fx-opacity: 0.9;"/>
+                            <Label fx:id="totalPatientsLabel" text="0" style="-fx-text-fill: white; -fx-font-size: 24px;"/>
+                        </VBox>
+                        <VBox>
+                            <Label text="Upcoming Appointments" style="-fx-text-fill: white; -fx-opacity: 0.9;"/>
+                            <Label fx:id="upcomingAppointmentsLabel" text="0" style="-fx-text-fill: white; -fx-font-size: 24px;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Appointment Requests Card -->
+                <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="Appointment Requests" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    <TableView fx:id="pendingAppointmentsTable" prefHeight="150">
+                        <columns>
+                            <TableColumn fx:id="pendingPatientColumn" text="Patient" prefWidth="200"/>
+                            <TableColumn fx:id="pendingDateColumn" text="Date" prefWidth="120"/>
+                            <TableColumn fx:id="pendingTimeColumn" text="Time" prefWidth="120"/>
+                            <TableColumn fx:id="pendingActionsColumn" text="Actions" prefWidth="160"/>
+                        </columns>
+                        <placeholder>
+                            <Label text="No pending appointment requests."/>
+                        </placeholder>
+                    </TableView>
+                </VBox>
+                
+                <!-- Scheduled Appointments Card -->
+                <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="Scheduled Appointments" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    <TableView fx:id="scheduledAppointmentsTable" prefHeight="150">
+                        <columns>
+                            <TableColumn fx:id="scheduledPatientColumn" text="Patient" prefWidth="200"/>
+                            <TableColumn fx:id="scheduledDateColumn" text="Date" prefWidth="120"/>
+                            <TableColumn fx:id="scheduledTimeColumn" text="Time" prefWidth="120"/>
+                            <TableColumn fx:id="scheduledStatusColumn" text="Status" prefWidth="120"/>
+                        </columns>
+                        <placeholder>
+                            <Label text="No scheduled appointments."/>
+                        </placeholder>
+                    </TableView>
+                </VBox>
+
+                <!-- Today's Appointments Card -->
+                <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="Today's Appointments" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    <TableView fx:id="todaysAppointmentsTable" prefHeight="150">
+                        <columns>
+                            <TableColumn fx:id="todayPatientColumn" text="Patient" prefWidth="200"/>
+                            <TableColumn fx:id="todayTimeColumn" text="Time" prefWidth="120"/>
+                            <TableColumn fx:id="todayStatusColumn" text="Status" prefWidth="120"/>
+                        </columns>
+                        <placeholder>
+                            <Label text="No appointments for today."/>
+                        </placeholder>
+                    </TableView>
+                </VBox>
+
+                <!-- Emergency Alerts Card -->
+                <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="Emergency Alerts" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #d32f2f;"/>
+                    <ListView fx:id="emergencyAlertsList" prefHeight="100"/>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- Optional Bottom Bar with Status -->
+    <bottom>
+        <HBox style="-fx-background-color: #f5f5f5; -fx-border-color: #e0e0e0; -fx-border-width: 1 0 0 0;">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+            <Label fx:id="statusLabel" text="Status: Online" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

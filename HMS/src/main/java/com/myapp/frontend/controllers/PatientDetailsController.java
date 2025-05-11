@@ -6,6 +6,7 @@ import com.myapp.backend.model.Feedback;
 import com.myapp.backend.model.Patient;
 import com.myapp.backend.model.VitalSign;
 import com.myapp.backend.services.NotificationService;
+import com.myapp.backend.services.VitalSignService;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +19,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -26,6 +29,15 @@ import java.util.ResourceBundle;
 import java.util.List;
 import java.io.IOException;
 import java.io.File;
+
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.Alert;
 
 public class PatientDetailsController implements Initializable {
 
@@ -58,6 +70,11 @@ public class PatientDetailsController implements Initializable {
     
     @FXML private TextField searchHistoryField;
 
+    @FXML private BarChart<String, Number> bpChart;
+    @FXML private BarChart<String, Number> hrChart;
+    @FXML private BarChart<String, Number> tempChart;
+    @FXML private BarChart<String, Number> oxyChart;
+
     private Patient currentPatient;
     private Doctor currentDoctor;
     
@@ -82,6 +99,7 @@ public class PatientDetailsController implements Initializable {
         loadPatientVitals();
         loadVitalsHistory();
         loadPreviousFeedback();
+        updateVitalsCharts();
     }
     
     private void updatePatientInfo() {
@@ -311,5 +329,43 @@ public class PatientDetailsController implements Initializable {
         if (medicalTabPane != null && newFeedbackTab != null) {
             medicalTabPane.getSelectionModel().select(newFeedbackTab);
         }
+    }
+
+    private void updateVitalsCharts() {
+        if (bpChart != null) bpChart.getData().clear();
+        if (hrChart != null) hrChart.getData().clear();
+        if (tempChart != null) tempChart.getData().clear();
+        if (oxyChart != null) oxyChart.getData().clear();
+        if (currentPatient == null) return;
+        java.util.List<VitalSign> vitalsHistory = VitalSignService.getVitalsHistory(currentPatient.getId());
+        if (vitalsHistory == null || vitalsHistory.isEmpty()) return;
+        XYChart.Series<String, Number> bpSeriesSys = new XYChart.Series<>();
+        bpSeriesSys.setName("Systolic");
+        XYChart.Series<String, Number> bpSeriesDia = new XYChart.Series<>();
+        bpSeriesDia.setName("Diastolic");
+        XYChart.Series<String, Number> hrSeries = new XYChart.Series<>();
+        hrSeries.setName("Heart Rate");
+        XYChart.Series<String, Number> tempSeries = new XYChart.Series<>();
+        tempSeries.setName("Temperature");
+        XYChart.Series<String, Number> oxySeries = new XYChart.Series<>();
+        oxySeries.setName("Oxygen Level");
+        for (int i = vitalsHistory.size() - 1; i >= 0; i--) {
+            VitalSign v = vitalsHistory.get(i);
+            String time = v.getTimestamp().toString();
+            try {
+                String[] bp = v.getBloodPressure().split("/");
+                if (bp.length == 2) {
+                    bpSeriesSys.getData().add(new XYChart.Data<>(time, Integer.parseInt(bp[0].trim())));
+                    bpSeriesDia.getData().add(new XYChart.Data<>(time, Integer.parseInt(bp[1].trim())));
+                }
+            } catch (Exception ignored) {}
+            hrSeries.getData().add(new XYChart.Data<>(time, v.getHeartRate()));
+            tempSeries.getData().add(new XYChart.Data<>(time, v.getTemperature()));
+            oxySeries.getData().add(new XYChart.Data<>(time, v.getOxygenLevel()));
+        }
+        if (bpChart != null) { bpChart.getData().add(bpSeriesSys); bpChart.getData().add(bpSeriesDia); }
+        if (hrChart != null) { hrChart.getData().add(hrSeries); }
+        if (tempChart != null) { tempChart.getData().add(tempSeries); }
+        if (oxyChart != null) { oxyChart.getData().add(oxySeries); }
     }
 }

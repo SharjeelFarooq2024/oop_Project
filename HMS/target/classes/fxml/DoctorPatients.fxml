@@ -25,16 +25,14 @@
     </top>
     
     <center>
-        <VBox spacing="20" style="-fx-padding: 20;">
-            <children>
+        <ScrollPane fitToWidth="true" fitToHeight="true" pannable="true" vbarPolicy="ALWAYS" hbarPolicy="AS_NEEDED" style="-fx-background: #f5f5f5; -fx-background-color: #f5f5f5;">
+            <VBox spacing="20" style="-fx-padding: 20;" minWidth="900" minHeight="800" VBox.vgrow="ALWAYS">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <TextField fx:id="searchField" promptText="Search patients..." prefWidth="300"/>
                     <Button fx:id="searchButton" text="Search" style="-fx-background-color: #1a237e; -fx-text-fill: white;"/>
                     <Pane HBox.hgrow="ALWAYS"/>
                     <Button fx:id="refreshButton" text="Refresh" style="-fx-background-color: #1a237e; -fx-text-fill: white;"/>
                 </HBox>
-                
-                <!-- New BorderPane to manage TableView and buttons -->
                 <BorderPane VBox.vgrow="ALWAYS">
                     <center>
                         <TableView fx:id="patientsTable">
@@ -46,6 +44,7 @@
                         </TableView>
                     </center>
                     <bottom>
+                        <Region VBox.vgrow="ALWAYS" minHeight="20" /> <!-- Spacer to push buttons down -->
                         <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
                             <Button fx:id="viewDetailsButton" text="View Details" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 12;"/>
                             <Button fx:id="addFeedbackButton" text="Add Feedback" style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 12;"/>
@@ -53,7 +52,7 @@
                         </HBox>
                     </bottom>
                 </BorderPane>
-            </children>
-        </VBox>
+            </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>

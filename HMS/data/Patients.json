@@ -1,6 +1,76 @@
 [ {
   "name" : "ali",
+<<<<<<< HEAD
   "id" : "4fc50cc7-1a14-4e83-bd48-9c02fe59136f",
+=======
+  "id" : "e6288530-7473-4ab1-bc36-38d09a2fe119",
+  "email" : "ali",
+  "password" : "ali",
+  "age" : 12,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "a",
+  "id" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+  "email" : "b",
+  "password" : "c",
+  "age" : 20,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "abdullah",
+  "id" : "6c838500-1953-4933-be97-67166cca0f40",
+  "email" : "akhalil.bsai24seecs@seecs.edu.pk",
+  "password" : "a1",
+  "age" : 20,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "dogar",
+  "id" : "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1",
+  "email" : "dogar@gmail.com",
+  "password" : "qwerty",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "Humza",
+  "id" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+  "email" : "humza@gmail.com",
+  "password" : "password",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "patient_1",
+  "id" : "1d390b86-c79f-41b5-9e51-7e98b52b3184",
+  "email" : "p@gmail.com",
+  "password" : "p1",
+  "age" : 0,
+  "feedbacks" : [ {
+    "comment" : "take complete bed rest\n\nPrescribed Tests: complete blood test",
+    "doctorName" : "Dr. John Smith",
+    "medicationPrescribed" : "panadol 3 times for 4 days",
+    "timestamp" : [ 2025, 5, 9, 11, 11, 31, 985075000 ],
+    "recommendedTests" : null
+  } ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ "panadol 3 times for 4 days" ]
+}, {
+  "name" : "patient 5",
+  "id" : "6530992a-5b3c-4eff-8a78-bcf23b25cd29",
+>>>>>>> ab2322349ae586f953225afb09b9f1f0390b53af
   "email" : "zrehman.bsai24seecs@seecs.edu.pk",
   "password" : "p",
   "age" : 0,
@@ -12,6 +82,31 @@
     "recommendedTests" : null
   } ],
   "vitalSigns" : [ ],
+<<<<<<< HEAD
   "prescribedMedications" : [ "panadol 3 times a day" ],
   "latestVitalSign" : null
+=======
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ "panadol 100mg 3 times a day for 7 days" ]
+}, {
+  "name" : "talha",
+  "id" : "45e4c2e1-00dc-45ff-b41a-5472f3dd8d54",
+  "email" : "talha",
+  "password" : "talha",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "haris",
+  "id" : "e65222f9-af45-44df-b63d-24ceebf40ef1",
+  "email" : "haris@gmail.com",
+  "password" : "Asdfgg/&",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+>>>>>>> ab2322349ae586f953225afb09b9f1f0390b53af
 } ]

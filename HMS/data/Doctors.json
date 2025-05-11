@@ -65,8 +65,261 @@
     "time" : "10:00 AM",
     "description" : "sore throat!",
     "completed" : false,
+<<<<<<< HEAD
+=======
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "5c3c6df7-2c21-4b98-acd3-1133b7b3f9e1",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "c7f18c72-1210-45c4-8529-9011e61c324d",
+    "status" : "Pending",
+    "date" : "2025-05-15",
+    "time" : "02:00 PM",
+    "description" : "fgg",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "b58114cd-38c7-42aa-a92c-1f812ff67eb8",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "c7f18c72-1210-45c4-8529-9011e61c324d",
+    "status" : "Pending",
+    "date" : "2025-05-14",
+    "time" : "12:00 PM",
+    "description" : "fjdbhhu",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "ad2341f5-19f5-495c-ac09-a525ec6433f5",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "c7f18c72-1210-45c4-8529-9011e61c324d",
+    "status" : "Pending",
+    "date" : "2025-05-14",
+    "time" : "02:00 PM",
+    "description" : "graph",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  } ],
+  "emergencyAlerts" : [ ]
+}, {
+  "name" : "Ahmad",
+  "id" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+  "email" : "ahmad@gmail.com",
+  "password" : "password",
+  "age" : 0,
+  "specialization" : "Iron-Man",
+  "patientIds" : [ "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b", "1c29dab2-2eca-4c95-bc96-555d2f73d531" ],
+  "appointments" : [ {
+    "appointmentId" : "5a912c56-771e-4678-a04f-ed42c345b15f",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-06-04",
+    "time" : "12:00 PM",
+    "description" : "hope",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "6b84c97e-dbec-466f-907a-f49ea969b58e",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-31",
+    "time" : "02:00 PM",
+    "description" : "alpha",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "f4749fca-26a7-4c81-9010-e3b0424d22d0",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-30",
+    "time" : "11:00 AM",
+    "description" : "z",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "9c93421a-bf97-43a8-acc1-e85cd1c9c7ab",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-30",
+    "time" : "03:00 PM",
+    "description" : "kai",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "7f7302b8-db02-434a-a5ac-e20b5c035560",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-27",
+    "time" : "12:00 PM",
+    "description" : "q",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "276a640a-2c6c-4dbb-bf1e-3ab8dd88bc92",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-27",
+    "time" : "04:00 PM",
+    "description" : "q",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "b5f624ec-c47e-4732-be09-6412d7bee7cd",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-24",
+    "time" : "09:00 AM",
+    "description" : "b",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "d754924c-ad9a-436f-b1da-c44ea63b063e",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-24",
+    "time" : "04:00 PM",
+    "description" : "q",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "4a9b8921-49d3-4b20-b386-19b1e0ff717b",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-23",
+    "time" : "10:00 AM",
+    "description" : "a",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "2afd5737-1744-453b-b34e-86db738177b8",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-22",
+    "time" : "10:00 AM",
+    "description" : "fds",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "cd23f974-b499-4e63-93f7-8386a8b9f1b9",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-22",
+    "time" : "02:00 PM",
+    "description" : "q",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "8e907c0f-b43c-45bd-8b06-4279d9982dd1",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-20",
+    "time" : "11:00 AM",
+    "description" : "ww",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "14d924e9-4bd1-4419-8d7c-9bfb820f90d3",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-19",
+    "time" : "02:00 PM",
+    "description" : "q",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "f743d90b-8e69-40a8-ac78-8cccc6ec1d7a",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-18",
+    "time" : "04:00 PM",
+    "description" : "kl",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "99be739e-da6e-4690-8835-2b356924e77f",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-15",
+    "time" : "02:00 PM",
+    "description" : "gamma",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  }, {
+    "appointmentId" : "21b213c7-563d-43ef-b701-31a429700c98",
+    "patientId" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+    "doctorId" : "bf00724c-b28e-4307-ac34-e503bfbcbe33",
+    "status" : "Pending",
+    "date" : "2025-05-13",
+    "time" : "11:00 AM",
+    "description" : "beta",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  } ],
+  "emergencyAlerts" : [ ]
+}, {
+  "name" : "rowdy",
+  "id" : "6a2c963e-77af-46ff-a00e-2f1ac89bb0db",
+  "email" : "rowdy",
+  "password" : "r",
+  "age" : 0,
+  "specialization" : "Kung Fu",
+  "patientIds" : [ "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b" ],
+  "appointments" : [ {
+    "appointmentId" : "eaccebca-244f-4a38-8e4b-4252dd09be6f",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "6a2c963e-77af-46ff-a00e-2f1ac89bb0db",
+    "status" : "Scheduled",
+    "date" : "2025-05-22",
+    "time" : "02:00 PM",
+    "description" : "g",
+    "completed" : false,
+>>>>>>> ab2322349ae586f953225afb09b9f1f0390b53af
     "pending" : false,
     "scheduled" : true
   } ],
+  "emergencyAlerts" : [ ]
+}, {
+  "name" : "ali",
+  "id" : "0c9fb1c5-6f5e-4e96-839b-cc00556f3ff6",
+  "email" : "ali",
+  "password" : "ali",
+  "age" : 0,
+  "specialization" : "ali",
+  "patientIds" : [ ],
+  "appointments" : [ ],
   "emergencyAlerts" : [ ]
 } ]

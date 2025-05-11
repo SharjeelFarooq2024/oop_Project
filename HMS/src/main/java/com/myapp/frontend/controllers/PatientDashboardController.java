@@ -42,6 +42,10 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 
 public class PatientDashboardController {
 
@@ -81,6 +85,14 @@ public class PatientDashboardController {
 
     @FXML private Button panicButton; // Add this field with other FXML button declarations
 
+    @FXML private BarChart<String, Number> bpChart;
+    @FXML private BarChart<String, Number> hrChart;
+    @FXML private BarChart<String, Number> tempChart;
+    @FXML private BarChart<String, Number> oxyChart;
+
+    @FXML
+    private VBox upcomingAppointmentsVBox; // Add this field for upcoming appointments
+
     private Patient loggedInPatient;  // This is where we store the logged-in patient
 
     // This method will be called after the login to pass the logged-in patient
@@ -91,72 +103,101 @@ public class PatientDashboardController {
         // Initialize the UI with patient data
         Platform.runLater(() -> {
             updateWelcomeMessage();
+            loadUpcomingAppointments();
             loadAppointments();
             loadLatestVitals();
             updateVitalsDisplay();
         });
     }
 
-    private void loadAppointments() {
+    private void loadUpcomingAppointments() {
         if (loggedInPatient != null) {
-            // Clear existing appointments
-            appointmentsVBox.getChildren().clear();
-            
-            // Add a header for appointments
-            Text headerText = new Text("Your Appointments");
+            upcomingAppointmentsVBox.getChildren().clear();
+            Text headerText = new Text("Upcoming Appointments");
             headerText.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-            appointmentsVBox.getChildren().add(headerText);
-            
-            // Fetch appointments for the logged-in patient
+            upcomingAppointmentsVBox.getChildren().add(headerText);
+
             List<Appointment> appointments = AppointmentService.getAppointmentsForPatient(loggedInPatient.getId());
-            
-            // Already sorted in descending order by AppointmentService
-            
             DoctorDAO doctorDAO = new DoctorDAO();
             List<Doctor> allDoctors = doctorDAO.loadDoctors();
-            
-            // Display each appointment in the VBox
+
+            boolean hasUpcoming = false;
             for (Appointment appointment : appointments) {
+                if (!"Scheduled".equalsIgnoreCase(appointment.getStatus())) continue;
+                hasUpcoming = true;
                 String doctorId = appointment.getDoctorId();
                 String doctorName = "Unknown";
-                
-                // Find the doctor's name from the doctor list
                 for (Doctor doctor : allDoctors) {
                     if (doctor.getId() != null && doctor.getId().equals(doctorId)) {
                         doctorName = doctor.getName() + " - " + doctor.getSpecialization();
                         break;
                     }
                 }
-                
-                // Create a styled box for each appointment
+                VBox appointmentBox = new VBox();
+                appointmentBox.setSpacing(5);
+                appointmentBox.setPadding(new javafx.geometry.Insets(10));
+                appointmentBox.setStyle("-fx-background-color: #f5f5f5; -fx-border-color: #4caf50; -fx-border-radius: 5; -fx-background-radius: 5;");
+                Text doctorText = new Text("Doctor: " + doctorName);
+                doctorText.setStyle("-fx-font-weight: bold;");
+                Text dateText = new Text("Date: " + appointment.getDate());
+                Text timeText = new Text("Time: " + appointment.getTime());
+                Text statusText = new Text("Status: " + appointment.getStatus());
+                statusText.setStyle("-fx-font-weight: bold; -fx-fill: green;");
+                Text descText = new Text("Reason: " + appointment.getDescription());
+                appointmentBox.getChildren().addAll(doctorText, dateText, timeText, statusText, descText);
+                VBox.setMargin(appointmentBox, new javafx.geometry.Insets(0, 0, 10, 0));
+                upcomingAppointmentsVBox.getChildren().add(appointmentBox);
+            }
+            if (!hasUpcoming) {
+                Text noAppointmentsText = new Text("No upcoming appointments scheduled");
+                noAppointmentsText.setStyle("-fx-font-style: italic;");
+                upcomingAppointmentsVBox.getChildren().add(noAppointmentsText);
+            }
+        }
+    }
+
+    private void loadAppointments() {
+        if (loggedInPatient != null) {
+            appointmentsVBox.getChildren().clear();
+            Text headerText = new Text("Your Appointments");
+            headerText.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+            appointmentsVBox.getChildren().add(headerText);
+
+            List<Appointment> appointments = AppointmentService.getAppointmentsForPatient(loggedInPatient.getId());
+            DoctorDAO doctorDAO = new DoctorDAO();
+            List<Doctor> allDoctors = doctorDAO.loadDoctors();
+
+            boolean hasAny = false;
+            for (Appointment appointment : appointments) {
+                hasAny = true;
+                String doctorId = appointment.getDoctorId();
+                String doctorName = "Unknown";
+                for (Doctor doctor : allDoctors) {
+                    if (doctor.getId() != null && doctor.getId().equals(doctorId)) {
+                        doctorName = doctor.getName() + " - " + doctor.getSpecialization();
+                        break;
+                    }
+                }
                 VBox appointmentBox = new VBox();
                 appointmentBox.setSpacing(5);
                 appointmentBox.setPadding(new javafx.geometry.Insets(10));
                 appointmentBox.setStyle("-fx-background-color: #f5f5f5; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;");
-                
                 Text doctorText = new Text("Doctor: " + doctorName);
                 doctorText.setStyle("-fx-font-weight: bold;");
-                
                 Text dateText = new Text("Date: " + appointment.getDate());
                 Text timeText = new Text("Time: " + appointment.getTime());
-                
                 Text statusText = new Text("Status: " + appointment.getStatus());
                 statusText.setStyle("-fx-font-weight: bold; " + 
                     (appointment.getStatus().equals("Scheduled") ? "-fx-fill: green;" :
                     appointment.getStatus().equals("Pending") ? "-fx-fill: orange;" :
                     appointment.getStatus().equals("Rejected") ? "-fx-fill: red;" : ""));
-                
                 Text descText = new Text("Reason: " + appointment.getDescription());
-                
                 appointmentBox.getChildren().addAll(doctorText, dateText, timeText, statusText, descText);
-                
-                // Add spacing between appointments
                 VBox.setMargin(appointmentBox, new javafx.geometry.Insets(0, 0, 10, 0));
                 appointmentsVBox.getChildren().add(appointmentBox);
             }
-            
-            if (appointments.isEmpty()) {
-                Text noAppointmentsText = new Text("No appointments scheduled");
+            if (!hasAny) {
+                Text noAppointmentsText = new Text("No appointments found");
                 noAppointmentsText.setStyle("-fx-font-style: italic;");
                 appointmentsVBox.getChildren().add(noAppointmentsText);
             }
@@ -168,17 +209,60 @@ public class PatientDashboardController {
         if (loggedInPatient != null) {
             VitalSign latestVitals = VitalSignService.getLatestVitals(loggedInPatient.getId());
             if (latestVitals != null) {
-                latestVitalsLabel.setText("Latest Vitals:\nBlood Pressure: " + latestVitals.getBloodPressure() +
-                                          "\nHeart Rate: " + latestVitals.getHeartRate() +
-                                          "\nTemperature: " + latestVitals.getTemperature() +
-                                          "\nOxygen Level: " + latestVitals.getOxygenLevel() +
-                                          "\nTimestamp: " + latestVitals.getTimestamp());
+                bloodPressureLabel.setText("Blood Pressure: " + latestVitals.getBloodPressure());
+                heartRateLabel.setText("Heart Rate: " + latestVitals.getHeartRate() + " bpm");
+                temperatureLabel.setText("Temperature: " + latestVitals.getTemperature() + " °C");
+                oxygenLevelLabel.setText("Oxygen Level: " + latestVitals.getOxygenLevel() + "%");
+                latestVitalsLabel.setText("Timestamp: " + latestVitals.getTimestamp());
             } else {
+                bloodPressureLabel.setText("Blood Pressure: -");
+                heartRateLabel.setText("Heart Rate: -");
+                temperatureLabel.setText("Temperature: -");
+                oxygenLevelLabel.setText("Oxygen Level: -");
                 latestVitalsLabel.setText("No vitals available.");
             }
+            updateVitalsCharts();
         }
     }
-    
+
+    private void updateVitalsCharts() {
+        if (bpChart != null) bpChart.getData().clear();
+        if (hrChart != null) hrChart.getData().clear();
+        if (tempChart != null) tempChart.getData().clear();
+        if (oxyChart != null) oxyChart.getData().clear();
+        if (loggedInPatient == null) return;
+        java.util.List<VitalSign> vitalsHistory = VitalSignService.getVitalsHistory(loggedInPatient.getId());
+        if (vitalsHistory == null || vitalsHistory.isEmpty()) return;
+        XYChart.Series<String, Number> bpSeriesSys = new XYChart.Series<>();
+        bpSeriesSys.setName("Systolic");
+        XYChart.Series<String, Number> bpSeriesDia = new XYChart.Series<>();
+        bpSeriesDia.setName("Diastolic");
+        XYChart.Series<String, Number> hrSeries = new XYChart.Series<>();
+        hrSeries.setName("Heart Rate");
+        XYChart.Series<String, Number> tempSeries = new XYChart.Series<>();
+        tempSeries.setName("Temperature");
+        XYChart.Series<String, Number> oxySeries = new XYChart.Series<>();
+        oxySeries.setName("Oxygen Level");
+        for (int i = vitalsHistory.size() - 1; i >= 0; i--) {
+            VitalSign v = vitalsHistory.get(i);
+            String time = v.getTimestamp().toString();
+            try {
+                String[] bp = v.getBloodPressure().split("/");
+                if (bp.length == 2) {
+                    bpSeriesSys.getData().add(new XYChart.Data<>(time, Integer.parseInt(bp[0].trim())));
+                    bpSeriesDia.getData().add(new XYChart.Data<>(time, Integer.parseInt(bp[1].trim())));
+                }
+            } catch (Exception ignored) {}
+            hrSeries.getData().add(new XYChart.Data<>(time, v.getHeartRate()));
+            tempSeries.getData().add(new XYChart.Data<>(time, v.getTemperature()));
+            oxySeries.getData().add(new XYChart.Data<>(time, v.getOxygenLevel()));
+        }
+        if (bpChart != null) { bpChart.getData().add(bpSeriesSys); bpChart.getData().add(bpSeriesDia); }
+        if (hrChart != null) { hrChart.getData().add(hrSeries); }
+        if (tempChart != null) { tempChart.getData().add(tempSeries); }
+        if (oxyChart != null) { oxyChart.getData().add(oxySeries); }
+    }
+
     private void loadLatestVitals() {
         if (loggedInPatient != null) {
             List<VitalSign> vitalsHistory = VitalSignService.getVitalsHistory(loggedInPatient.getId());
@@ -331,6 +415,9 @@ public class PatientDashboardController {
             
             // Show the stage
             stage.show();
+
+            // Update vitals display after uploading vitals
+            updateVitalsDisplay();
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -19,8 +19,8 @@
     </top>
 
     <center>
-        <VBox spacing="20" style="-fx-padding: 20;">
-            <children>
+        <ScrollPane fitToWidth="true" fitToHeight="true" pannable="true" hbarPolicy="AS_NEEDED" vbarPolicy="ALWAYS" style="-fx-background: #f5f5f5; -fx-background-color: #f5f5f5;">
+            <VBox spacing="20" style="-fx-padding: 20;" minWidth="1200" minHeight="2000" maxWidth="Infinity" VBox.vgrow="ALWAYS">
                 <!-- Patient Info Card -->
                 <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-padding: 20;">
                     <children>
@@ -89,6 +89,22 @@
                                                 </VBox>
                                             </children>
                                         </GridPane>
+                                        <javafx.scene.chart.BarChart fx:id="bpChart" title="Blood Pressure Trend" minHeight="180" minWidth="420" style="-fx-background-color: #f8f9fa; -fx-border-color: #1a237e; -fx-border-radius: 8;">
+                                            <xAxis><javafx.scene.chart.CategoryAxis label="Date/Time" /></xAxis>
+                                            <yAxis><javafx.scene.chart.NumberAxis label="Blood Pressure (mmHg)" /></yAxis>
+                                        </javafx.scene.chart.BarChart>
+                                        <javafx.scene.chart.BarChart fx:id="hrChart" title="Heart Rate Trend" minHeight="180" minWidth="420" style="-fx-background-color: #f8f9fa; -fx-border-color: #0097a7; -fx-border-radius: 8;">
+                                            <xAxis><javafx.scene.chart.CategoryAxis label="Date/Time" /></xAxis>
+                                            <yAxis><javafx.scene.chart.NumberAxis label="Heart Rate (bpm)" /></yAxis>
+                                        </javafx.scene.chart.BarChart>
+                                        <javafx.scene.chart.BarChart fx:id="tempChart" title="Temperature Trend" minHeight="180" minWidth="420" style="-fx-background-color: #f8f9fa; -fx-border-color: #ff9800; -fx-border-radius: 8;">
+                                            <xAxis><javafx.scene.chart.CategoryAxis label="Date/Time" /></xAxis>
+                                            <yAxis><javafx.scene.chart.NumberAxis label="Temperature (°C)" /></yAxis>
+                                        </javafx.scene.chart.BarChart>
+                                        <javafx.scene.chart.BarChart fx:id="oxyChart" title="Oxygen Level Trend" minHeight="180" minWidth="420" style="-fx-background-color: #f8f9fa; -fx-border-color: #43a047; -fx-border-radius: 8;">
+                                            <xAxis><javafx.scene.chart.CategoryAxis label="Date/Time" /></xAxis>
+                                            <yAxis><javafx.scene.chart.NumberAxis label="Oxygen Level (%)" /></yAxis>
+                                        </javafx.scene.chart.BarChart>
                                         <Label text="Vitals History" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 10 0 0 0;"/>
                                         <ListView fx:id="vitalsHistoryListView" VBox.vgrow="ALWAYS"/>
                                     </children>
@@ -152,7 +168,7 @@
                         </Tab>
                     </tabs>
                 </TabPane>
-            </children>
-        </VBox>
+            </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>
