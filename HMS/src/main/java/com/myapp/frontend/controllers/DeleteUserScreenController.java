@@ -1,5 +1,6 @@
 package com.myapp.frontend.controllers;
 
+import com.myapp.backend.model.AdminDashboardUser;
 import com.myapp.backend.services.UserManager;
 
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class DeleteUserScreenController implements Initializable {
@@ -37,17 +39,26 @@ public class DeleteUserScreenController implements Initializable {
             }
         });
     }
-    
-    private void loadUsers() {
+      private void loadUsers() {
         userListView.getItems().clear();
         
         // Get all users from the UserManager
-        UserManager.getUsers().forEach(user -> {
+        List<AdminDashboardUser> usersList = UserManager.getUsers();
+        
+        if (usersList.isEmpty()) {
+            showAlert(Alert.AlertType.INFORMATION, "No Users", "There are no users in the system. Default users will be added.");
+            // Initialize default users
+            UserManager.initializeDefaultAdminUsers();
+            // Get users again after initialization
+            usersList = UserManager.getUsers();
+        }
+        
+        for (AdminDashboardUser user : usersList) {
             userListView.getItems().add(user.getName() + " (" + user.getRole() + ")");
-        });
+        }
         
         if (userListView.getItems().isEmpty()) {
-            userListView.setPlaceholder(new Label("No users found."));
+            userListView.setPlaceholder(new Label("No users found. Please refresh or contact administrator."));
         }
     }
     

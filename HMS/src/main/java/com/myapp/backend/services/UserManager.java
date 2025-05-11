@@ -2,10 +2,8 @@ package com.myapp.backend.services;
 
 import com.myapp.backend.model.AdminDashboardUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.*;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -51,9 +49,7 @@ public class UserManager {
         } else {
             System.out.println(FILE_PATH + " already exists and is not empty. Skipping default admin user initialization.");
         }
-    }
-
-    // Add user to file
+    }    // Add user to file
     public static void addUser(AdminDashboardUser user) {
         try {
             File file = new File(FILE_PATH);
@@ -62,18 +58,26 @@ public class UserManager {
                 file.getParentFile().mkdirs();
             }
             
-            // Create file if it doesn't exist
-            if (!file.exists()) {
-                file.createNewFile();
+            List<AdminDashboardUser> users = new ArrayList<>();
+            
+            // Read existing users if file exists
+            if (file.exists() && file.length() > 0) {
+                try {
+                    users = mapper.readValue(file, 
+                        mapper.getTypeFactory().constructCollectionType(List.class, AdminDashboardUser.class));
+                } catch (Exception e) {
+                    System.out.println("Warning: Could not read existing users. Creating new file: " + e.getMessage());
+                    // Continue with empty list if file is corrupted
+                }
             }
             
-            try (FileWriter fileWriter = new FileWriter(FILE_PATH, true)) {
-                ObjectNode userJson = mapper.createObjectNode();
-                userJson.put("name", user.getName());
-                userJson.put("role", user.getRole());
-                fileWriter.write(mapper.writeValueAsString(userJson) + "\n");
-                System.out.println("User added: " + user.getName() + " (" + user.getRole() + ")");
-            }
+            // Add the new user
+            users.add(user);
+            
+            // Write back the entire list
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, users);
+            System.out.println("User added: " + user.getName() + " (" + user.getRole() + ")");
+            
         } catch (IOException e) {
             System.out.println("Error adding user: " + e.getMessage());
         }
@@ -99,48 +103,83 @@ public class UserManager {
             System.out.println("User deleted: " + nameToDelete);
         } else {
             System.out.println("User not found: " + nameToDelete);
-        }
-    }
-
-    // Get all users
+        }    }    // Get all users
     public static List<AdminDashboardUser> getUsers() {
         List<AdminDashboardUser> users = new ArrayList<>();
         File file = new File(FILE_PATH);
         
         if (!file.exists()) {
-            return users; // Return empty list if file doesn't exist
+            // Initialize with default users if file doesn't exist
+            initializeDefaultAdminUsers();
+            return getUsers(); // Recursive call after initialization
         }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                try {
-                    ObjectNode obj = (ObjectNode) mapper.readTree(line);
-                    String name = obj.get("name").asText();
-                    String role = obj.get("role").asText();
-                    users.add(new AdminDashboardUser(name, role));
-                } catch (Exception e) {
-                    System.out.println("Skipping invalid line: " + line);
+        try {
+            // Read the entire file as a JSON array
+            users = mapper.readValue(file, 
+                mapper.getTypeFactory().constructCollectionType(List.class, AdminDashboardUser.class));
+            
+            // If the list is empty or has only one user, add default users
+            if (users.size() <= 1) {
+                // Add the existing user(s) to our default set if any
+                List<AdminDashboardUser> defaultUsers = new ArrayList<>(users);
+                
+                // Check if Smith exists, if not add
+                if (!userExists(users, "Smith")) {
+                    defaultUsers.add(new AdminDashboardUser("Smith", "Doctor"));
+                }
+                
+                // Check if Bob exists, if not add
+                if (!userExists(users, "Bob")) {
+                    defaultUsers.add(new AdminDashboardUser("Bob", "Admin"));
+                }
+                
+                // Check if John exists, if not add
+                if (!userExists(users, "John")) {
+                    defaultUsers.add(new AdminDashboardUser("John", "Patient"));
+                }
+                
+                // Only update if we added users
+                if (defaultUsers.size() > users.size()) {
+                    overwriteUsersFile(defaultUsers);
+                    users = defaultUsers;
                 }
             }
+            
+            System.out.println("Successfully loaded " + users.size() + " users from file");
         } catch (IOException e) {
             System.out.println("Error reading users: " + e.getMessage());
+            // Initialize with default users if there's an error
+            initializeDefaultAdminUsers();
+            try {
+                users = mapper.readValue(file, 
+                    mapper.getTypeFactory().constructCollectionType(List.class, AdminDashboardUser.class));
+            } catch (IOException ex) {
+                System.out.println("Failed to read users after initialization: " + ex.getMessage());
+            }
         }
 
         return users;
-    }
-
+    }    
+    
     // Rewrite entire file with updated users
     private static void overwriteUsersFile(List<AdminDashboardUser> users) {
-        try (FileWriter fileWriter = new FileWriter(FILE_PATH, false)) {
-            for (AdminDashboardUser user : users) {
-                ObjectNode obj = mapper.createObjectNode();
-                obj.put("name", user.getName());
-                obj.put("role", user.getRole());
-                fileWriter.write(mapper.writeValueAsString(obj) + "\n");
-            }
+        try {
+            // Write the entire list as a JSON array
+            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(FILE_PATH), users);
+            System.out.println("Successfully saved " + users.size() + " users to file");
         } catch (IOException e) {
             System.out.println("Error writing users to file: " + e.getMessage());
         }
+    }
+    
+    // Helper method to check if a user with a given name exists
+    private static boolean userExists(List<AdminDashboardUser> users, String name) {
+        for (AdminDashboardUser user : users) {
+            if (user.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

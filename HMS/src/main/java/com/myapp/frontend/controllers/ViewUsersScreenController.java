@@ -38,10 +38,17 @@ public class ViewUsersScreenController implements Initializable {
         loadUsers();
 
         backButton.setOnAction(e -> navigateBack());
-    }
-
-    private void loadUsers() {
+    }    private void loadUsers() {
         List<AdminDashboardUser> userList = UserManager.getUsers();
+        
+        if (userList.isEmpty()) {
+            showAlert(Alert.AlertType.INFORMATION, "No Users", "There are no users in the system. Default users will be added.");
+            // Initialize default users
+            UserManager.initializeDefaultAdminUsers();
+            // Get users again after initialization
+            userList = UserManager.getUsers();
+        }
+        
         ObservableList<AdminDashboardUser> observableUserList = FXCollections.observableArrayList(userList);
         usersTable.setItems(observableUserList);
 

@@ -12,7 +12,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class Main extends Application {
+public class main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Initialize data directory and files

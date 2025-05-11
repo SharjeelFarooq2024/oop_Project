@@ -85,10 +85,14 @@ public class PatientDashboardController {
 
     @FXML private Button panicButton; // Add this field with other FXML button declarations
 
-    @FXML private BarChart<String, Number> bpChart;
-    @FXML private BarChart<String, Number> hrChart;
-    @FXML private BarChart<String, Number> tempChart;
-    @FXML private BarChart<String, Number> oxyChart;
+    @FXML
+    private BarChart<String, Number> bpChart;
+    @FXML
+    private BarChart<String, Number> hrChart;
+    @FXML
+    private BarChart<String, Number> tempChart;
+    @FXML
+    private BarChart<String, Number> oxyChart;
 
     @FXML
     private VBox upcomingAppointmentsVBox; // Add this field for upcoming appointments

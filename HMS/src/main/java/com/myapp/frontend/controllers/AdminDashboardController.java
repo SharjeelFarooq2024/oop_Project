@@ -32,6 +32,7 @@ public class AdminDashboardController implements Initializable {
     @FXML private Button deleteUserBtn;
     @FXML private Button generateReportBtn;
     @FXML private Button backToLoginBtn;
+    @FXML private Button viewLogsBtn;
     @FXML private Label title;
 
     private Stage primaryStage;
@@ -43,6 +44,7 @@ public class AdminDashboardController implements Initializable {
         addUserBtn.setOnAction(e -> showAddUserScreen());
         deleteUserBtn.setOnAction(e -> showDeleteUserScreen());
         generateReportBtn.setOnAction(e -> showGenerateReportScreen());
+        viewLogsBtn.setOnAction(e -> showViewLogsScreen());
         
         if (backToLoginBtn != null) {
             backToLoginBtn.setOnAction(e -> navigateToLogin());
@@ -53,6 +55,7 @@ public class AdminDashboardController implements Initializable {
         applyButtonStyles(addUserBtn);
         applyButtonStyles(deleteUserBtn);
         applyButtonStyles(generateReportBtn);
+        applyButtonStyles(viewLogsBtn);
         if (backToLoginBtn != null) {
             applyButtonStyles(backToLoginBtn);
         }
@@ -141,6 +144,19 @@ public class AdminDashboardController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load report generation screen.");
+        }
+    }
+    
+    private void showViewLogsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ViewLogs.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) viewLogsBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("System Logs");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load logs screen.");
         }
     }
     

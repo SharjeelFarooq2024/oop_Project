@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx" 
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.myapp.frontend.controllers.DeleteUserScreenController"
+      spacing="15" 
+      alignment="TOP_CENTER"
+      style="-fx-background-color: white; -fx-padding: 20;">
+      
+    <Label text="Delete User" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+    
+    <Label text="Select a user from the list or enter username:" style="-fx-font-size: 14px;"/>
+    
+    <ListView fx:id="userListView" prefHeight="200"/>
+    
+    <HBox spacing="10" alignment="CENTER">
+        <TextField fx:id="usernameField" promptText="Enter username" prefWidth="220"/>
+        <Button fx:id="deleteButton" text="Delete User" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+    </HBox>
+    
+    <Button fx:id="backButton" text="Back to Dashboard" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+</VBox>

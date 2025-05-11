@@ -9,19 +9,16 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.myapp.frontend.controllers.AddUserScreenController"
       alignment="CENTER"
-      style="-fx-background-color: linear-gradient(to bottom right, #0f4c81, #38b6ff);"
-      spacing="30"
-      padding="40">
+      style="-fx-background-color: linear-gradient(to bottom right, #0f4c81, #38b6ff); -fx-padding: 40;"
+      spacing="30">
       
     <Label text="Add New User"
            style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;" />
-    
-    <VBox spacing="20" 
+      <VBox spacing="20" 
           alignment="CENTER"
-          style="-fx-background-color: white; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 0);"
+          style="-fx-background-color: white; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 0); -fx-padding: 30;"
           minWidth="400"
-          maxWidth="500"
-          padding="30">
+          maxWidth="500">
           
         <HBox spacing="10" alignment="CENTER_LEFT">
             <Label text="Name:" style="-fx-font-size: 14px; -fx-min-width: 50;" />

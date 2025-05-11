@@ -23,6 +23,7 @@ public class SignupController {
     @FXML private ToggleGroup userTypeToggle;
     @FXML private RadioButton patientRadio;
     @FXML private RadioButton doctorRadio;
+    @FXML private RadioButton adminRadio;
     @FXML private VBox specializationBox;
     @FXML private TextField specializationField;
 
@@ -52,10 +53,7 @@ public class SignupController {
             showAlert("Error", "Password must contain at least one uppercase letter.");
             return false;
         }
-        if (!password.matches(".*[!@#$%^&*()_+\\-=[\\]{};':\"\\\\|,.<>/?].*")) {
-            showAlert("Error", "Password must contain at least one special character (e.g. !@#$%^&* etc).");
-            return false;
-        }
+        // Removed special character requirement
         return true;
     }
 
@@ -105,6 +103,9 @@ public class SignupController {
                     return;
                 }
                 success = doctorService.registerNewDoctor(name, email, password, specialization);
+            } else if (selectedType == adminRadio) {
+                // Allow admin registration: append to Admin.json if email not already present, with auto-generated id
+                success = registerNewAdmin(name, email, password);
             }
 
             if (success) {
@@ -116,6 +117,37 @@ public class SignupController {
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Error", "An error occurred during registration: " + e.getMessage());
+        }
+    }
+
+    // Add this method to allow admin registration with auto-generated id
+    private boolean registerNewAdmin(String name, String email, String password) {
+        try {
+            java.io.File file = new java.io.File("data/Admin.json");
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            java.util.List<java.util.Map<String, Object>> admins = new java.util.ArrayList<>();
+            if (file.exists() && file.length() > 0) {
+                admins = mapper.readValue(file, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<java.util.Map<String, Object>>>() {});
+                for (java.util.Map<String, Object> admin : admins) {
+                    if (admin.get("email") != null && admin.get("email").toString().equalsIgnoreCase(email)) {
+                        return false; // Email already in use
+                    }
+                }
+            }
+            // Generate a random UUID for admin id
+            String id = java.util.UUID.randomUUID().toString();
+            java.util.Map<String, Object> newAdmin = new java.util.HashMap<>();
+            newAdmin.put("id", id);
+            newAdmin.put("name", name);
+            newAdmin.put("email", email);
+            newAdmin.put("password", password);
+            newAdmin.put("role", "Admin");
+            admins.add(newAdmin);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, admins);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

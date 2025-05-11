@@ -1,4 +1,4 @@
-package backend;
+package com.myapp.backend.services;
 
 public class ReportGenerator {
 

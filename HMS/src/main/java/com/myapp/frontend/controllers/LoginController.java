@@ -11,11 +11,18 @@ import javafx.stage.Stage;
 import com.myapp.backend.services.SessionManager;
 import com.myapp.backend.services.PatientService;
 import com.myapp.backend.services.DoctorService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.myapp.backend.model.Patient;
 import com.myapp.backend.model.Doctor;
 import com.myapp.backend.model.Admin;
 
 import java.io.IOException;
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
 
 public class LoginController {
 
@@ -132,28 +139,64 @@ public class LoginController {
             e.printStackTrace();
             showAlert("Error", "An error occurred during login: " + e.getMessage());
         }
-    }
-
-    private void handleAdminLogin(String email, String password) {
-        // For simplicity, hardcoded admin credentials
-        if ("admin@hospital.com".equals(email) && "admin123".equals(password)) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminDashboard.fxml"));
-                Parent root = loader.load();
+    }    private void handleAdminLogin(String email, String password) {
+        try {
+            System.out.println("DEBUG: Starting admin login for " + email);
+            File file = new File("data/Admin.json");
+            System.out.println("DEBUG: Admin.json exists? " + file.exists() + ", size: " + (file.exists() ? file.length() : 0));
+            
+            ObjectMapper mapper = new ObjectMapper();
+            List<Map<String, Object>> admins = new ArrayList<>();
+            if (file.exists() && file.length() > 0) {
+                System.out.println("DEBUG: Reading Admin.json content");
+                admins = mapper.readValue(file, new TypeReference<List<Map<String, Object>>>() {});
+                System.out.println("DEBUG: Found " + admins.size() + " admin entries");
                 
-                AdminDashboardController controller = loader.getController();
-                controller.setPrimaryStage((Stage) loginButton.getScene().getWindow());
-                
-                Scene scene = new Scene(root);
-                Stage stage = (Stage) loginButton.getScene().getWindow();
-                stage.setScene(scene);
-                stage.setTitle("HMS - Admin Dashboard");
-            } catch (IOException e) {
-                e.printStackTrace();
-                showAlert("Error", "Could not load admin dashboard.");
+                for (Map<String, Object> admin : admins) {
+                    System.out.println("DEBUG: Checking admin entry: " + admin);
+                    boolean emailMatch = admin.get("email") != null && admin.get("email").toString().equalsIgnoreCase(email);
+                    boolean passwordMatch = admin.get("password") != null && admin.get("password").toString().equals(password);
+                    boolean roleMatch = "Admin".equalsIgnoreCase(String.valueOf(admin.get("role")));
+                    
+                    System.out.println("DEBUG: Match results - Email: " + emailMatch + ", Password: " + passwordMatch + ", Role: " + roleMatch);
+                    
+                    if (emailMatch && passwordMatch && roleMatch) {
+                        // Successful admin login
+                        System.out.println("DEBUG: Admin login successful, loading dashboard");
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminDashboard.fxml"));
+                        System.out.println("DEBUG: FXML loader created");
+                        
+                        try {
+                            System.out.println("DEBUG: About to load AdminDashboard.fxml");
+                            Parent root = loader.load();
+                            System.out.println("DEBUG: AdminDashboard.fxml loaded successfully");
+                            
+                            AdminDashboardController controller = loader.getController();
+                            System.out.println("DEBUG: AdminDashboardController obtained");
+                            
+                            controller.setPrimaryStage((Stage) loginButton.getScene().getWindow());
+                            System.out.println("DEBUG: PrimaryStage set");
+                            
+                            Scene scene = new Scene(root);
+                            Stage stage = (Stage) loginButton.getScene().getWindow();
+                            stage.setScene(scene);
+                            stage.setTitle("HMS - Admin Dashboard");
+                            System.out.println("DEBUG: Scene set, admin dashboard should be visible now");
+                            return;
+                        } catch (Exception e) {
+                            System.err.println("DEBUG: Error loading AdminDashboard.fxml: " + e.getMessage());
+                            e.printStackTrace();
+                            throw e; // Re-throw to be caught by outer handler
+                        }
+                    }
+                }
             }
-        } else {
+            System.out.println("DEBUG: Admin login failed - invalid credentials");
             showAlert("Login Failed", "Invalid admin credentials.");
+        } catch (Exception e) {
+            System.err.println("DEBUG: Admin login error: " + e.getMessage());
+            e.printStackTrace();
+            showAlert("Error", "Could not load admin dashboard.");
         }
     }
 

@@ -91,14 +91,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
 
             <!-- JavaFX Maven plugin -->
             <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
-                <configuration>
-                    <mainClass>com.myapp.app.Main</mainClass>
-                </configuration>
-            </plugin>
+    <groupId>org.openjfx</groupId>
+    <artifactId>javafx-maven-plugin</artifactId>
+    <version>0.0.8</version>
+    <configuration>
+        <mainClass>com.myapp.app.main</mainClass>
+        <modules>
+            <module>javafx.controls</module>
+            <module>javafx.fxml</module>
+        </modules>
+    </configuration>
+</plugin>
         </plugins>
+
     </build>
 
 </project>
