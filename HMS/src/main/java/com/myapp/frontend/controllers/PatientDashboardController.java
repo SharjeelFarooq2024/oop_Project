@@ -77,7 +77,7 @@ public class PatientDashboardController {
     @FXML
     private Text oxygenLevelLabel;
 
-    @FXML 
+    @FXML
     private Button chatButton; // Add this to your existing FXML button declarations
     
     @FXML
@@ -112,9 +112,7 @@ public class PatientDashboardController {
             loadLatestVitals();
             updateVitalsDisplay();
         });
-    }
-
-    private void loadUpcomingAppointments() {
+    }    private void loadUpcomingAppointments() {
         if (loggedInPatient != null) {
             upcomingAppointmentsVBox.getChildren().clear();
             Text headerText = new Text("Upcoming Appointments");
@@ -122,6 +120,9 @@ public class PatientDashboardController {
             upcomingAppointmentsVBox.getChildren().add(headerText);
 
             List<Appointment> appointments = AppointmentService.getAppointmentsForPatient(loggedInPatient.getId());
+            // Appointments are already sorted in descending order by date and time (latest first)
+            // from the AppointmentDAO.findByPatientId method
+            
             DoctorDAO doctorDAO = new DoctorDAO();
             List<Doctor> allDoctors = doctorDAO.loadDoctors();
 
@@ -158,9 +159,7 @@ public class PatientDashboardController {
                 upcomingAppointmentsVBox.getChildren().add(noAppointmentsText);
             }
         }
-    }
-
-    private void loadAppointments() {
+    }    private void loadAppointments() {
         if (loggedInPatient != null) {
             appointmentsVBox.getChildren().clear();
             Text headerText = new Text("Your Appointments");
@@ -168,6 +167,9 @@ public class PatientDashboardController {
             appointmentsVBox.getChildren().add(headerText);
 
             List<Appointment> appointments = AppointmentService.getAppointmentsForPatient(loggedInPatient.getId());
+            // The appointments are already sorted in descending order by date and time (latest first)
+            // from the AppointmentDAO.findByPatientId method
+            
             DoctorDAO doctorDAO = new DoctorDAO();
             List<Doctor> allDoctors = doctorDAO.loadDoctors();
 
@@ -301,7 +303,7 @@ public class PatientDashboardController {
     private void setupButtonHoverEffects() {
         // Setup hover effects for navigation buttons
         bookAppointmentButton.setOnMouseEntered(e -> 
-            bookAppointmentButton.setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #1a237e; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"));
+            bookAppointmentButton.setStyle("-fx-background-color:rgb(255, 255, 255); -fx-text-fill: #1a237e; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"));
         bookAppointmentButton.setOnMouseExited(e -> 
             bookAppointmentButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #424242; -fx-font-size: 14px; -fx-padding: 10 15; -fx-background-radius: 5;"));
 
@@ -574,7 +576,7 @@ public class PatientDashboardController {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             // Create emergency message
             String message = "EMERGENCY ALERT: Patient " + loggedInPatient.getName() + 
-                             " has pressed the panic button and needs immediate medical assistance!";
+                            " has pressed the panic button and needs immediate medical assistance!";
             
             // Use EmergencyAlertService to create an alert for all doctors
             EmergencyAlertService.createEmergencyAlert(loggedInPatient, message);
@@ -593,7 +595,7 @@ public class PatientDashboardController {
             
             // Show confirmation to the user
             showAlert("Alert Sent", "Your emergency alert has been sent to all doctors. " +
-                     "A medical professional will contact you as soon as possible.");
+                    "A medical professional will contact you as soon as possible.");
         }
     }
 }

@@ -5,8 +5,19 @@
   "password" : "password",
   "age" : 0,
   "specialization" : "Cardiology",
-  "patientIds" : [ ],
-  "appointments" : [ ],
+  "patientIds" : [ "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b" ],
+  "appointments" : [ {
+    "appointmentId" : "38b31169-dd99-4c7a-821e-00faff79751e",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "f0907906-f40b-43ed-b97b-235baa523301",
+    "status" : "Pending",
+    "date" : "2025-05-21",
+    "time" : "10:00 AM",
+    "description" : "tuna",
+    "completed" : false,
+    "pending" : true,
+    "scheduled" : false
+  } ],
   "emergencyAlerts" : [ ]
 }, {
   "name" : "Dr. Sarah Johnson",
@@ -35,8 +46,19 @@
   "password" : "password",
   "age" : 0,
   "specialization" : "Pediatrics",
-  "patientIds" : [ ],
-  "appointments" : [ ],
+  "patientIds" : [ "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b" ],
+  "appointments" : [ {
+    "appointmentId" : "7af8137e-ec9f-40a4-97ca-69e90bdc4be8",
+    "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+    "doctorId" : "e7f2fdc7-a299-4779-8dec-db0a45a0b025",
+    "status" : "Scheduled",
+    "date" : "2025-05-22",
+    "time" : "04:00 PM",
+    "description" : "ddd",
+    "completed" : false,
+    "pending" : false,
+    "scheduled" : true
+  } ],
   "emergencyAlerts" : [ ]
 }, {
   "name" : "Dr. Robert Wilson",
