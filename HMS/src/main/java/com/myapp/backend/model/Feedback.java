@@ -2,23 +2,27 @@ package com.myapp.backend.model;
 
 import java.time.LocalDateTime;
 
+// Represents feedback from a doctor about a patient's condition or treatment
 public class Feedback {
-    private String comment;
-    private String doctorName;
-    private String medicationPrescribed;
-    private LocalDateTime timestamp;
-    private String recommendedTests;
+    private String comment;                // Doctor's comments about the patient
+    private String doctorName;             // Name of the doctor providing feedback
+    private String medicationPrescribed;   // Medications prescribed during the visit
+    private LocalDateTime timestamp;       // When the feedback was created
+    private String recommendedTests;       // Tests recommended by the doctor
 
+    // Default constructor for Jackson JSON serialization
     public Feedback() {
         // Default constructor for Jackson
     }
 
+    // Constructor with minimal required parameters
     public Feedback(String comment, String doctorName) {
         this.comment = comment;
         this.doctorName = doctorName;
         this.timestamp = LocalDateTime.now();
     }
     
+    // Constructor with medication information
     public Feedback(String comment, String doctorName, String medicationPrescribed, LocalDateTime timestamp) {
         this.comment = comment;
         this.doctorName = doctorName;
@@ -26,6 +30,7 @@ public class Feedback {
         this.timestamp = timestamp;
     }
 
+    // Constructor with full information including recommended tests
     public Feedback(String comment, String doctorName, String medicationPrescribed, String recommendedTests, LocalDateTime timestamp) {
         this.comment = comment;
         this.doctorName = doctorName;
@@ -34,18 +39,22 @@ public class Feedback {
         this.timestamp = timestamp;
     }
 
+    // Getter for doctor's comment
     public String getComment() {
         return comment;
     }
 
+    // Getter for doctor's name
     public String getDoctorName() {
         return doctorName;
     }
     
+    // Getter for prescribed medication
     public String getMedicationPrescribed() {
         return medicationPrescribed;
     }
     
+    // Getter for timestamp
     public LocalDateTime getTimestamp() {
         return timestamp;
     }

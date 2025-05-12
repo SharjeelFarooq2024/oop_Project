@@ -12,16 +12,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// Data Access Object for Patient operations
+// Handles all database interactions for Patient entities
 public class PatientDAO {
-    private static final String FILE_PATH = "data" + File.separator + "Patients.json";
-    private ObjectMapper mapper;
+    private static final String FILE_PATH = "data" + File.separator + "Patients.json"; // Path to JSON file storing patient data
+    private ObjectMapper mapper; // Jackson JSON mapper for serialization/deserialization
 
+    // Constructor initializes the ObjectMapper with proper time module support
     public PatientDAO() {
         mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
+        mapper.registerModule(new JavaTimeModule()); // Register module to handle Java 8 date/time types
     }
 
-    // Load patients from the file
+    // Load patients from the JSON file
+    // Returns empty list if file doesn't exist or is empty
     private List<Patient> loadPatients() throws IOException {
         File file = new File(FILE_PATH);
         if (!file.exists() || file.length() == 0) { // Handle empty file
@@ -37,14 +41,16 @@ public class PatientDAO {
         }
     }
 
-    // Save patients to the file
+    // Save patients to the JSON file
+    // Creates directories if they don't exist
     private void savePatients(List<Patient> patients) throws IOException {
         File file = new File(FILE_PATH);
         file.getParentFile().mkdirs();  // Create directory if it doesn't exist
-        mapper.writerWithDefaultPrettyPrinter().writeValue(file, patients);
+        mapper.writerWithDefaultPrettyPrinter().writeValue(file, patients); // Pretty print for readability
     }
 
-    // Add a patient to the list and save to file
+    // Add a new patient to the database
+    // Loads existing patients, adds the new one, and saves
     public void addPatient(Patient patient) throws IOException {
         List<Patient> patients = loadPatients();
         patients.add(patient);

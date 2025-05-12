@@ -3,19 +3,22 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+// Class to ignore unknown properties during serialization/deserialization
 @JsonIgnoreProperties(ignoreUnknown = true)
+// Represents an appointment between a patient and a doctor
 public class Appointment {
-    private String appointmentId;
-    private String patientId;
-    private String doctorId;
-    private String status;
-    private String date;
-    private String time;
-    private String description;
-    private boolean completed;
-    private boolean pending;
-    private boolean scheduled;
+    private String appointmentId;  // Unique identifier for the appointment
+    private String patientId;      // ID of the patient associated with the appointment
+    private String doctorId;       // ID of the doctor associated with the appointment
+    private String status;         // Current status of the appointment (Pending, Scheduled, Completed)
+    private String date;           // Date of the appointment
+    private String time;           // Time of the appointment
+    private String description;    // Description or reason for the appointment
+    private boolean completed;     // Flag indicating if the appointment is completed
+    private boolean pending;       // Flag indicating if the appointment is pending
+    private boolean scheduled;     // Flag indicating if the appointment is scheduled
 
+    // Default constructor - initializes appointment as pending
     public Appointment() {
         this.pending = true;
         this.completed = false;
@@ -23,6 +26,7 @@ public class Appointment {
         this.status = "Pending";
     }
 
+    // Constructor with parameters to create a new appointment
     public Appointment(String patientId, String doctorId, String status, String date, String time, String description) {
         this.appointmentId = UUID.randomUUID().toString();
         this.patientId = patientId;
@@ -50,6 +54,7 @@ public class Appointment {
     public void setPatientId(String patientId) { this.patientId = patientId; }
     public void setDoctorId(String doctorId) { this.doctorId = doctorId; }
     
+    // Sets the status and updates the corresponding boolean flags
     public void setStatus(String status) {
         if (status == null) {
             status = "Pending";

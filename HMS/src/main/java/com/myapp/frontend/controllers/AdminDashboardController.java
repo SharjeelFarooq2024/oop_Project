@@ -25,17 +25,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+// Controller for the Admin Dashboard screen
 public class AdminDashboardController implements Initializable {
 
-    @FXML private Button viewUsersBtn;
-    @FXML private Button addUserBtn;
-    @FXML private Button deleteUserBtn;
-    @FXML private Button generateReportBtn;
-    @FXML private Button backToLoginBtn;
-    @FXML private Button viewLogsBtn;
-    @FXML private Label title;
+    // UI elements from the FXML file
+    @FXML private Button viewUsersBtn;      // Button to view all users
+    @FXML private Button addUserBtn;        // Button to add a new user
+    @FXML private Button deleteUserBtn;     // Button to delete a user
+    @FXML private Button generateReportBtn; // Button to generate reports
+    @FXML private Button backToLoginBtn;    // Button to return to login screen
+    @FXML private Button viewLogsBtn;       // Button to view system logs
+    @FXML private Label title;              // Dashboard title label
 
-    private Stage primaryStage;
+    private Stage primaryStage; // Reference to the main application window
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -49,8 +51,7 @@ public class AdminDashboardController implements Initializable {
         if (backToLoginBtn != null) {
             backToLoginBtn.setOnAction(e -> navigateToLogin());
         }
-        
-        // Apply styles to buttons
+          // Apply styles to buttons
         applyButtonStyles(viewUsersBtn);
         applyButtonStyles(addUserBtn);
         applyButtonStyles(deleteUserBtn);
@@ -61,10 +62,12 @@ public class AdminDashboardController implements Initializable {
         }
     }
     
+    // Set the main stage for the application
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
     }
     
+    // Apply consistent styling to all dashboard buttons
     private void applyButtonStyles(Button button) {
         button.setStyle("-fx-background-color: #1e1e2f; -fx-text-fill: white; -fx-font-size: 14px;" +
                         "-fx-background-radius: 8px; -fx-padding: 10 20;");
@@ -74,7 +77,7 @@ public class AdminDashboardController implements Initializable {
         button.setOnMouseExited(e -> button.setStyle("-fx-background-color: #1e1e2f; -fx-text-fill: white; -fx-font-size: 14px;" +
                                                      "-fx-background-radius: 8px; -fx-padding: 10 20;"));
     }
-    
+      // Navigate to the View Users screen
     private void showViewUsersScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ViewUsers.fxml"));
@@ -97,6 +100,7 @@ public class AdminDashboardController implements Initializable {
         }
     }
     
+    // Navigate to the Add User screen
     private void showAddUserScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AddUser.fxml"));
@@ -118,7 +122,7 @@ public class AdminDashboardController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load add user screen.");
         }
     }
-    
+      // Navigate to the Delete User screen
     private void showDeleteUserScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DeleteUser.fxml"));
@@ -133,6 +137,7 @@ public class AdminDashboardController implements Initializable {
         }
     }
     
+    // Navigate to the Generate Report screen
     private void showGenerateReportScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/GenerateReport.fxml"));
@@ -147,6 +152,7 @@ public class AdminDashboardController implements Initializable {
         }
     }
     
+    // Navigate to the View Logs screen
     private void showViewLogsScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ViewLogs.fxml"));
@@ -159,7 +165,7 @@ public class AdminDashboardController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load logs screen.");
         }
     }
-    
+      // Navigate back to the login screen
     private void navigateToLogin() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
@@ -175,6 +181,7 @@ public class AdminDashboardController implements Initializable {
         }
     }
     
+    // Display an alert dialog with the specified type, title, and content
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

@@ -16,35 +16,40 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+// Controller for the screen that allows administrators to delete users from the system
 public class DeleteUserScreenController implements Initializable {
 
-    @FXML private TextField usernameField;
-    @FXML private Button deleteButton;
-    @FXML private Button backButton;
-    @FXML private ListView<String> userListView;
+    @FXML private TextField usernameField; // Field for entering the username to delete
+    @FXML private Button deleteButton;     // Button to confirm user deletion
+    @FXML private Button backButton;       // Button to return to admin dashboard
+    @FXML private ListView<String> userListView; // List view showing all available users
 
+    // Initialize the controller
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Load users into the list view
+        // Load users into the list view for selection
         loadUsers();
         
-        // Setup button actions
+        // Setup button actions for delete and back operations
         deleteButton.setOnAction(e -> handleDeleteUser());
         backButton.setOnAction(e -> navigateBack());
         
-        // Add selection listener to populate the text field when a user is selected
+        // Add selection listener to populate the text field when a user is selected from the list
         userListView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                usernameField.setText(newValue.split(" \\(")[0]); // Extract username
+                usernameField.setText(newValue.split(" \\(")[0]); // Extract username from display string
             }
         });
     }
-      private void loadUsers() {
+    
+    // Load all users from the system into the list view
+    private void loadUsers() {
         userListView.getItems().clear();
         
         // Get all users from the UserManager
         List<AdminDashboardUser> usersList = UserManager.getUsers();
         
+        // If no users exist, add default users
         if (usersList.isEmpty()) {
             showAlert(Alert.AlertType.INFORMATION, "No Users", "There are no users in the system. Default users will be added.");
             // Initialize default users

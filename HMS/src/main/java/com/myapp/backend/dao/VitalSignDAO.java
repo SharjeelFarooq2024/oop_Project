@@ -14,16 +14,20 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+// Data Access Object for VitalSign operations
+// Handles storage and retrieval of patient vital signs
 public class VitalSignDAO {
 
-    private static final String FILE_PATH = "data/vitals.json";
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final String FILE_PATH = "data/vitals.json"; // Path to JSON file storing vital signs
+    private static final ObjectMapper mapper = new ObjectMapper(); // Jackson JSON mapper (static for efficiency)
 
-    static { // Initialize mapper with JavaTimeModule
-        mapper.registerModule(new JavaTimeModule());
+    // Static initializer block to configure the mapper
+    static { 
+        mapper.registerModule(new JavaTimeModule()); // Add support for Java 8 date/time types
     }
 
-    // Save a new VitalSign entry
+    // Save a new vital sign record to the database
+    // Adds the vital sign to the existing list and writes to file
     public static void saveVital(VitalSign vital) {
         List<VitalSign> vitals = getAllVitals();
         vitals.add(vital);
@@ -34,14 +38,17 @@ public class VitalSignDAO {
         }
     }
 
+    // Get the most recent vital sign record for a specific patient
+    // Returns an Optional that may contain the latest vital sign
     public static Optional<VitalSign> getLatestVitalForPatient(String patientId) {
         List<VitalSign> allVitals = getAllVitals();
         return allVitals.stream()
-            .filter(v -> v.getPatientId().equals(patientId))
-            .max(Comparator.comparing(VitalSign::getTimestamp));
+            .filter(v -> v.getPatientId().equals(patientId)) // Filter by patient ID
+            .max(Comparator.comparing(VitalSign::getTimestamp)); // Find the most recent by timestamp
     }
 
-    // Get all vitals (used internally)
+    // Get all vital signs from the database
+    // Creates file if it doesn't exist
     public static List<VitalSign> getAllVitals() {
         try {
             File file = new File(FILE_PATH);

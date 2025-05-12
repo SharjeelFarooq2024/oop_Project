@@ -24,16 +24,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
+// Controller for the login screen
 public class LoginController {
 
-    @FXML private TextField emailField;
-    @FXML private PasswordField passwordField;
-    @FXML private Button loginButton;
-    @FXML private ToggleGroup userTypeToggle;
-    @FXML private RadioButton patientRadio;
-    @FXML private RadioButton doctorRadio;
-    @FXML private RadioButton adminRadio;
+    @FXML private TextField emailField;         // Field for user email input
+    @FXML private PasswordField passwordField;  // Field for password input
+    @FXML private Button loginButton;           // Button to submit login credentials
+    @FXML private ToggleGroup userTypeToggle;   // Toggle group for user type selection
+    @FXML private RadioButton patientRadio;     // Radio button for patient login
+    @FXML private RadioButton doctorRadio;      // Radio button for doctor login
+    @FXML private RadioButton adminRadio;       // Radio button for admin login
 
+    // Service instances for accessing patient and doctor data
     private PatientService patientService = new PatientService();
     private DoctorService doctorService = new DoctorService();
 
@@ -45,6 +47,7 @@ public class LoginController {
         }
     }
 
+    // Handle click on sign up link to navigate to registration page
     @FXML
     private void handleSignUpLinkClick(ActionEvent event) {
         try {
@@ -59,21 +62,21 @@ public class LoginController {
             e.printStackTrace();
             showAlert("Error", "Could not load sign-up page!\n" + e.getMessage());
         }
-    }
-
-    @FXML
+    }    @FXML
     private void handleLoginButtonAction(ActionEvent event) {
         String email = emailField.getText();
         String password = passwordField.getText();
 
         System.out.println("Login attempt - Email: " + email);
 
+        // Validate input fields
         if (email.isEmpty() || password.isEmpty()) {
             showAlert("Error", "Please enter email and password.");
             return;
         }
 
         try {
+            // Get current stage dimensions for new scene
             Stage stage = (Stage) loginButton.getScene().getWindow();
             double width = stage.getWidth();
             double height = stage.getHeight();
@@ -82,17 +85,19 @@ public class LoginController {
             RadioButton selectedType = (RadioButton) userTypeToggle.getSelectedToggle();
 
             if (selectedType == doctorRadio) {
-                // Doctor login
+                // Doctor login authentication
                 Doctor doctor = doctorService.login(email, password);
                 System.out.println("Login result - Doctor object: " + (doctor != null ? "found" : "not found"));
                 
                 if (doctor != null) {
                     System.out.println("Login successful for doctor: " + doctor.getName());
-                    SessionManager.setLoggedInDoctor(doctor);
+                    SessionManager.setLoggedInDoctor(doctor); // Set session for current doctor
 
+                    // Load doctor dashboard
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DoctorDashboard.fxml"));
                     Parent dashboardRoot = loader.load();
 
+                    // Set logged in doctor in dashboard controller
                     DoctorDashboardController controller = loader.getController();
                     controller.setLoggedInDoctor(doctor);
 

@@ -14,35 +14,40 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+// Controller for the screen that allows administrators to generate various system reports
 public class GenerateReportScreenController implements Initializable {
 
-    @FXML private ComboBox<String> reportTypeComboBox;
-    @FXML private Button generateButton;
-    @FXML private Button backButton;
+    @FXML private ComboBox<String> reportTypeComboBox; // Dropdown for selecting report type
+    @FXML private Button generateButton;               // Button to generate the selected report
+    @FXML private Button backButton;                   // Button to return to admin dashboard
 
+    // Initialize the controller
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialize the ComboBox with report types
+        // Initialize the ComboBox with available report types
         reportTypeComboBox.getItems().addAll(
-            "Vitals History", 
-            "Feedback", 
-            "Prescriptions", 
-            "Medical History"
+            "Vitals History",     // Report for patient vital signs history
+            "Feedback",           // Report for patient feedback
+            "Prescriptions",      // Report for medication prescriptions
+            "Medical History"     // Report for patient medical history
         );
-        reportTypeComboBox.setValue("Vitals History");
+        reportTypeComboBox.setValue("Vitals History"); // Set default selection
         
         // Set up button actions
         generateButton.setOnAction(e -> handleGenerateReport());
         backButton.setOnAction(e -> handleBack());
     }
     
+    // Handle the report generation process
     private void handleGenerateReport() {
         String selectedReportType = reportTypeComboBox.getValue();
+        // Validate that a report type is selected
         if (selectedReportType == null) {
             showAlert(Alert.AlertType.ERROR, "Error", "Please select a report type.");
             return;
         }
         
+        // Generate the selected report using the ReportGenerator service
         boolean success = ReportGenerator.generateReport(selectedReportType);
         if (success) {
             showAlert(Alert.AlertType.INFORMATION, "Success", "Report generated successfully and saved in the reports directory.");

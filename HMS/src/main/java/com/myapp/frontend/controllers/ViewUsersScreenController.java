@@ -22,25 +22,33 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+// Controller for the view users screen in admin dashboard
 public class ViewUsersScreenController implements Initializable {
 
-    @FXML private TableView<AdminDashboardUser> usersTable;
-    @FXML private TableColumn<AdminDashboardUser, String> nameColumn;
-    @FXML private TableColumn<AdminDashboardUser, String> roleColumn;
-    @FXML private Button backButton;
+    @FXML private TableView<AdminDashboardUser> usersTable;  // Table to display all users
+    @FXML private TableColumn<AdminDashboardUser, String> nameColumn; // Column for user names
+    @FXML private TableColumn<AdminDashboardUser, String> roleColumn; // Column for user roles
+    @FXML private Button backButton;  // Button to return to admin dashboard
 
+    // Initialize the controller
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Configure table columns
+        // Configure table columns to display user properties
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
 
+        // Load all users from the system
         loadUsers();
 
+        // Set up navigation back to dashboard
         backButton.setOnAction(e -> navigateBack());
-    }    private void loadUsers() {
+    }
+    
+    // Load all users from the UserManager
+    private void loadUsers() {
         List<AdminDashboardUser> userList = UserManager.getUsers();
         
+        // If no users exist, add default users to the system
         if (userList.isEmpty()) {
             showAlert(Alert.AlertType.INFORMATION, "No Users", "There are no users in the system. Default users will be added.");
             // Initialize default users

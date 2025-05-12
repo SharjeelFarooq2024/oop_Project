@@ -39,60 +39,66 @@ import com.myapp.backend.dao.AppointmentDAO;
 import com.myapp.backend.dao.PatientDAO;
 import com.myapp.backend.services.SessionManager; // For logout or getting current session
 
+// Controller for the Doctor Dashboard screen
 public class DoctorDashboardController implements Initializable {
 
-    private Doctor loggedInDoctor;
-    private AppointmentDAO appointmentDAO = new AppointmentDAO();
-    private PatientDAO patientDAO = new PatientDAO(); // To fetch patient names for appointments
+    private Doctor loggedInDoctor;                       // Current logged-in doctor
+    private AppointmentDAO appointmentDAO = new AppointmentDAO(); // Data access for appointments
+    private PatientDAO patientDAO = new PatientDAO();    // Data access for patients
 
-    @FXML private Label doctorNameLabel;
-    @FXML private Label specializationLabel;
-    @FXML private Label welcomeLabel;
-    @FXML private Label statusLabel;
-    @FXML private Label totalPatientsLabel;
-    @FXML private Label upcomingAppointmentsLabel;
+    // UI Labels for doctor information
+    @FXML private Label doctorNameLabel;        // Shows doctor's name
+    @FXML private Label specializationLabel;    // Shows doctor's specialization
+    @FXML private Label welcomeLabel;           // Welcome message
+    @FXML private Label statusLabel;            // Status messages for operations
+    @FXML private Label totalPatientsLabel;     // Shows total number of patients
+    @FXML private Label upcomingAppointmentsLabel; // Shows number of upcoming appointments
 
-    @FXML private Button logoutButton;
-    @FXML private Button dashboardButton;
-    @FXML private Button appointmentsButton;
-    @FXML private Button patientsButton;
-    @FXML private Button emergencyAlertsButton;
-    @FXML private Button chatButton; // Add this to your existing FXML button declarations
+    // Navigation buttons
+    @FXML private Button logoutButton;          // Button to log out
+    @FXML private Button dashboardButton;       // Button to navigate to dashboard
+    @FXML private Button appointmentsButton;    // Button to navigate to appointments view
+    @FXML private Button patientsButton;        // Button to navigate to patients view
+    @FXML private Button emergencyAlertsButton; // Button to navigate to emergency alerts
+    @FXML private Button chatButton;            // Button to navigate to chat interface
 
-    // Appointment requests (pending appointments)
+    // Appointment requests (pending appointments) UI components
     @FXML private TableView<AppointmentViewModel> pendingAppointmentsTable;
     @FXML private TableColumn<AppointmentViewModel, String> pendingPatientColumn;
     @FXML private TableColumn<AppointmentViewModel, String> pendingDateColumn;
     @FXML private TableColumn<AppointmentViewModel, String> pendingTimeColumn;
-    @FXML private TableColumn<AppointmentViewModel, Void> pendingActionsColumn;
+    @FXML private TableColumn<AppointmentViewModel, Void> pendingActionsColumn; // Actions like approve/reject
 
-    // Scheduled appointments
+    // Scheduled appointments UI components
     @FXML private TableView<AppointmentViewModel> scheduledAppointmentsTable;
     @FXML private TableColumn<AppointmentViewModel, String> scheduledPatientColumn;
     @FXML private TableColumn<AppointmentViewModel, String> scheduledDateColumn;
     @FXML private TableColumn<AppointmentViewModel, String> scheduledTimeColumn;
     @FXML private TableColumn<AppointmentViewModel, String> scheduledStatusColumn;
 
-    // Today's appointments
+    // Today's appointments UI components
     @FXML private TableView<AppointmentViewModel> todaysAppointmentsTable;
     @FXML private TableColumn<AppointmentViewModel, String> todayPatientColumn;
     @FXML private TableColumn<AppointmentViewModel, String> todayTimeColumn;
     @FXML private TableColumn<AppointmentViewModel, String> todayStatusColumn;
 
+    // Emergency alerts list
     @FXML private ListView<String> emergencyAlertsList;
 
+    // Observable lists to store and display data in tables
     private ObservableList<AppointmentViewModel> pendingAppointmentsData = FXCollections.observableArrayList();
     private ObservableList<AppointmentViewModel> scheduledAppointmentsData = FXCollections.observableArrayList();
     private ObservableList<AppointmentViewModel> todaysAppointmentsData = FXCollections.observableArrayList();
     private ObservableList<String> emergencyAlertsData = FXCollections.observableArrayList();
 
+    // Initialize the controller
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Setup table columns for pending appointments
         pendingPatientColumn.setCellValueFactory(new PropertyValueFactory<>("patientName"));
         pendingDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         pendingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
-        setupPendingActionsColumn();
+        setupPendingActionsColumn(); // Add action buttons to the pending appointments table
         pendingAppointmentsTable.setItems(pendingAppointmentsData);
 
         // Setup table columns for scheduled appointments

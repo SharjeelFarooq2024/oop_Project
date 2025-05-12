@@ -5,30 +5,35 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.myapp.backend.services.NotificationService;
 
+// Doctor class representing a medical doctor in the system
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Doctor extends User {
-    private String specialization;
-    private ArrayList<String> patientIds;
-    private ArrayList<Appointment> appointments;
-    private ArrayList<EmergencyAlert> emergencyAlerts;
+    private String specialization;                     // Doctor's medical specialization
+    private ArrayList<String> patientIds;              // List of patient IDs assigned to the doctor
+    private ArrayList<Appointment> appointments;       // Doctor's appointments
+    private ArrayList<EmergencyAlert> emergencyAlerts; // Alerts for emergencies related to this doctor
     
+    // Default constructor
     public Doctor() {
         super();
         initializeLists();
     }
 
+    // Constructor with parameters
     public Doctor(String name, String email, String password, String specialization) {
         super(name, email, password);
         this.specialization = specialization;
         initializeLists();
     }
 
+    // Initialize all required lists
     private void initializeLists() {
         this.patientIds = new ArrayList<>();
         this.appointments = new ArrayList<>();
         this.emergencyAlerts = new ArrayList<>();
     }
 
+    // Add a patient to this doctor's patient list
     public void addPatientId(String patientId) {
         if (patientId == null) {
             System.out.println("Warning: Attempted to add null patientId");
