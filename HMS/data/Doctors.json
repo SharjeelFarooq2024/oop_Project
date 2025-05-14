@@ -5,8 +5,19 @@
   "password" : "password",
   "age" : 0,
   "specialization" : "Cardiology",
-  "patientIds" : [ "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b" ],
+  "patientIds" : [ "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b", "d68fb49e-0810-4c1f-b1d6-ab9433c08d55" ],
   "appointments" : [ {
+    "appointmentId" : "1214fade-ec6c-43a2-97ea-7cf914c2ec82",
+    "patientId" : "d68fb49e-0810-4c1f-b1d6-ab9433c08d55",
+    "doctorId" : "f0907906-f40b-43ed-b97b-235baa523301",
+    "status" : "Scheduled",
+    "date" : "2025-05-20",
+    "time" : "04:00 PM",
+    "description" : "just a diagnose",
+    "completed" : false,
+    "pending" : false,
+    "scheduled" : true
+  }, {
     "appointmentId" : "38b31169-dd99-4c7a-821e-00faff79751e",
     "patientId" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
     "doctorId" : "f0907906-f40b-43ed-b97b-235baa523301",

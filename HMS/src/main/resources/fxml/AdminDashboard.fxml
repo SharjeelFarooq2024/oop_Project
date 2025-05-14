@@ -27,6 +27,9 @@
         <Button fx:id="deleteUserBtn" text="Delete User" />
         <Button fx:id="generateReportBtn" text="Generate Report" />
         <Button fx:id="viewLogsBtn" text="View Logs" />
+        <Button fx:id="viewAppointmentsBtn" text="Manage Appointments" />
+        <Button fx:id="viewFeedbackBtn" text="View Feedback" />
+        <Button fx:id="viewAlertsBtn" text="Emergency Alerts" />
         <Button fx:id="backToLoginBtn" text="Back to Login" />
     </VBox>
 </VBox>

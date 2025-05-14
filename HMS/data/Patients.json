@@ -1,68 +1,71 @@
-[
-  {
-    "name": "ali",
-    "id": "e6288530-7473-4ab1-bc36-38d09a2fe119",
-    "email": "ali",
-    "password": "ali",
-    "age": 12,
-    "feedbacks": [],
-    "vitalSigns": [],
-    "latestVitalSign": null,
-    "prescribedMedications": []
-  },
-  {
-    "name": "a",
-    "id": "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
-    "email": "b",
-    "password": "c",
-    "age": 20,
-    "feedbacks": [],
-    "vitalSigns": [],
-    "latestVitalSign": null,
-    "prescribedMedications": []
-  },
-  {
-    "name": "abdullah",
-    "id": "6c838500-1953-4933-be97-67166cca0f40",
-    "email": "akhalil.bsai24seecs@seecs.edu.pk",
-    "password": "a1",
-    "age": 20,
-    "feedbacks": [],
-    "vitalSigns": [],
-    "latestVitalSign": null,
-    "prescribedMedications": []
-  },
-  {
-    "name": "dogar",
-    "id": "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1",
-    "email": "dogar@gmail.com",
-    "password": "qwerty",
-    "age": 0,
-    "feedbacks": [],
-    "vitalSigns": [],
-    "latestVitalSign": null,
-    "prescribedMedications": []
-  },
-  {
-    "name": "Humza",
-    "id": "1c29dab2-2eca-4c95-bc96-555d2f73d531",
-    "email": "humza@gmail.com",
-    "password": "password",
-    "age": 0,
-    "feedbacks": [],
-    "vitalSigns": [],
-    "latestVitalSign": null,
-    "prescribedMedications": []
-  },
-  {
-    "name": "patient_1",
-    "id": "1d390b86-c79f-41b5-9e51-7e98b52b3184",
-    "email": "p@gmail.com",
-    "password": "p1",
-    "age": 0,
-    "feedbacks": [],
-    "vitalSigns": [],
-    "latestVitalSign": null,
-    "prescribedMedications": []
-  }
-]
+[ {
+  "name" : "ali",
+  "id" : "e6288530-7473-4ab1-bc36-38d09a2fe119",
+  "email" : "ali",
+  "password" : "ali",
+  "age" : 12,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "a",
+  "id" : "5a69e9ed-bb63-46ec-a95d-4cd39f4f096b",
+  "email" : "b",
+  "password" : "c",
+  "age" : 20,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "abdullah",
+  "id" : "6c838500-1953-4933-be97-67166cca0f40",
+  "email" : "akhalil.bsai24seecs@seecs.edu.pk",
+  "password" : "a1",
+  "age" : 20,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "dogar",
+  "id" : "2df7b598-5bd1-4aa1-9ff9-c2c10f8f41b1",
+  "email" : "dogar@gmail.com",
+  "password" : "qwerty",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "Humza",
+  "id" : "1c29dab2-2eca-4c95-bc96-555d2f73d531",
+  "email" : "humza@gmail.com",
+  "password" : "password",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "patient_1",
+  "id" : "1d390b86-c79f-41b5-9e51-7e98b52b3184",
+  "email" : "p@gmail.com",
+  "password" : "p1",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+}, {
+  "name" : "Salman Farooq",
+  "id" : "d68fb49e-0810-4c1f-b1d6-ab9433c08d55",
+  "email" : "salman12@gmail.com",
+  "password" : "Whatisup",
+  "age" : 0,
+  "feedbacks" : [ ],
+  "vitalSigns" : [ ],
+  "latestVitalSign" : null,
+  "prescribedMedications" : [ ]
+} ]

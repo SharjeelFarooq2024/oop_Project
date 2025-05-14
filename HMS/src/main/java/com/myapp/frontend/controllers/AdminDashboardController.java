@@ -35,6 +35,9 @@ public class AdminDashboardController implements Initializable {
     @FXML private Button generateReportBtn; // Button to generate reports
     @FXML private Button backToLoginBtn;    // Button to return to login screen
     @FXML private Button viewLogsBtn;       // Button to view system logs
+    @FXML private Button viewAppointmentsBtn; // Button to view/manage appointments
+    @FXML private Button viewFeedbackBtn;     // Button to view feedback
+    @FXML private Button viewAlertsBtn;       // Button to view emergency alerts
     @FXML private Label title;              // Dashboard title label
 
     private Stage primaryStage; // Reference to the main application window
@@ -51,7 +54,11 @@ public class AdminDashboardController implements Initializable {
         if (backToLoginBtn != null) {
             backToLoginBtn.setOnAction(e -> navigateToLogin());
         }
-          // Apply styles to buttons
+        if (viewAppointmentsBtn != null) viewAppointmentsBtn.setOnAction(e -> showViewAppointmentsScreen());
+        if (viewFeedbackBtn != null) viewFeedbackBtn.setOnAction(e -> showViewFeedbackScreen());
+        if (viewAlertsBtn != null) viewAlertsBtn.setOnAction(e -> showViewAlertsScreen());
+        
+        // Apply styles to buttons
         applyButtonStyles(viewUsersBtn);
         applyButtonStyles(addUserBtn);
         applyButtonStyles(deleteUserBtn);
@@ -60,6 +67,9 @@ public class AdminDashboardController implements Initializable {
         if (backToLoginBtn != null) {
             applyButtonStyles(backToLoginBtn);
         }
+        if (viewAppointmentsBtn != null) applyButtonStyles(viewAppointmentsBtn);
+        if (viewFeedbackBtn != null) applyButtonStyles(viewFeedbackBtn);
+        if (viewAlertsBtn != null) applyButtonStyles(viewAlertsBtn);
     }
     
     // Set the main stage for the application
@@ -77,7 +87,8 @@ public class AdminDashboardController implements Initializable {
         button.setOnMouseExited(e -> button.setStyle("-fx-background-color: #1e1e2f; -fx-text-fill: white; -fx-font-size: 14px;" +
                                                      "-fx-background-radius: 8px; -fx-padding: 10 20;"));
     }
-      // Navigate to the View Users screen
+    
+    // Navigate to the View Users screen
     private void showViewUsersScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ViewUsers.fxml"));
@@ -122,7 +133,8 @@ public class AdminDashboardController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load add user screen.");
         }
     }
-      // Navigate to the Delete User screen
+    
+    // Navigate to the Delete User screen
     private void showDeleteUserScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DeleteUser.fxml"));
@@ -165,7 +177,50 @@ public class AdminDashboardController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load logs screen.");
         }
     }
-      // Navigate back to the login screen
+    
+    // Navigate to the View Appointments screen
+    private void showViewAppointmentsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ViewAppointments.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) viewAppointmentsBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Manage Appointments");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load appointments screen.");
+        }
+    }
+    
+    // Navigate to the View Feedback screen
+    private void showViewFeedbackScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ViewFeedback.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) viewFeedbackBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("View Feedback");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load feedback screen.");
+        }
+    }
+    
+    // Navigate to the Emergency Alerts screen
+    private void showViewAlertsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/EmergencyAlerts.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) viewAlertsBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Emergency Alerts");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load emergency alerts screen.");
+        }
+    }
+    
+    // Navigate back to the login screen
     private void navigateToLogin() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
