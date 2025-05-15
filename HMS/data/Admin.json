@@ -4,4 +4,10 @@
   "name" : "salman",
   "id" : "ac80752b-1c15-4387-a2a6-5de1ec568fd4",
   "email" : "salman@gmail.com"
+}, {
+  "password" : "motebaR",
+  "role" : "Admin",
+  "name" : "Moteba Rehman",
+  "id" : "ee9368d5-cfbb-4993-ac36-590bf5071d9d",
+  "email" : "motebarehman@gmail.com"
 } ]
